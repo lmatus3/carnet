@@ -3,10 +3,10 @@ import { AppRoutes } from "./routes/AppRoutes";
 
 export const CarnetApp = () => {
   return (
-    <div className="h-svh bg-GreenPale font-azeretMono flex">
+    <div className="h-auto min-h-screen bg-GreenPale font-azeretMono flex">
       <AppRoutes />
       {/* Alertas */}
-      <Toaster />
+      <Toaster richColors   />
     </div>
   );
 };
