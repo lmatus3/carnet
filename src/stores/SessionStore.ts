@@ -1,22 +1,27 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+interface userInterface {
+  id: number;
+  token: string;
+  email: string;
+}
+
 interface SessionState {
   session: "Logged" | "NotLogged" | "Checking";
-  token: string | undefined;
+  currentUser: userInterface | undefined;
   onChecking: () => void;
-  onLogin: (newToken: string) => void;
+  onLogin: (user: userInterface) => void;
   onLogout: () => void;
 }
 
 export const useSessionStore = create<SessionState>()(
   persist(
     (set) => ({
-      session: "Checking",
-      token: undefined,
+      session: "NotLogged",
+      currentUser: undefined,
       onChecking: () => set(() => ({ session: "Checking", token: undefined })),
-      onLogin: (newToken) =>
-        set(() => ({ session: "Logged", token: newToken })),
+      onLogin: (user) => set(() => ({ session: "Logged", currentUser: user })),
       onLogout: () => set(() => ({ session: "NotLogged", token: undefined })),
     }),
     {
