@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useSessionStore } from "../../stores";
-import { users } from "../../data/tempData";
 import { toast } from "sonner";
+import axios, { isAxiosError } from "axios";
+
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export const Login = () => {
   const onLogin = useSessionStore((state) => state.onLogin);
@@ -9,30 +11,34 @@ export const Login = () => {
     email: "",
     password: "",
   });
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const usuario = users.find((user) => user.email === Formulario.email);
-    if (!usuario) {
-      toast.info("Sus credenciales no pertenecen a una cuenta");
-      return;
-    }
-    if (usuario.password === Formulario.password) {
+    try {
+      const { data } = await axios.post(backendURL + "/auth", {
+        ...Formulario,
+      });
       toast.success("Bienvenido");
-      onLogin({ ...usuario });
-    } else {
-      toast.info("Credenciales incorrectas");
+      onLogin({ email: Formulario.email, token: data.token });
+    } catch (error: unknown) {
+      console.log(error);
+      if (isAxiosError(error)) {
+        toast.info(error.response?.data.msg || "No se logró iniciar sesión");
+        return;
+      }
+      toast.info("Error desconocido");
+      return;
     }
   };
   return (
-    <div className="bg-DarkBlue text-GreenLight flex flex-col m-auto w-11/12 md:w-1/4">
+    <div className="bg-white text-BlueStrong rounded-lg flex flex-col m-auto w-[300px] p-4 gap-y-2">
       <h1 className="text-h1 m-auto">Login</h1>
-      <form onSubmit={handleLogin} className="flex flex-col pb-5 gap-2">
+      <form onSubmit={handleLogin} className="flex flex-col pb-5 gap-2 text-sm">
         <div className="flex flex-col">
-          <label className="m-auto" htmlFor="Correo">
+          <label className="" htmlFor="Correo">
             Correo
           </label>
           <input
-            className="text-black"
+            className="text-black rounded border py-1"
             type="email"
             name="Correo"
             id="Correo"
@@ -43,11 +49,11 @@ export const Login = () => {
           />
         </div>
         <div className="flex flex-col">
-          <label className="m-auto" htmlFor="password">
+          <label className="" htmlFor="password">
             Contraseña
           </label>
           <input
-            className="text-black"
+            className="text-black rounded border py-1"
             type="password"
             name="password"
             id="password"
@@ -59,7 +65,7 @@ export const Login = () => {
         </div>
         <button
           type="submit"
-          className="bg-PaleBlue w-fit m-auto px-10 py-1 hover:opacity-80"
+          className="bg-OrangeMedium w-fit m-auto py-1 px-2 rounded hover:bg-orange-400"
         >
           Ingresar
         </button>

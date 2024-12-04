@@ -6,10 +6,10 @@ export const Navbar = () => {
   return (
     <div className="flex bg-white w-svw h-auto text-BlueMedium justify-between">
       <div className="flex items-center gap-4">
-        <span className="text-h2 ml-2">CARNET APP</span>
+        <span className=" text-h3 md:text-h2 ml-2">CARNET APP</span>
         <NavLink
           className={({ isActive }) =>
-            ` ${isActive && "text-BlueStrong font-bold"} `
+            ` ${isActive && "text-BlueStrong "} text-sm`
           }
           to={"/"}
         >
@@ -17,17 +17,17 @@ export const Navbar = () => {
         </NavLink>
         <NavLink
           className={({ isActive }) =>
-            ` ${isActive && "text-BlueStrong font-bold"} `
+            ` ${isActive && "text-BlueStrong "} text-sm`
           }
-          to={"/eventos"}
+          to={"/asistencias"}
         >
-          Eventos
+          Asistencia
         </NavLink>
       </div>
       <div className=" flex items-center p-2">
         <button type="button" onClick={onLogout}>
           <svg
-            className="w-12 fill-BlueStrong"
+            className="w-8 fill-BlueStrong"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -960 960 960"
           >

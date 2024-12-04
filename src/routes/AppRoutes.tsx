@@ -3,8 +3,9 @@ import { useSessionStore } from "../stores";
 import { Home } from "../pages/Home";
 import { Login } from "../pages/auth/Login";
 import { LoadingPage } from "../pages/LoadingPage";
-import { Eventos } from "../pages/Eventos";
+import { Asistencia } from "../pages/Asistencia";
 import { useEffect } from "react";
+import { Validate } from "../pages/Validate";
 
 export const AppRoutes = () => {
   const session = useSessionStore((state) => state.session);
@@ -26,7 +27,8 @@ export const AppRoutes = () => {
         {session === "Logged" && (
           <>
             <Route path="/" element={<Home />} />
-            <Route path="/eventos" element={<Eventos />} />
+            <Route path="/asistencias" element={<Asistencia />} />
+            <Route path="/validar/:codigo" element={<Validate />} />
           </>
         )}
         {session === "NotLogged" && (
