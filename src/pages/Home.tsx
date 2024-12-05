@@ -53,7 +53,13 @@ export const Home = () => {
               ${carnet.type == 3 && " from-BlueMedium to-GrayMedium text-white"}
               w-11/12 max-w-[500px] m-auto p-4 rounded transition-all relative focus:scale-105 focus:drop-shadow-lg`}
             >
-              <h2 className={`text-h3 md:text-h2 text-black text-center ${carnet.type == 3 && " text-white "}`}>{carnet.name}</h2>
+              <h2
+                className={`text-h3 md:text-h2 text-black text-center ${
+                  carnet.type == 3 && " text-white "
+                }`}
+              >
+                {carnet.name}
+              </h2>
               <div>
                 <span className="text-lg md:text-h3 font-bold">
                   {carnet.type == 1 && "Carrera"}
@@ -79,8 +85,8 @@ export const Home = () => {
               </div>
               <img
                 src={carnet.qrUrl}
-                alt=""
-                className="absolute right-4 bottom-4"
+                alt={"carnet" + carnet.type}
+                className="absolute right-4 bottom-4 w-36 md:w-40"
               />
             </div>
           ))}
