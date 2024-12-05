@@ -77,18 +77,18 @@ export const Asistencia = () => {
             <button
               onClick={() => setPauseScan((prev) => !prev)}
               className={`${
-                PauseScan ? " bg-PaleBlue " : " bg-red-600"
+                PauseScan ? " bg-BlueMedium " : " bg-red-600"
               } text-white p-2 mx-auto my-2`}
             >
               {PauseScan ? "Pausado" : "Escaneando"}
             </button>
-            <div className="w-auto h-80 ">
+            <div className="w-auto h-80 print:hidden ">
               <Scanner scanDelay={100} paused={PauseScan} onScan={handleScan} />
             </div>
           </div>
           <div
             ref={contentRef}
-            className="text-wrap w-full mt-80 flex flex-col bg-white relative print:absolute print:top-0 print:mt-8"
+            className="text-wrap w-full mt-16 md:mt-80 flex flex-col bg-white relative print:absolute print:top-0 print:mt-8"
           >
             <h2 className="text-h2 m-auto">
               Asistencia de {DatosEvento.nombre}
@@ -107,7 +107,7 @@ export const Asistencia = () => {
                 <path d="M320-120q-33 0-56.5-23.5T240-200v-80h-80q-33 0-56.5-23.5T80-360v-160q0-51 35-85.5t85-34.5h560q51 0 85.5 34.5T880-520v160q0 33-23.5 56.5T800-280h-80v80q0 33-23.5 56.5T640-120H320ZM160-360h80q0-33 23.5-56.5T320-440h320q33 0 56.5 23.5T720-360h80v-160q0-17-11.5-28.5T760-560H200q-17 0-28.5 11.5T160-520v160Zm480-280v-120H320v120h-80v-120q0-33 23.5-56.5T320-840h320q33 0 56.5 23.5T720-760v120h-80Zm80 180q17 0 28.5-11.5T760-500q0-17-11.5-28.5T720-540q-17 0-28.5 11.5T680-500q0 17 11.5 28.5T720-460Zm-80 260v-160H320v160h320ZM160-560h640-640Z" />
               </svg>
             </button>
-            <ul className="w-11/12 m-auto pb-10 text-pretty text-ellipsis overflow-hidden">
+            <ul className="w-11/12 m-auto pb-10 text-pretty text-ellipsis overflow-hidden ">
               {ScannerResults?.map((scan, i) => (
                 <li key={scan}>
                   {i + 1}. {scan}

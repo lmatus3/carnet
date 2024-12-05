@@ -60,34 +60,38 @@ export const Home = () => {
               >
                 {carnet.name}
               </h2>
-              <div>
-                <span className="text-lg md:text-h3 font-bold">
-                  {carnet.type == 1 && "Carrera"}
-                  {carnet.type == 2 && "Cargo"}
-                  {carnet.type == 3 && "Facultad"}
-                </span>
-                <p>
-                  {carnet.type == 1 && carnet.carrera}
-                  {carnet.type == 2 && carnet.cargo}
-                  {carnet.type == 3 && carnet.facultad}
-                </p>
+              <div className="grid grid-cols-2">
+                <div className="flex flex-col">
+                  <div>
+                    <span className="text-lg md:text-h3 font-bold">
+                      {carnet.type == 1 && "Carrera"}
+                      {carnet.type == 2 && "Cargo"}
+                      {carnet.type == 3 && "Facultad"}
+                    </span>
+                    <p>
+                      {carnet.type == 1 && carnet.carrera}
+                      {carnet.type == 2 && carnet.cargo}
+                      {carnet.type == 3 && carnet.facultad}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-h3 font-bold">Número de carnet</span>
+                    <p>{carnet.credentialCode}</p>
+                  </div>
+                  <div>
+                    <span className="text-h3 font-bold">Válido de</span>
+                    <p>
+                      {new Date(2024, 7, 12).toISOString().split("T")[0]} -{" "}
+                      {new Date(2025, 7, 12).toISOString().split("T")[0]}
+                    </p>
+                  </div>
+                </div>
+                <img
+                  src={carnet.qrUrl}
+                  alt={"carnet" + carnet.type}
+                  className="absolute right-4 bottom-4 w-36 md:w-40"
+                />
               </div>
-              <div>
-                <span className="text-h3 font-bold">Número de carnet</span>
-                <p>29123132</p>
-              </div>
-              <div>
-                <span className="text-h3 font-bold">Válido de</span>
-                <p>
-                  {new Date(2024, 7, 12).toISOString().split("T")[0]} -{" "}
-                  {new Date(2025, 7, 12).toISOString().split("T")[0]}
-                </p>
-              </div>
-              <img
-                src={carnet.qrUrl}
-                alt={"carnet" + carnet.type}
-                className="absolute right-4 bottom-4 w-36 md:w-40"
-              />
             </div>
           ))}
         </div>
