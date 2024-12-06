@@ -3,7 +3,7 @@ import { BackendApi } from "../api/config";
 
 export const GetCarnetInfo = async (codigo: string) => {
   try {
-    const respuesta = await BackendApi.get("/carnets/validate/" + codigo);
+    const respuesta = await BackendApi.get("/validate/" + codigo);
     return { ok: true, data: respuesta.data };
   } catch (error) {
     if (isAxiosError(error)) {

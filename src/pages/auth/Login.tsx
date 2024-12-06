@@ -18,7 +18,12 @@ export const Login = () => {
         ...Formulario,
       });
       toast.success("Bienvenido");
-      onLogin({ email: Formulario.email, token: data.token });
+      onLogin({
+        email: Formulario.email,
+        token: data.token,
+        names: data.user.names,
+        lastNames: data.user.lastNames,
+      });
     } catch (error: unknown) {
       console.log(error);
       if (isAxiosError(error)) {

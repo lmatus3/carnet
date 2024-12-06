@@ -2,17 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @font-face {
-  font-family: "AzeretMono";
-  src: url("/src/assets/fonts/AzeretMono-Regular.ttf") format("truetype");
-  font-weight: 400; /* Regular */
+  font-family: "Inter";
+  src: url("./assets/Fonts/Inter.ttf") format("truetype");
+  font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "AzeretMono";
-  src: url("/src/assets/fonts/AzeretMono-Bold.ttf") format("truetype");
-  font-weight: 700; /* Bold */
+  font-family: "LeagueGothic";
+  src: url("./assets/Fonts/LeagueGothic.ttf") format("truetype");
+  font-weight: normal;
   font-style: normal;
 }

@@ -13,7 +13,7 @@ export const AppRoutes = () => {
   // Validando sesión actual
 
   const validarSesion = () => {
-    console.log(session)
+    console.log(session);
     if (!session) {
       onLogout();
     }
@@ -29,11 +29,11 @@ export const AppRoutes = () => {
           <>
             <Route path="/" element={<Home />} />
             <Route path="/asistencias" element={<Asistencia />} />
-            <Route path="/validar/:codigo" element={<Validate />} />
           </>
         )}
         {session === "NotLogged" && (
           <>
+            <Route path="/validar/:codigo" element={<Validate />} />
             <Route path="/*" element={<Login />} />
           </>
         )}

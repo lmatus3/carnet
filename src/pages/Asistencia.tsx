@@ -43,7 +43,7 @@ export const Asistencia = () => {
       toast.info("Ya fue escaneado previamente");
       setTimeout(() => {
         setPauseScan(false);
-      }, 100);
+      }, 2500);
       return;
     }
     toast.success("Escaneado correctamente");
@@ -83,7 +83,7 @@ export const Asistencia = () => {
               {PauseScan ? "Pausado" : "Escaneando"}
             </button>
             <div className="w-auto h-80 print:hidden ">
-              <Scanner scanDelay={100} paused={PauseScan} onScan={handleScan} />
+              <Scanner  paused={PauseScan} onScan={handleScan} />
             </div>
           </div>
           <div

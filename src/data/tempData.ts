@@ -6,7 +6,12 @@ export const users = [
     password: "123123",
   },
 ];
-
+interface userInterface {
+  id: number;
+  names: string;
+  lastNames: string;
+  email: string;
+}
 export type carnetType = {
   id: number;
   user: number;
@@ -20,6 +25,7 @@ export type carnetType = {
   url: string;
   qrUrl: string;
   type: 1 | 2 | 3;
+  usuario?: userInterface;
 };
 
 // export const carnets: carnetType[] = [

@@ -4,12 +4,12 @@ import { useSessionStore } from "../stores";
 export const Navbar = () => {
   const onLogout = useSessionStore((state) => state.onLogout);
   return (
-    <div className="flex bg-white w-svw h-auto text-BlueMedium justify-between">
+    <div className="flex bg-white w-svw h-auto text-BlueMedium justify-between font-leagueGothic">
       <div className="flex items-center gap-4">
         <span className=" text-h3 md:text-h2 ml-2">CARNET APP</span>
         <NavLink
           className={({ isActive }) =>
-            ` ${isActive && "text-BlueStrong "} text-sm`
+            ` ${isActive && "text-BlueStrong "} text-2xl`
           }
           to={"/"}
         >
@@ -17,7 +17,7 @@ export const Navbar = () => {
         </NavLink>
         <NavLink
           className={({ isActive }) =>
-            ` ${isActive && "text-BlueStrong "} text-sm`
+            ` ${isActive && "text-BlueStrong "} text-2xl`
           }
           to={"/asistencias"}
         >

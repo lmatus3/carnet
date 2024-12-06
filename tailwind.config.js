@@ -4,7 +4,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        azeretMono: ['"AzeretMono"', "monospace"], // Agregamos AzeretMono
+        leagueGothic: ['LeagueGothic', "monospace"],
+        inter: ['Inter', "monospace"],
       },
       colors: {
         GrayMedium: "#404040",
