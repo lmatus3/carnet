@@ -7,7 +7,6 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
   const { type, cargo, carrera, facultad, credentialCode, qrUrl, url } =
     carnetData;
   const currentUser = useSessionStore((state) => state.currentUser);
-  console.log(carnetData);
   return (
     <div className="w-[300px] h-[600px] bg-BlueLight relative flex flex-col">
       {/* Logo */}
