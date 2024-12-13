@@ -23,6 +23,14 @@ export const Navbar = () => {
         >
           Asistencia
         </NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            ` ${isActive && "text-BlueStrong "} text-2xl`
+          }
+          to={"/noticias"}
+        >
+          Noticias
+        </NavLink>
       </div>
       <div className=" flex items-center p-2">
         <button type="button" onClick={onLogout}>
