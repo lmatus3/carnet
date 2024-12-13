@@ -6,7 +6,7 @@ interface MainLayoutProps {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className="">
+    <div className="w-svw">
       <div className="print:hidden">
         <Navbar />
       </div>
