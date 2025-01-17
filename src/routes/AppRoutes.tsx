@@ -6,7 +6,7 @@ import { LoadingPage } from "../pages/LoadingPage";
 import { Asistencia } from "../pages/Asistencia";
 import { useEffect } from "react";
 import { Validate } from "../pages/Validate";
-import { Noticias } from "../pages/Noticias";
+// import { Noticias } from "../pages/Noticias";
 
 export const AppRoutes = () => {
   const session = useSessionStore((state) => state.session);
@@ -30,7 +30,7 @@ export const AppRoutes = () => {
           <>
             <Route path="/" element={<Home />} />
             <Route path="/asistencias" element={<Asistencia />} />
-            <Route path="/noticias" element={<Noticias />} />
+            {/* <Route path="/noticias" element={<Noticias />} /> */}
           </>
         )}
         {session === "NotLogged" && (

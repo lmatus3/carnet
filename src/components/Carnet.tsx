@@ -11,10 +11,10 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
     <div className="w-[300px] h-[600px] bg-BlueLight relative flex flex-col">
       {/* Logo */}
       <div className="absolute top-6">
-        <img src={foto} alt="Logo UNICA" />
+        <img src={foto} alt="Logo UNICA" className="w-3/4 m-auto" />
       </div>
       {/* Foto estudiante */}
-      <div className="bg-white mx-auto mt-32 h-[170px] w-[150px] flex">
+      <div className="bg-white mx-auto mt-28 h-[170px] w-[150px] flex">
         <img className="m-auto" src={fotoPerfil} alt="fotoEstudiante" />
       </div>
       {/* Datos de carnet */}
@@ -23,7 +23,7 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
         <p className="text-xl font-bold">{currentUser?.lastNames}</p>
         <p>
           {type === 2 && "Cargo: " + cargo}
-          {type === 1 && "Estudia: " + carrera}
+          {type === 1 && "" + carrera}
           {type === 3 && "Docente: " + facultad}
         </p>
         <p className="text-xl">{credentialCode}</p>
@@ -36,8 +36,10 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
       </div>
       {/* contacto */}
       <div className="w-full absolute bottom-4 bg-white h-[60px] text-BlueMedium text-center text-sm">
-        Km. 9.5 carretera Masaya. 500 vrs al suroeste Managua, Nicaragua /Tel.:
-        (505) 2248-9595
+          {
+            // TODO Mostrar validez del carnet (Semestre o año)
+          }
+          Carnet valido en:
       </div>
     </div>
   );

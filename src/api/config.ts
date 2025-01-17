@@ -1,9 +1,9 @@
 import axios from "axios";
-const rutaBackend = import.meta.env.VITE_BACKEND_URL;
+import { envs } from "../plugins/envs";
 // Este componente tiene como objetivo configurar axios para tener la ruta del backend
 
 export const BackendApi = axios.create({
-  baseURL: rutaBackend,
+  baseURL: envs.BACKEND_URL,
 });
 
 // Interceptor para agregar el token a cada solicitud

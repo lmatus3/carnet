@@ -10,7 +10,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       <div className="print:hidden">
         <Navbar />
       </div>
-      {children}
+      <div className="mb-14">{children}</div>
     </div>
   );
 };
