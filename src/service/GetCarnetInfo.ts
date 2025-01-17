@@ -1,4 +1,3 @@
-import { isAxiosError } from "axios";
 import { BackendApi } from "../api/config";
 
 interface ValidateResponseInterface {
@@ -21,42 +20,86 @@ interface InfoEstudianteInterface {
   email: string;
   cursoNombre: string;
 }
-interface BackendResponse {
+interface GetEstudianteInfoResponse {
   message: string;
   data: { infoEstudiante: InfoEstudianteInterface[] } | null;
   errors: string[] | null;
 }
+interface GetEstadoEstudianteInfoResponse {
+  message: string;
+  data: { infoEstudiante: ValidateResponseInterface[] } | null;
+  errors: string[] | null;
+}
 
-type Response = { ok: boolean; data?: unknown; error?: string };
-export const GetEstudianteInfo: () => Promise<Response> = async () => {
-  try {
-    const respuesta = await BackendApi.get("/infoEstudiante");
-    return { ok: true, data: respuesta.data as BackendResponse };
-  } catch (error) {
-    if (isAxiosError(error)) {
-      if (error.response?.data.valid == false) {
-        return { ok: false, error: "Carnet inválido" };
-      }
-      return { ok: false, error: "Error no controlador" };
-    }
-    return { ok: false, error: "Error no controlado" };
-  }
-};
+interface ResponseInfoInterface {
+  ok: boolean;
+  data?: InfoEstudianteInterface[];
+  error?: string;
+}
 
-export const ValidateCarnet: (carnet: string) => Promise<Response> = async (
-  carnet
-) => {
-  try {
-    const respuesta = await BackendApi.get("/validate/" + carnet);
-    return { ok: true, data: respuesta.data as BackendResponse };
-  } catch (error) {
-    if (isAxiosError(error)) {
-      // La lógica de la validación vendrá diferente
-      if (error.response?.data.valid == false) {
-        return { ok: false, error: "Carnet inválido" };
+interface ResponseValidInterface {
+  ok: boolean;
+  data?: ValidateResponseInterface[];
+  error?: string;
+}
+
+export const GetEstudianteInfo: () => Promise<ResponseInfoInterface> =
+  async () => {
+    try {
+      const response = await BackendApi.post("infoEstudiante");
+      const ServerResponse = response.data as GetEstudianteInfoResponse;
+      if (ServerResponse.data) {
+        return {
+          ok: true,
+          data: ServerResponse.data.infoEstudiante as InfoEstudianteInterface[],
+        };
+      } else {
+        if (ServerResponse.errors) {
+          console.log(ServerResponse.errors);
+        }
       }
-      return { ok: false, error: "Error no controlador" };
+      return {
+        ok: false,
+        error: "No se logró obtener información de este usuario",
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        ok: false,
+        error: "No se logró obtener información de este usuario",
+      };
     }
-    return { ok: false, error: "Error no controlado" };
+  };
+
+export const ValidateEstudianteInfo: (
+  carnet: string
+) => Promise<ResponseValidInterface> = async (carnet) => {
+  try {
+    const response = await BackendApi.get(
+      "estadoEstudiante?EstudianteCarne=" + carnet
+    );
+    const ServerResponse = response.data as GetEstadoEstudianteInfoResponse;
+    if (ServerResponse.data) {
+      return {
+        ok: true,
+        data: ServerResponse.data.infoEstudiante as ValidateResponseInterface[],
+      };
+    } else {
+      if (ServerResponse.errors) {
+        console.log(ServerResponse.errors);
+      }
+    }
+    return {
+      ok: false,
+      error: "No se logró obtener información de este usuario",
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      ok: false,
+      error: "No se logró obtener información de este usuario",
+    };
   }
 };

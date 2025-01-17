@@ -34,7 +34,6 @@ export const LoginCredentials: (
       return { ok: false, error: "No se logró iniciar sesión" };
     }
   } catch (error) {
-    console.log(error);
     return { ok: true, error: error as string };
   }
 };
@@ -42,7 +41,7 @@ export const LoginGoogle: (
   payload: LoginGoogleInterface
 ) => Promise<LoginResponse> = async (payload) => {
   try {
-    const response = await BackendApi.post("/CheckCredentialsUonline", payload);
+    const response = await BackendApi.post("/CheckCredentialsUonlineGoogle", payload);
     if (response.status) {
       return { ok: true, data: response.data as BackendResponse };
     } else {

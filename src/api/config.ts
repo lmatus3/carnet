@@ -13,9 +13,9 @@ BackendApi.interceptors.request.use(
     const sessionData = sessionStorage.getItem("session-storage");
     if (sessionData) {
       const parsedData = JSON.parse(sessionData as string);
-      const { token } = parsedData.state.currentUser;
+      const { token } = parsedData.state;
       if (token) {
-        config.headers["x-token"] = `${token}`;
+        config.headers["Authorization"] = `Bearer ${token}`;
       }
     }
     config.headers["Accept"] = "application/json";

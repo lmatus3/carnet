@@ -1,26 +1,6 @@
 import Aviso from "../assets/imgs/Aviso.png";
 
-interface userInterface {
-  id: number;
-  names: string;
-  lastNames: string;
-  email: string;
-}
-export type carnetType = {
-  id: number;
-  user: number;
-  name: string;
-  carrera?: string;
-  cargo?: string;
-  facultad?: string;
-  credentialCode: string;
-  dateCreated: string;
-  dateEnd: string;
-  url: string;
-  qrUrl: string;
-  type: 1 | 2 | 3;
-  usuario?: userInterface;
-};
+
 
 export interface noticia {
   id: number;

@@ -46,7 +46,7 @@ export const Login = () => {
     sendForm();
     setSubmitDisabled(true);
     // Validando campos de formulario
-    if (isFormValid) {
+    if (!isFormValid) {
       toast.info("Favor, revise los campos necesarios");
       setSubmitDisabled(false);
       return;
@@ -57,8 +57,9 @@ export const Login = () => {
     const payload = { user: user as string, password: password as string };
     LoginCredentials(payload).then((res) => {
       // Caso de error
-      if (res.error || !res.data) {
-        toast.error(res.error);
+      if (res.error) {
+        console.log(res)
+        toast.error("Credenciales incorrectas");
         SetLoading(false);
         setSubmitDisabled(false);
         return;
@@ -105,6 +106,7 @@ export const Login = () => {
       toast.error("No se logró iniciar sesión");
     }
   };
+  
   return (
     <div className="w-screen h-svh bg-blueDark font-inter flex">
       <div className="m-auto bg-white rounded p-8 flex flex-col">

@@ -17,6 +17,13 @@ module.exports = {
         YellowStrong: "#fad126",
         YellowMedium: "#edc121",
         YellowLight: "#ffe895",
+        blueDark: "#0c1b33",
+        blueSemiDark: "#04337f",
+        yellowLight: "#ffe895",
+        yellow: "#edc121 ",
+        yellowStrong: "#fad126",
+        orangeStrong: "#ff6000",
+        orange: "fc9d15",
       },
       fontSize: {
         h1: "34px",
