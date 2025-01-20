@@ -45,11 +45,11 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
         <small className="text-[8px]"> {url} </small>
       </div>
       {/* contacto */}
-      <div className="w-full absolute bottom-4 bg-white h-[60px] text-BlueMedium text-center text-sm">
+      <div className="w-full absolute bottom-4 bg-white h-[60px] text-BlueMedium flex items-center justify-center">
         {
           // TODO Mostrar validez del carnet (Semestre o año)
         }
-        Carnet valido en:{carnetData.timeValid}
+        <p className="text-2xl">{carnetData.timeValid}</p>
       </div>
     </div>
   );

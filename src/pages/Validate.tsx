@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { ValidateEstudianteInfo } from "../service/GetCarnetInfo";
+import {
+  ValidateEstudianteInfo,
+  ValidateResponseInterface,
+} from "../service/GetCarnetInfo";
 import { toast } from "sonner";
 
 export const Validate = () => {
   const { codigo } = useParams();
   const [isCarnetValid, setIsCarnetValid] = useState<boolean>();
+  const [errorMessage, setErrorMessage] = useState<ReactElement>();
   const [carnetData, setCarnetData] = useState<{
     estado: string;
     estudianteCarne: string;
@@ -13,16 +17,38 @@ export const Validate = () => {
     matriculado: "SI" | "NO";
   }>();
 
+  const mensajeErrorPorDefecto = (
+    <h1 className="text-red-500">
+      <b>No</b> se pudo obtener información de este carnet.
+    </h1>
+  );
   // TODO Validación de carnet en backend
   const ValidarCarnet = async () => {
-    ValidateEstudianteInfo(codigo as string).then((res) => {
-      if (res.data) {
-        setIsCarnetValid(true);
-        setCarnetData(res.data[0]);
+    const response = await ValidateEstudianteInfo(codigo as string);
+    if (response.ok) {
+      if (response.data) {
+        try {
+          const { data } = response.data;
+          const datosEstudiante =
+            data?.infoEstudiante as ValidateResponseInterface[];
+          setIsCarnetValid(true);
+          setCarnetData(datosEstudiante[0]);
+        } catch (error) {
+          console.log(error);
+          setIsCarnetValid(false);
+          setCarnetData(undefined);
+          setErrorMessage(mensajeErrorPorDefecto);
+          toast.error("No se pudo obtener información de este carnet.");
+        }
       } else {
-        toast.error("No se pudo obtener información de este carnet");
+        setErrorMessage(mensajeErrorPorDefecto);
+        toast.error("No se pudo obtener información de este carnet.");
       }
-    });
+    } else {
+      if (response.error) {
+        toast.error(response.error);
+      }
+    }
   };
   useEffect(() => {
     ValidarCarnet();
@@ -35,9 +61,7 @@ export const Validate = () => {
       </h1>
       {!isCarnetValid ? (
         <div className="bg-white mx-auto mt-4 h-fit w-[400px] p-4 rounded">
-          <h1 className="text-red-500 text-h3 text-center">
-            El carnet escaneado es invalido
-          </h1>
+          <h1 className="text-red-500 text-h3 text-center">{errorMessage}</h1>
         </div>
       ) : (
         <div className="bg-white mx-auto mt-4 h-fit w-[400px] p-4 rounded">

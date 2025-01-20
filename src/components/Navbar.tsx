@@ -17,14 +17,15 @@ export const Navbar = () => {
           >
             Home
           </NavLink>
-          <NavLink
+          {/* Las asistencias estaran ocultas */}
+          {/* <NavLink
             className={({ isActive }) =>
               ` ${isActive && "text-BlueStrong "} text-2xl`
             }
             to={"/asistencias"}
           >
             Asistencia
-          </NavLink>
+          </NavLink> */}
           {/* <NavLink
             className={({ isActive }) =>
               ` ${isActive && "text-BlueStrong "} text-2xl`

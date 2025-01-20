@@ -58,8 +58,7 @@ export const Login = () => {
     LoginCredentials(payload).then((res) => {
       // Caso de error
       if (res.error) {
-        console.log(res)
-        toast.error("Credenciales incorrectas");
+        toast.error(res.error);
         SetLoading(false);
         setSubmitDisabled(false);
         return;
@@ -84,7 +83,7 @@ export const Login = () => {
     console.log(payload);
     LoginGoogle(payload).then((res) => {
       // Caso de error (De axios)
-      if (res.error || !res.data) {
+      if (res.error) {
         toast.error(res.error);
         SetLoading(false);
         setSubmitDisabled(false);
@@ -103,10 +102,10 @@ export const Login = () => {
     if (res.data?.data) {
       onSessionStart(res.data?.data.temporalToken);
     } else {
-      toast.error("No se logró iniciar sesión");
+      toast.error("No se logró finalizar el iniciar sesión");
     }
   };
-  
+
   return (
     <div className="w-screen h-svh bg-blueDark font-inter flex">
       <div className="m-auto bg-white rounded p-8 flex flex-col">

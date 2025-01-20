@@ -4,11 +4,10 @@ import { MainLayout } from "../layouts/MainLayout";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useReactToPrint } from "react-to-print";
-import { useSessionStore } from "../stores";
 import LogoAzul from "../assets/imgs/logoAzul.png";
 
 type eventoType = {
-  token: string;
+  
   nombre: string;
   fechaHoraInicio: string;
   fechaHoraFinal: string;
@@ -21,10 +20,8 @@ type eventoType = {
 
 export const Asistencia = () => {
   const [ScannerResults, setScannerResults] = useState<string[]>([]);
-  const currentUser = useSessionStore((state) => state.currentUser);
   const [PauseScan, setPauseScan] = useState(false);
   const [DatosEvento, setDatosEvento] = useState<eventoType>({
-    token: currentUser?.token as string,
     nombre: "",
     fechaHoraInicio: "",
     fechaHoraFinal: "",

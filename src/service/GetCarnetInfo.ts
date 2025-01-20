@@ -1,13 +1,14 @@
+import { isAxiosError } from "axios";
 import { BackendApi } from "../api/config";
 
-interface ValidateResponseInterface {
+export interface ValidateResponseInterface {
   estudianteCarne: string;
   matriculado: "SI" | "NO";
   inscrito: "SI" | "NO";
   estado: string;
 }
 
-interface InfoEstudianteInterface {
+export interface InfoEstudianteInterface {
   estudianteCarne: string;
   nombreEstudiante: string;
   periodoLectivo: string;
@@ -20,86 +21,74 @@ interface InfoEstudianteInterface {
   email: string;
   cursoNombre: string;
 }
-interface GetEstudianteInfoResponse {
+interface BackendDataResponse {
   message: string;
-  data: { infoEstudiante: InfoEstudianteInterface[] } | null;
-  errors: string[] | null;
-}
-interface GetEstadoEstudianteInfoResponse {
-  message: string;
-  data: { infoEstudiante: ValidateResponseInterface[] } | null;
+  data: {
+    infoEstudiante: InfoEstudianteInterface[] | ValidateResponseInterface[];
+  } | null;
   errors: string[] | null;
 }
 
 interface ResponseInfoInterface {
   ok: boolean;
-  data?: InfoEstudianteInterface[];
+  data?: BackendDataResponse;
   error?: string;
+  status?: number;
 }
 
-interface ResponseValidInterface {
+const ValidateError: (err: unknown) => {
   ok: boolean;
-  data?: ValidateResponseInterface[];
-  error?: string;
-}
+  error: string;
+  status?: number;
+} = (err) => {
+  console.log(err);
+  if (isAxiosError(err)) {
+    // Access to config, request, and response
+    const { response } = err;
+    if (response && response.data) {
+      const { message }: { message: string } = response.data;
+      return { ok: false, error: message, status: err.status };
+    }
+    return { ok: false, error: "No se logró obtener los datos del usuario" };
+  } else {
+    // Error no de backend
+    return { ok: false, error: "No se logró obtener los datos del usuario" };
+  }
+};
 
 export const GetEstudianteInfo: () => Promise<ResponseInfoInterface> =
   async () => {
     try {
       const response = await BackendApi.post("infoEstudiante");
-      const ServerResponse = response.data as GetEstudianteInfoResponse;
-      if (ServerResponse.data) {
-        return {
-          ok: true,
-          data: ServerResponse.data.infoEstudiante as InfoEstudianteInterface[],
-        };
+      if (response.status) {
+        return { ok: true, data: response.data as BackendDataResponse };
       } else {
-        if (ServerResponse.errors) {
-          console.log(ServerResponse.errors);
-        }
+        return {
+          ok: false,
+          error: "No se logró obtener los datos del usuario",
+        };
       }
-      return {
-        ok: false,
-        error: "No se logró obtener información de este usuario",
-      };
     } catch (error) {
-      console.log(error);
-
-      return {
-        ok: false,
-        error: "No se logró obtener información de este usuario",
-      };
+      return ValidateError(error);
     }
   };
 
 export const ValidateEstudianteInfo: (
   carnet: string
-) => Promise<ResponseValidInterface> = async (carnet) => {
+) => Promise<ResponseInfoInterface> = async (carnet) => {
   try {
     const response = await BackendApi.get(
       "estadoEstudiante?EstudianteCarne=" + carnet
     );
-    const ServerResponse = response.data as GetEstadoEstudianteInfoResponse;
-    if (ServerResponse.data) {
-      return {
-        ok: true,
-        data: ServerResponse.data.infoEstudiante as ValidateResponseInterface[],
-      };
+    if (response.status) {
+      return { ok: true, data: response.data as BackendDataResponse };
     } else {
-      if (ServerResponse.errors) {
-        console.log(ServerResponse.errors);
-      }
+      return {
+        ok: false,
+        error: "No se logró validar los datos del usuario",
+      };
     }
-    return {
-      ok: false,
-      error: "No se logró obtener información de este usuario",
-    };
   } catch (error) {
-    console.log(error);
-
-    return {
-      ok: false,
-      error: "No se logró obtener información de este usuario",
-    };
+    return ValidateError(error);
   }
 };

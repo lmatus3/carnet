@@ -3,7 +3,7 @@ import { useSessionStore } from "../stores";
 import { Home } from "../pages/Home";
 import { Login } from "../pages/auth/Login";
 import { LoadingPage } from "../pages/LoadingPage";
-import { Asistencia } from "../pages/Asistencia";
+// import { Asistencia } from "../pages/Asistencia";
 import { useEffect } from "react";
 import { Validate } from "../pages/Validate";
 // import { Noticias } from "../pages/Noticias";
@@ -29,7 +29,7 @@ export const AppRoutes = () => {
         {session === "Logged" && (
           <>
             <Route path="/" element={<Home />} />
-            <Route path="/asistencias" element={<Asistencia />} />
+            {/* <Route path="/asistencias" element={<Asistencia />} /> */}
             {/* <Route path="/noticias" element={<Noticias />} /> */}
           </>
         )}
