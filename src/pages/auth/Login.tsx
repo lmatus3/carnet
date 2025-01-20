@@ -65,6 +65,8 @@ export const Login = () => {
       }
       // Caso positivo
       ManagePostLogin(res);
+      SetLoading(false);
+      setSubmitDisabled(false);
     });
   };
   const HandleGoogleLogin = (credentialResponse: CredentialResponse) => {
@@ -91,6 +93,8 @@ export const Login = () => {
       }
       // Caso positivo
       ManagePostLogin(res);
+      SetLoading(false);
+      setSubmitDisabled(false);
     });
   };
   const ManagePostLogin = (res: LoginResponse) => {
@@ -180,16 +184,18 @@ export const Login = () => {
             Iniciar sesión
           </button>
         </form>
-        <div>
-          <GoogleLogin
-            onSuccess={HandleGoogleLogin}
-            onError={() => {
-              console.log("Login Failed");
-            }}
-            shape="pill"
-            cancel_on_tap_outside
-            useOneTap
-          />
+        <div className="flex">
+          <div className="mx-auto">
+            <GoogleLogin
+              onSuccess={HandleGoogleLogin}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+              shape="pill"
+              cancel_on_tap_outside
+              useOneTap
+            />
+          </div>
         </div>
       </div>
       {loading && <Loader />}
