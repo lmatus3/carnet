@@ -19,6 +19,14 @@ export const Navbar = () => {
           >
             Home
           </NavLink>
+          <NavLink
+            className={({ isActive }) =>
+              ` ${isActive && "text-BlueStrong "} text-2xl`
+            }
+            to={"/eventos"}
+          >
+            Eventos
+          </NavLink>
           {/* Las asistencias estaran ocultas */}
           {/* <NavLink
             className={({ isActive }) =>
@@ -53,7 +61,7 @@ export const Navbar = () => {
         <PhoneNavbar />
         <button type="button" onClick={() => setShowLogOutPopup(true)}>
           <svg
-            className="w-12 fill-BlueLight"
+            className="w-12 fill-blueDark"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -960 960 960"
           >
