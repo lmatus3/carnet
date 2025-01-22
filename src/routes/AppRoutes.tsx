@@ -7,6 +7,7 @@ import { LoadingPage } from "../pages/LoadingPage";
 import { useEffect } from "react";
 import { Validate } from "../pages/Validate";
 import { Eventos } from "../pages/eventos/Eventos";
+import { Evento } from "../pages/eventos/Evento";
 // import { Noticias } from "../pages/Noticias";
 
 export const AppRoutes = () => {
@@ -31,6 +32,7 @@ export const AppRoutes = () => {
           <>
             <Route path="/" element={<Home />} />
             <Route path="/eventos" element={<Eventos />} />
+            <Route path="/eventos/:id" element={<Evento />} />
             {/* <Route path="/asistencias" element={<Asistencia />} /> */}
             {/* <Route path="/noticias" element={<Noticias />} /> */}
           </>

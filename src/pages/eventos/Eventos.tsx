@@ -9,7 +9,7 @@ export const Eventos = () => {
         <h1 className="text-2xl font-leagueGothic w-40 py-2 bg-white m-auto text-center rounded md:text-4xl md:w-56">
           Eventos
         </h1>
-        <div className="flex flex-col bg-white my-2 mx-auto rounded  w-11/12 max-w-[800px]">
+        <div className="flex flex-col bg-white my-2 mx-auto rounded w-11/12 md:max-w-[800px]">
           {
             // TODO Lista de eventos
           }
