@@ -1,6 +1,6 @@
 import { ChangeEvent } from "react";
 
-type OptionType = {
+export type OptionType = {
   value: string;
   name: string;
 };

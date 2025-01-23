@@ -7,7 +7,7 @@ export const EstadoBadge = ({ estado }: { estado: EstadoTypes }) => {
         estado === "Programado" && "bg-green-800 text-white"
       } ${estado === "En curso" && "bg-blue-950 text-white"} ${
         estado === "Concluído" && "border"
-      } ${estado === "Desconocido" && "bg-black text-white"}`}
+      } ${estado === "Cancelado" && "bg-red-600 text-white"} ${estado === "Desconocido" && "bg-black text-white"}`}
     >
       {estado}
     </div>

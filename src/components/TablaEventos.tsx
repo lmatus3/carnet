@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Link } from "react-router";
 import { usePrint } from "../plugins/print";
 import { useModalControls } from "../hooks/useModalControls";
+import { RegisterEvento } from "../pages/eventos/RegisterEvento";
 
 type TablaEventosType = {
   Registros: eventoInterface[];
@@ -385,8 +386,7 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
               ref={ModalRef}
               className="bg-white mt-24 mx-auto w-11/12 md:w-2/3 h-fit p-8 rounded shadow-lg relative"
             >
-              <h1>Registrar nuevo evento</h1>
-              <span>TBD</span>
+              <RegisterEvento closeModal={() => setIsModalOpen(false)} />
             </div>
           </div>
         )}

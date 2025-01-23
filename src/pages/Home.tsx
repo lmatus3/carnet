@@ -26,39 +26,43 @@ export const Home = () => {
         if (res.data.data) {
           const { infoEstudiante } = res.data.data;
           (infoEstudiante as InfoEstudianteInterface[]).map((Estudio) => {
-            if (Estudio.matriculado === "SI") {
-              // Caso positivo
-              if (Estudio.estado == "Expulsado") {
-                // Caso expulsado
-                setErrorMessage(
-                  <div>
-                    Actualmente <b>no</b> cuenta con credenciales activas.
-                  </div>
-                );
-                return;
-              }
-              // Procesando strings (Obteniendo solo dato relevante)
-              const nombreCarreraProcesado = Estudio.carreraNombre.split('-')
-              // console.log(nombreCarreraProcesado)
-              const nuevoNombreCarrera = nombreCarreraProcesado[1]
-              const periodoProcesado = Estudio.periodoLectivo.split('-')
-              // console.log(periodoProcesado)
-              const nuevoPeriodo = periodoProcesado[1]
-              const carnet: carnetType = {
-                credentialCode: Estudio.estudianteCarne,
-                name: Estudio.nombreEstudiante,
-                type: 1, // Estudiante
-                // TODO Trim carrera nombre
-                carrera: nuevoNombreCarrera,
-                url: envs.LINK_APP + "validar/" + Estudio.estudianteCarne,
-
-                photoUrl: Estudio.personaFoto,
-                timeValid: nuevoPeriodo,
-                qrUrl: "",
-              };
-              setCarnets([carnet]);
+            //! La validación es basada en el estado de este estudiante para la carrera actual del mismo
+            if (
+              Estudio.estado == "Expulsado" ||
+              Estudio.estado == "Retirado" ||
+              Estudio.estado == "Inactivo" ||
+              Estudio.estado == "Graduado"
+            ) {
+              // Caso expulsado
+              setErrorMessage(
+                <div>
+                  Actualmente <b>no</b> cuenta con credenciales activas.
+                </div>
+              );
               return;
             }
+            // * Aqui se asignan los datos del estudiante
+            // Procesando strings (Obteniendo solo dato relevante)
+            const nombreCarreraProcesado = Estudio.carreraNombre.split("-");
+            // console.log(nombreCarreraProcesado)
+            const nuevoNombreCarrera = nombreCarreraProcesado[1];
+            const periodoProcesado = Estudio.periodoLectivo.split("-");
+            // console.log(periodoProcesado)
+            const nuevoPeriodo = periodoProcesado[1];
+            const carnet: carnetType = {
+              credentialCode: Estudio.estudianteCarne,
+              name: Estudio.nombreEstudiante,
+              type: 1, // Estudiante
+              // TODO Trim carrera nombre
+              carrera: nuevoNombreCarrera,
+              url: envs.LINK_APP + "validar/" + Estudio.estudianteCarne,
+
+              photoUrl: Estudio.personaFoto,
+              timeValid: nuevoPeriodo,
+              qrUrl: "",
+            };
+            setCarnets([carnet]);
+            return;
           });
         }
         setErrorMessage(
