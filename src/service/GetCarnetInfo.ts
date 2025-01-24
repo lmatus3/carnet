@@ -59,7 +59,7 @@ const ValidateError: (err: unknown) => {
 export const GetEstudianteInfo: () => Promise<ResponseInfoInterface> =
   async () => {
     try {
-      const response = await BackendApi.post("infoEstudiante");
+      const response = await BackendApi.post("informacionUsuario");
       if (response.status) {
         return { ok: true, data: response.data as BackendDataResponse };
       } else {

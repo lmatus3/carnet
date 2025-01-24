@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { TypeOfUser } from "../types/userTypes";
 
 interface userInterface {
   id?: number;
@@ -11,9 +12,11 @@ interface userInterface {
 interface SessionState {
   session: "Logged" | "NotLogged" | "Checking";
   token: string | undefined;
+  perfiles: TypeOfUser[] | undefined;
   currentUser: userInterface | undefined;
   onChecking: () => void;
   onSessionStart: (token: string) => void;
+  onLoadProfiles: (newPerfiles: TypeOfUser[]) => void;
   onUserInfoLoad: (user: userInterface) => void;
   onLogout: () => void;
 }
@@ -24,10 +27,13 @@ export const useSessionStore = create<SessionState>()(
       token: undefined,
       session: "NotLogged",
       currentUser: undefined,
+      perfiles: undefined,
       onChecking: () => set(() => ({ session: "Checking", token: undefined })),
       // Iniciando sesión
       onSessionStart: (token) =>
         set(() => ({ session: "Logged", token: token })),
+      // Cargando perfil
+      onLoadProfiles: (newPerfiles) => set(() => ({ perfiles: newPerfiles })),
       // Esto es solo para cargar info del usuario
       onUserInfoLoad: (user) =>
         set(() => ({
@@ -38,6 +44,7 @@ export const useSessionStore = create<SessionState>()(
           session: "NotLogged",
           token: undefined,
           currentUser: undefined,
+          perfiles: undefined,
         })),
     }),
     {

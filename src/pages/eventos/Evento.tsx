@@ -7,12 +7,14 @@ import { EstadoBadge } from "../../components/EstadoBadge";
 import { useModalControls } from "../../hooks/useModalControls";
 import { EditEvento } from "./EditEvento";
 import { envs } from "../../plugins/envs";
-import QRCode from "react-qr-code";
+import { QR } from "../../plugins/QR";
+import { downloadQRCode } from "../../utils/donwloadQR";
 
 export const Evento = () => {
   const { id } = useParams();
   // Construyendo URL
-  const URLQR = envs.LINK_APP + "asistencia/" + id;
+  const URLQR: string = envs.LINK_APP + "asistencia/" + id;
+  //* Temp data
   const FakeData: eventoInterface = {
     id: id as string,
     nombre: "Ejemplo",
@@ -26,42 +28,14 @@ export const Evento = () => {
     //   Esto va a cambiar en un futuro
     tipoEventoId: "1",
   };
+  // Datos de evento a renderizar
   const [Data, setData] = useState<eventoInterface>(FakeData);
 
   // Modal
   // Controles del modal de las acciones
   const { ModalRef, isModalOpen, setIsModalOpen } = useModalControls();
   // Descargar QR como imagen
-  const downloadQRCode = () => {
-    // Seleccionamos el SVG generado por `react-qr-code`
-    const svg = document.getElementById("QRGenerated");
-    if (svg) {
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
 
-      // Definimos el tamaño del QR
-      const size = 256; // Tamaño del QR
-      canvas.width = size;
-      canvas.height = size;
-
-      // Convertimos el SVG en una imagen
-      const img = new Image();
-      img.onload = () => {
-        ctx?.drawImage(img, 0, 0, size, size);
-
-        // Convertimos el canvas a una URL de imagen
-        const pngUrl = canvas.toDataURL("image/png");
-
-        // Creamos un enlace para descargar la imagen
-        const downloadLink = document.createElement("a");
-        downloadLink.href = pngUrl;
-        downloadLink.download = "qrcode.png";
-        downloadLink.click();
-      };
-      img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
-    }
-  };
   return (
     <MainLayout>
       <div className="bg-white w-11/12 md:w-1/2 m-auto mt-8 rounded p-4">
@@ -106,11 +80,13 @@ export const Evento = () => {
             </>
           )}
           {/* Mostrando QR de evento */}
-          <p className="text-center font-leagueGothic text-2xl md:text-4xl ">QR de asistencia</p>
+          <p className="text-center font-leagueGothic text-2xl md:text-4xl ">
+            QR de asistencia
+          </p>
           <div className="bg-OrangeMedium rounded w-64 m-auto p-4 relative group">
             <button
               type="button"
-              onClick={downloadQRCode}
+              onClick={() => downloadQRCode({ id: "QRGenerated" })}
               className="w-full h-full bg-white opacity-40 absolute top-0 left-0 rounded hidden group-hover:block"
             >
               <svg
@@ -121,17 +97,7 @@ export const Evento = () => {
                 <path d="M480-337q-8 0-15-2.5t-13-8.5L308-492q-12-12-11.5-28t11.5-28q12-12 28.5-12.5T365-549l75 75v-286q0-17 11.5-28.5T480-800q17 0 28.5 11.5T520-760v286l75-75q12-12 28.5-11.5T652-548q11 12 11.5 28T652-492L508-348q-6 6-13 8.5t-15 2.5ZM240-160q-33 0-56.5-23.5T160-240v-80q0-17 11.5-28.5T200-360q17 0 28.5 11.5T240-320v80h480v-80q0-17 11.5-28.5T760-360q17 0 28.5 11.5T800-320v80q0 33-23.5 56.5T720-160H240Z" />
               </svg>
             </button>
-            <QRCode
-              id="QRGenerated"
-              value={URLQR}
-              size={256}
-              style={{
-                height: "auto",
-                maxWidth: "100%",
-                width: "100%",
-              }}
-              // viewBox={`0 0 256 256`}
-            />
+            <QR id="QRGenerated" URL={URLQR} />
           </div>
 
           <button

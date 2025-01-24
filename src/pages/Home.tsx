@@ -1,14 +1,13 @@
 import { ReactElement, useEffect, useState } from "react";
 import { MainLayout } from "../layouts/MainLayout";
 import { Carnet } from "../components/Carnet";
-import {
-  GetEstudianteInfo,
-  InfoEstudianteInterface,
-} from "../service/GetCarnetInfo";
-import { toast } from "sonner";
 import { carnetType } from "../types/carnetType";
 import { envs } from "../plugins/envs";
 import { useSessionStore } from "../stores";
+import { GetUserInfo } from "../service/GetUserInfo";
+import { estudianteInterface } from "../types/estudianteType";
+import { toast } from "sonner";
+import { TypeOfUser } from "../types/userTypes";
 
 export const Home = () => {
   const [Carnets, setCarnets] = useState<carnetType[]>([]);
@@ -20,79 +19,122 @@ export const Home = () => {
     </h1>
   );
   // Procesando datos de backend para mostrar carnet
-  const GetCarnetsOfStudent = () => {
-    GetEstudianteInfo().then((res) => {
-      if (res.ok && res.data) {
-        if (res.data.data) {
-          const { infoEstudiante } = res.data.data;
-          (infoEstudiante as InfoEstudianteInterface[]).map((Estudio) => {
-            //! La validación es basada en el estado de este estudiante para la carrera actual del mismo
-            if (
-              Estudio.estado == "Expulsado" ||
-              Estudio.estado == "Retirado" ||
-              Estudio.estado == "Inactivo" ||
-              Estudio.estado == "Graduado"
-            ) {
-              // Caso expulsado
-              setErrorMessage(
-                <div>
-                  Actualmente <b>no</b> cuenta con credenciales activas.
-                </div>
-              );
-              return;
-            }
-            // * Aqui se asignan los datos del estudiante
-            // Procesando strings (Obteniendo solo dato relevante)
-            const nombreCarreraProcesado = Estudio.carreraNombre.split("-");
-            // console.log(nombreCarreraProcesado)
-            const nuevoNombreCarrera = nombreCarreraProcesado[1];
-            const periodoProcesado = Estudio.periodoLectivo.split("-");
-            // console.log(periodoProcesado)
-            const nuevoPeriodo = periodoProcesado[1];
-            const carnet: carnetType = {
-              credentialCode: Estudio.estudianteCarne,
-              name: Estudio.nombreEstudiante,
-              type: 1, // Estudiante
-              // TODO Trim carrera nombre
-              carrera: nuevoNombreCarrera,
-              url: envs.LINK_APP + "validar/" + Estudio.estudianteCarne,
-
-              photoUrl: Estudio.personaFoto,
-              timeValid: nuevoPeriodo,
-              qrUrl: "",
-            };
-            setCarnets([carnet]);
-            return;
-          });
-        }
-        setErrorMessage(
-          <h1 className="text-red-500">
-            <b>No</b> tiene credenciales activas.
-          </h1>
-        );
-      } else {
-        setErrorMessage(mensajeErrorPorDefecto);
-        if (res.error) {
-          if (res.status === 401) {
-            // Significa que o venció la sesión o no tiene token
-            console.log("Cerrando sesion");
-            toast.error(
-              "Su sesión no es válida, por favor inicie sesión nuevamente."
+  const GetCarnetsOfUser = async () => {
+    const response = await GetUserInfo();
+    if (response.ok && response.data) {
+      console.log(response.data);
+      const { data } = response.data;
+      const { administrativo, docente, estudiante } = data.informacion;
+      const newCarnets: carnetType[] = [];
+      // Casos de carnet
+      if (estudiante.length > 0) {
+        (estudiante as estudianteInterface[]).map((datosEstudiante) => {
+          //! La validación es basada en el estado de este estudiante para la carrera actual del mismo
+          if (
+            datosEstudiante.estado == "Expulsado" ||
+            datosEstudiante.estado == "Retirado" ||
+            datosEstudiante.estado == "Inactivo" ||
+            datosEstudiante.estado == "Graduado"
+          ) {
+            // Caso expulsado
+            setErrorMessage(
+              <div>
+                Actualmente <b>no</b> cuenta con credenciales activas.
+              </div>
             );
-            onLogout();
             return;
           }
-          toast.error(res.error);
-          return;
-        }
-        toast.error("No se logró obtener su información");
-        return;
+          // * Aqui se asignan los datos del estudiante
+          // Procesando strings (Obteniendo solo dato relevante)
+          const nombreCarreraProcesado =
+            datosEstudiante.carreraNombre.split("-");
+          // console.log(nombreCarreraProcesado)
+          const nuevoNombreCarrera = nombreCarreraProcesado[1];
+          const tipoEstudiante: TypeOfUser =
+            nombreCarreraProcesado[0][0] === "6"
+              ? "Estudiante posgrado"
+              : "Estudiante";
+
+          const periodoProcesado = (
+            datosEstudiante.periodoLectivo as string
+          ).split("-");
+
+          // console.log(periodoProcesado)
+          const nuevoPeriodo = periodoProcesado[2];
+          const carnet: carnetType = {
+            credentialCode: datosEstudiante.estudianteCarne,
+            name: datosEstudiante.nombreEstudiante,
+            type: tipoEstudiante,
+            // TODO Trim carrera nombre
+            carrera: nuevoNombreCarrera,
+            url: envs.LINK_APP + "validar/" + datosEstudiante.estudianteCarne,
+            photoUrl: datosEstudiante.personaFoto,
+            timeValid: nuevoPeriodo,
+            cursoNombre:
+              tipoEstudiante === "Estudiante posgrado"
+                ? datosEstudiante.cursoNombre
+                : undefined,
+          };
+          newCarnets.push(carnet);
+        });
       }
-    });
+      if (administrativo.length > 0) {
+        const datosAdministrativo = administrativo[0];
+        if (
+          datosAdministrativo.estatus === "1" &&
+          datosAdministrativo.fechabaja === null
+        ) {
+          // Caso carnet valido
+          const carnet: carnetType = {
+            credentialCode: datosAdministrativo.no_emple,
+            name: datosAdministrativo.nombres,
+            cargo: datosAdministrativo.cargo,
+            url: envs.LINK_APP + "validar/" + datosAdministrativo.no_emple,
+            photoUrl: datosAdministrativo.imgFoto,
+            type: "Administrativo",
+            timeValid: envs.TIMEVALID,
+          };
+          newCarnets.push(carnet);
+        } else {
+          // Caso carnet invalido
+        }
+      }
+      if (docente.length > 0) {
+        const datosDocente = docente[0];
+        const carnet: carnetType = {
+          credentialCode: datosDocente.iddocente,
+          name:
+            datosDocente.nombre1 +
+            datosDocente.nombre2 +
+            datosDocente.apellido1 +
+            datosDocente.apellido2,
+          // TODO agregando foto
+          photoUrl: "123",
+          timeValid: envs.TIMEVALID,
+          type:
+            datosDocente.idcarrera[0] === "6" ? "Docente posgrado" : "Docente",
+          url: envs.LINK_APP + "validar/" + datosDocente.iddocente,
+        };
+        newCarnets.push(carnet);
+      }
+      setCarnets(newCarnets);
+    } else {
+      // Manejando acceso no autorizado
+      if (response.status === 401) {
+        toast.error(
+          "Su sesión no es valida, por favor inicie sesión nuevamente"
+        );
+        onLogout();
+      } else {
+        // Manejando errores distintos
+        setErrorMessage(mensajeErrorPorDefecto);
+        toast.info(response.error);
+      }
+    }
   };
 
   useEffect(() => {
-    GetCarnetsOfStudent();
+    GetCarnetsOfUser();
   }, []);
 
   return (

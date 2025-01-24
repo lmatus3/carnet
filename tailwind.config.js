@@ -4,10 +4,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        leagueGothic: ['LeagueGothic', "monospace"],
-        inter: ['Inter', "monospace"],
+        leagueGothic: ["LeagueGothic", "monospace"],
+        inter: ["Inter", "monospace"],
+        monserrat: ["Montserrat", "monospace"],
       },
       colors: {
+        BlackPosgrado: "#1F1F1F",
         GrayMedium: "#404040",
         BlueStrong: "#0c1b33 ",
         BlueMedium: "#04337f ",
