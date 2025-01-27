@@ -232,7 +232,9 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
           {currentItems.length === 0 ? (
             <tr className="border">
               <td className="text-red-600" colSpan={5}>
-                No se encontraron registros...
+                {searchTerm.length > 0
+                  ? " No se encontraron registros..."
+                  : "No hay registros"}
               </td>
             </tr>
           ) : (

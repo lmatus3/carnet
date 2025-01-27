@@ -68,7 +68,14 @@ export const Home = () => {
             type: tipoEstudiante,
             // TODO Trim carrera nombre
             carrera: nuevoNombreCarrera,
-            url: envs.LINK_APP + "validar/" + datosEstudiante.estudianteCarne,
+            url:
+              envs.LINK_APP +
+              "validar/" +
+              datosEstudiante.estudianteCarne +
+              "?tipo=" +
+              (tipoEstudiante === "Estudiante posgrado"
+                ? "estudiantePosgrado"
+                : "estudiante"),
             photoUrl: datosEstudiante.personaFoto,
             timeValid: nuevoPeriodo,
             cursoNombre:
@@ -91,7 +98,11 @@ export const Home = () => {
             credentialCode: datosAdministrativo.no_emple,
             name: datosAdministrativo.nombres,
             cargo: datosAdministrativo.cargo,
-            url: envs.LINK_APP + "validar/" + datosAdministrativo.no_emple,
+            url:
+              envs.LINK_APP +
+              "validar/" +
+              datosAdministrativo.no_emple +
+              "?tipo=administrativo",
             photoUrl: datosAdministrativo.imgFoto,
             type: "Administrativo",
             timeValid: envs.TIMEVALID,
@@ -119,7 +130,13 @@ export const Home = () => {
           timeValid: envs.TIMEVALID,
           type:
             datosDocente.idcarrera[0] === "6" ? "Docente posgrado" : "Docente",
-          url: envs.LINK_APP + "validar/" + datosDocente.iddocente,
+          url:
+            envs.LINK_APP +
+            "validar/" +
+            datosDocente.iddocente +
+            (datosDocente.idcarrera[0] === "6"
+              ? "?tipo=docentePosgrado"
+              : "?tipo=docente"),
         };
         newCarnets.push(carnet);
       }

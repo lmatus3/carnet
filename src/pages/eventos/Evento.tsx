@@ -9,6 +9,7 @@ import { EditEvento } from "./EditEvento";
 import { envs } from "../../plugins/envs";
 import { QR } from "../../plugins/QR";
 import { downloadQRCode } from "../../utils/donwloadQR";
+import { estadoEnum } from "../../types/estadoType";
 
 export const Evento = () => {
   const { id } = useParams();
@@ -20,7 +21,7 @@ export const Evento = () => {
     nombre: "Ejemplo",
     descripcion:
       "Cupidatat ut do elit nulla ipsum occaecat. Nostrud voluptate reprehenderit aliqua amet nostrud sint ullamco. Sit do sit incididunt labore quis commodo ad dolore ipsum cupidatat.",
-    estadoId: "1",
+    estadoId: estadoEnum.EN_CURSO,
     fechaHoraInicio: "2025-01-23T17:46",
     fechaHoraFin: "2025-01-23T20:00",
     fechaHoraUltimaModificacion: "123123123",

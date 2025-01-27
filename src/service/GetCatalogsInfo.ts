@@ -1,15 +1,18 @@
 import { isAxiosError } from "axios";
 import { BackendApi } from "../api/config";
 import { ResponseInterface } from "../types/GeneralTypes";
+import { eventoTypeType } from "../types/eventoType";
+import { EstadoBDType } from "../types/estadoType";
 
 interface EstadosData {
   message: string;
-  data: string[] | null;
+  data: { Estados: EstadoBDType[] } | null;
   errors: string[] | null;
 }
+
 interface EventosTypeData {
   message: string;
-  data: string[] | null;
+  data: { EventoTipos: eventoTypeType[] } | null;
   errors: string[] | null;
 }
 interface PerfilesData {
@@ -92,7 +95,7 @@ export const GetPerfiles: () => Promise<ResponsePerfiles> = async () => {
 };
 export const GetEventoType: () => Promise<ResponseEventosType> = async () => {
   try {
-    const response = await BackendApi.get("evento");
+    const response = await BackendApi.get("eventoTipo");
     if (response.status) {
       return { ok: true, data: response.data as EventosTypeData };
     } else {

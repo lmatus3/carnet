@@ -6,6 +6,8 @@ import { OptionType, SelectField } from "../../components/SelectField";
 import { FormValidation } from "../../types/useFormTypes";
 import { toast } from "sonner";
 import { GetEstado, GetEventoType } from "../../service/GetCatalogsInfo";
+import { PostEvento } from "../../service/EventosService";
+import { estadoEnum } from "../../types/estadoType";
 
 type RegisterEventoProps = {
   closeModal: () => void;
@@ -60,38 +62,58 @@ export const RegisterEvento = ({ closeModal }: RegisterEventoProps) => {
       if (EstadosBackendCat) {
         if (EstadosBackendCat.data) {
           const { data } = EstadosBackendCat.data;
-          const CatEstados = data?.map((Estado) => {
-            return {
-              value: Estado.id,
-              name: Estado.name,
-            };
-          });
+          if (data) {
+            const { Estados } = data;
+            const CatEstados = Estados?.map((Estado) => {
+              return {
+                value: Estado.id,
+                name: Estado.nombre,
+              };
+            });
+            setCATEstados(CatEstados);
+          }
         }
       }
       const TiposEventosCat = responses[1];
       if (TiposEventosCat) {
         if (TiposEventosCat.data) {
           const { data } = TiposEventosCat.data;
-          const CatTiposEventos = data?.map((tipoEvento) => {
-            return {
-              value: tipoEvento.id,
-              name: tipoEvento.name,
-            };
-          });
+          if (data) {
+            const { EventoTipos } = data;
+            const CatTiposEventos = EventoTipos?.map((tipoEvento) => {
+              return {
+                value: tipoEvento.id,
+                name: tipoEvento.nombre,
+              };
+            });
+            setCATTipoEvento(CatTiposEventos);
+          }
         }
       }
     });
   };
-  const handleSubmit = (ev: React.FormEvent) => {
+  const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     sendForm();
     if (isFormValid) {
       // Si todo sale bien
-      toast.success("Evento creado exitósamente");
-      // TODO Redirigiendo a página de evento
-      updateForm(initForm);
-      closeModal();
-      return;
+      const response = await PostEvento({
+        nombre: nombre as string,
+        descripcion: descripcion as string,
+        estadoId: estadoId as string,
+        eventoTipoId: eventoTipoId as string,
+        fechaInicio: fechaInicio as string,
+        fechaFin: fechaFin as string,
+      });
+      console.log(response);
+      if (response.ok) {
+        toast.success("Evento creado exitósamente");
+        // TODO Redirigiendo a página de evento
+        updateForm(initForm);
+        closeModal();
+        return;
+      }
+      toast.error("No se logró registar el evento");
     }
   };
   useEffect(() => {

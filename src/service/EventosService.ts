@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 import { ResponseInterface } from "../types/GeneralTypes";
-import { eventoInterface } from "../types/eventoType";
+import { eventoInterface, eventoPostInterface } from "../types/eventoType";
 import { BackendApi } from "../api/config";
 
 interface EventosBackend extends eventoInterface {
@@ -10,7 +10,7 @@ interface EventosBackend extends eventoInterface {
 
 interface ResponseEventosDataInterface {
   message: string;
-  data: { eventos: EventosBackend[] } | null;
+  data: { Eventos: EventosBackend[] } | null;
   errors: string[] | null;
 }
 interface ResponseEventoDataInterface {
@@ -88,7 +88,7 @@ export const GetEvento: (id: string) => Promise<ResponseEvento> = async (
 
 // Registrar un evento
 export const PostEvento: (
-  payload: eventoInterface
+  payload: eventoPostInterface
 ) => Promise<ResponseInterface> = async (payload) => {
   try {
     const response = await BackendApi.post("/evento", payload);

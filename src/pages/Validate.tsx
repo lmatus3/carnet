@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import {
   ValidateEstudianteInfo,
   ValidateResponseInterface,
@@ -7,9 +7,11 @@ import {
 import { toast } from "sonner";
 import { Loader } from "../components/Loader";
 import { useUIStore } from "../stores/UIStore";
+import { isUserParamType } from "../types/userTypes";
 
 export const Validate = () => {
   const { codigo } = useParams();
+  const { search } = useLocation();
   const [isCarnetValid, setIsCarnetValid] = useState<boolean>();
   const [errorMessage, setErrorMessage] = useState<ReactElement>();
   const loading = useUIStore((state) => state.loading);
@@ -22,63 +24,79 @@ export const Validate = () => {
   }>();
 
   const mensajeErrorPorDefecto = (
-    <h1 className="text-red-500">
+    <>
       <b>No</b> se pudo obtener información de este carnet.
-    </h1>
+    </>
   );
   // TODO Validación de carnet en backend
-  const ValidarCarnet = async () => {
+  const ValidarCarnet = async (tipoBusqueda: string) => {
     SetLoading(true);
-    const response = await ValidateEstudianteInfo(codigo as string);
-    SetLoading(false);
-    if (response.ok) {
-      if (response.data) {
-        try {
-          const { data } = response.data;
-          const datosEstudiante =
-            data?.infoEstudiante as ValidateResponseInterface[];
-          const datosCarnet = datosEstudiante[0];
-          if (datosCarnet.estudianteCarne) {
-            setCarnetData(datosCarnet);
-            if (datosCarnet.matriculado === "SI") {
-              if (datosCarnet.estado != "Inactivo") {
-                setIsCarnetValid(true);
-                return;
+    if (tipoBusqueda === "estudiante") {
+      const response = await ValidateEstudianteInfo(codigo as string);
+      console.log(response);
+      SetLoading(false);
+      if (response.ok) {
+        if (response.data) {
+          try {
+            const { data } = response.data;
+            const datosEstudiante =
+              data?.infoEstudiante as ValidateResponseInterface[];
+            const datosCarnet = datosEstudiante[0];
+            if (datosCarnet.estudianteCarne) {
+              setCarnetData(datosCarnet);
+              if (datosCarnet.matriculado === "SI") {
+                if (datosCarnet.estado != "Inactivo") {
+                  setIsCarnetValid(true);
+                  return;
+                }
               }
+              setIsCarnetValid(false);
+            } else {
+              setErrorMessage(mensajeErrorPorDefecto);
+              toast.error("No se pudo obtener información de este carnet.");
             }
+          } catch (error) {
+            console.log(error);
             setIsCarnetValid(false);
-          } else {
+            setCarnetData(undefined);
             setErrorMessage(mensajeErrorPorDefecto);
             toast.error("No se pudo obtener información de este carnet.");
           }
-        } catch (error) {
-          console.log(error);
-          setIsCarnetValid(false);
-          setCarnetData(undefined);
+        } else {
           setErrorMessage(mensajeErrorPorDefecto);
           toast.error("No se pudo obtener información de este carnet.");
         }
       } else {
-        setErrorMessage(mensajeErrorPorDefecto);
-        toast.error("No se pudo obtener información de este carnet.");
+        if (response.error) {
+          toast.error(response.error);
+        }
       }
     } else {
-      if (response.error) {
-        toast.error(response.error);
-      }
+      SetLoading(false);
     }
   };
+  const Param = search.split("tipo=")[1];
+  const isValid = isUserParamType(Param);
+
   useEffect(() => {
-    console.log("Validando datos de backend");
-    ValidarCarnet();
-  }, []);
+    if (isValid) {
+      ValidarCarnet(Param);
+    } else {
+      setTimeout(() => {
+        if (!isValid) {
+          toast.error("Este link no es válido", { duration: 100000 });
+        }
+      });
+      setErrorMessage(mensajeErrorPorDefecto);
+    }
+  }, [isValid]);
 
   return (
     <div className="flex flex-col w-full">
       <h1 className="text-h1 text-YellowStrong mx-auto text-center w-3/4">
         Validación de carnet UNICA
       </h1>
-      {carnetData ? (
+      {carnetData && errorMessage === undefined ? (
         <div className="bg-white mx-auto mt-4 h-fit w-[400px] p-4 rounded">
           {isCarnetValid ? (
             <h1 className="text-green-500 text-h3 text-center">
