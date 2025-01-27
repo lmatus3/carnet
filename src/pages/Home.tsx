@@ -22,11 +22,12 @@ export const Home = () => {
   const GetCarnetsOfUser = async () => {
     const response = await GetUserInfo();
     if (response.ok && response.data) {
-      console.log(response.data);
+      // console.log(response.data);
       const { data } = response.data;
       const { administrativo, docente, estudiante } = data.informacion;
       const newCarnets: carnetType[] = [];
-      // Casos de carnet
+      //* Casos de carnet
+      //? Caso de estudiante
       if (estudiante.length > 0) {
         (estudiante as estudianteInterface[]).map((datosEstudiante) => {
           //! La validación es basada en el estado de este estudiante para la carrera actual del mismo
@@ -78,6 +79,7 @@ export const Home = () => {
           newCarnets.push(carnet);
         });
       }
+      //? Caso de administrativo
       if (administrativo.length > 0) {
         const datosAdministrativo = administrativo[0];
         if (
@@ -99,17 +101,21 @@ export const Home = () => {
           // Caso carnet invalido
         }
       }
+      //? Caso de docente
       if (docente.length > 0) {
         const datosDocente = docente[0];
         const carnet: carnetType = {
           credentialCode: datosDocente.iddocente,
           name:
             datosDocente.nombre1 +
+            " " +
             datosDocente.nombre2 +
+            " " +
             datosDocente.apellido1 +
+            " " +
             datosDocente.apellido2,
           // TODO agregando foto
-          photoUrl: "123",
+          photoUrl: "",
           timeValid: envs.TIMEVALID,
           type:
             datosDocente.idcarrera[0] === "6" ? "Docente posgrado" : "Docente",
@@ -148,7 +154,7 @@ export const Home = () => {
         // TODO obtener datos del backend esto es para mostrar de ejemplo
         */}
         {/* Card */}
-        <div className="flex justify-around flex-wrap gap-y-24 md:gap-y-4 mt-2 mb-4">
+        <div className="flex justify-around flex-wrap gap-y-44 md:gap-y-4 mt-2 mb-16">
           {Carnets.map((carnet) => (
             <Carnet key={"carnet" + carnet.type} carnetData={carnet} />
           ))}

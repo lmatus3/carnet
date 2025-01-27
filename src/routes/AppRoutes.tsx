@@ -19,7 +19,7 @@ export const AppRoutes = () => {
   const onLoadProfiles = useSessionStore((state) => state.onLoadProfiles);
   // Validando sesión actual
   const validarSesion = () => {
-    console.log(session);
+    // console.log(session);
     if (!session) {
       onLogout();
     }
@@ -50,7 +50,7 @@ export const AppRoutes = () => {
         console.log("Perfiles actuales", perfiles);
       }
     }
-  }, [pathname]);
+  }, [pathname,session]);
 
   return (
     <>
