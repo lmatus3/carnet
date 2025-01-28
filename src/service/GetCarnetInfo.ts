@@ -1,5 +1,7 @@
 import { isAxiosError } from "axios";
 import { BackendApi } from "../api/config";
+import { administrativoInterface } from "../types/administrativoType";
+import { DocenteInterface } from "../types/docenteType";
 
 export interface ValidateResponseInterface {
   estudianteCarne: string;
@@ -24,8 +26,10 @@ export interface InfoEstudianteInterface {
 interface BackendDataResponse {
   message: string;
   data: {
-    infoEstudiante: InfoEstudianteInterface[] | ValidateResponseInterface[];
-  } | null;
+    infoEstudiante?: InfoEstudianteInterface[];
+    infoAdministrativo?: administrativoInterface[];
+    infoDocente?: DocenteInterface[];
+  };
   errors: string[] | null;
 }
 
@@ -73,12 +77,13 @@ export const GetEstudianteInfo: () => Promise<ResponseInfoInterface> =
     }
   };
 
-export const ValidateEstudianteInfo: (
-  carnet: string
-) => Promise<ResponseInfoInterface> = async (carnet) => {
+export const ValidateUserInfo: (
+  carnet: string,
+  perfil: number
+) => Promise<ResponseInfoInterface> = async (carnet, perfil) => {
   try {
     const response = await BackendApi.get(
-      "estadoEstudiante?EstudianteCarne=" + carnet
+      "estadoUsuario?perfilId=" + perfil + "&codigo=" + carnet
     );
     if (response.status) {
       return { ok: true, data: response.data as BackendDataResponse };

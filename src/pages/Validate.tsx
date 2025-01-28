@@ -1,13 +1,14 @@
 import { ReactElement, useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
-import {
-  ValidateEstudianteInfo,
-  ValidateResponseInterface,
-} from "../service/GetCarnetInfo";
+import { ValidateUserInfo } from "../service/GetCarnetInfo";
 import { toast } from "sonner";
 import { Loader } from "../components/Loader";
 import { useUIStore } from "../stores/UIStore";
-import { isUserParamType } from "../types/userTypes";
+import { getTypeOfCarnet, isUserParamType } from "../types/userTypes";
+import {
+  EstadosEstudianteTypes,
+  ValidarEstadoEstudianteActivo,
+} from "../types/estadoType";
 
 export const Validate = () => {
   const { codigo } = useParams();
@@ -17,10 +18,8 @@ export const Validate = () => {
   const loading = useUIStore((state) => state.loading);
   const SetLoading = useUIStore((state) => state.SetLoading);
   const [carnetData, setCarnetData] = useState<{
-    estado: string;
-    estudianteCarne: string;
-    inscrito: "SI" | "NO";
-    matriculado: "SI" | "NO";
+    numeroCarnet: string;
+    nombre: string;
   }>();
 
   const mensajeErrorPorDefecto = (
@@ -31,29 +30,84 @@ export const Validate = () => {
   // TODO Validación de carnet en backend
   const ValidarCarnet = async (tipoBusqueda: string) => {
     SetLoading(true);
-    if (tipoBusqueda === "estudiante") {
-      const response = await ValidateEstudianteInfo(codigo as string);
+    if (tipoBusqueda) {
+      const perfilType = getTypeOfCarnet(tipoBusqueda);
+      if (!perfilType) {
+        toast.error("Carnet no valido");
+        return;
+      }
+      const response = await ValidateUserInfo(codigo as string, perfilType.id);
       console.log(response);
       SetLoading(false);
       if (response.ok) {
         if (response.data) {
           try {
             const { data } = response.data;
-            const datosEstudiante =
-              data?.infoEstudiante as ValidateResponseInterface[];
-            const datosCarnet = datosEstudiante[0];
-            if (datosCarnet.estudianteCarne) {
-              setCarnetData(datosCarnet);
-              if (datosCarnet.matriculado === "SI") {
-                if (datosCarnet.estado != "Inactivo") {
-                  setIsCarnetValid(true);
-                  return;
-                }
+            // Determinar el tipo de usuario
+            // * Caso administrativo
+            if (data.infoAdministrativo) {
+              const datosAdministrativo = data.infoAdministrativo[0];
+              if (
+                datosAdministrativo.estatus === "1" &&
+                datosAdministrativo.fechabaja === null
+              ) {
+                setCarnetData({
+                  numeroCarnet: datosAdministrativo.no_emple,
+                  nombre: datosAdministrativo.nombres,
+                });
+                setIsCarnetValid(true);
+                return;
               }
-              setIsCarnetValid(false);
-            } else {
-              setErrorMessage(mensajeErrorPorDefecto);
-              toast.error("No se pudo obtener información de este carnet.");
+              setErrorMessage(
+                <>
+                  Este carnet <b>no</b> es valido.
+                </>
+              );
+            }
+            // * Caso estudiante
+            if (data.infoEstudiante) {
+              const datosEstudiante = data.infoEstudiante[0];
+              if (
+                ValidarEstadoEstudianteActivo(
+                  datosEstudiante.estado as EstadosEstudianteTypes
+                )
+              ) {
+                setCarnetData({
+                  numeroCarnet: datosEstudiante.estudianteCarne,
+                  nombre: datosEstudiante.nombreEstudiante,
+                });
+                setIsCarnetValid(true);
+                return;
+              }
+              setErrorMessage(
+                <>
+                  Este carnet <b>no</b> es valido.
+                </>
+              );
+            }
+            // * Caso docente
+            if (data.infoDocente) {
+              const datosDocente = data.infoDocente[0];
+              if (!datosDocente.fecha_fin) {
+                setCarnetData({
+                  numeroCarnet: datosDocente.iddocente,
+                  nombre:
+                    datosDocente.nombre1 +
+                    " " +
+                    datosDocente.nombre2 +
+                    " " +
+                    datosDocente.apellido1 +
+                    " " +
+                    datosDocente.apellido2,
+                });
+                setIsCarnetValid(true);
+                return;
+              }
+              setErrorMessage(
+                <>
+                  Este carnet <b>no</b> es valido.
+                </>
+              );
             }
           } catch (error) {
             console.log(error);
@@ -79,6 +133,7 @@ export const Validate = () => {
   const isValid = isUserParamType(Param);
 
   useEffect(() => {
+    console.log(isValid);
     if (isValid) {
       ValidarCarnet(Param);
     } else {
@@ -108,12 +163,15 @@ export const Validate = () => {
             </h1>
           )}
 
-          <div className="grid grid-cols-7 text-center">
-            <span className="font-bold col-span-3">Tipo de carnet:</span>
-            {/* Actualmente solo estudiantes se muestran */}
-            <p className="col-span-4">Estudiante</p>
-            <span className="font-bold col-span-3">Carnet número:</span>
-            <p className="col-span-4">{carnetData?.estudianteCarne}</p>
+          <div className="flex flex-col ">
+            <div className="flex">
+              <span className="font-bold w-40">Carnet número:</span>
+              <p className="">{carnetData?.numeroCarnet}</p>
+            </div>
+            <div className="flex">
+              <span className="font-bold w-40">Nombre:</span>
+              <p className="">{carnetData?.nombre}</p>
+            </div>
           </div>
         </div>
       ) : (

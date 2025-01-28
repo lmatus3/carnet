@@ -30,3 +30,12 @@ export type EstadoBDType = {
   creadoPor: string;
   actualizadoPor: string;
 };
+
+export const ValidarEstadoEstudianteActivo = (
+  estado: EstadosEstudianteTypes
+) => {
+  if (estado === "Activo" || estado === "Culminación de estudios") {
+    return true;
+  }
+  return false;
+};

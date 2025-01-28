@@ -20,7 +20,7 @@ export const MarcarAsistencia = () => {
     estadoId: "1",
     fechaHoraInicio: "2025-01-23T17:46",
     fechaHoraFin: "2025-01-23T20:00",
-    fechaHoraUltimaModificacion: "123123123",
+    actualizadoEl: "123123123",
     creadoPor: "lmatus3@unica.edu.ni",
     //   Esto va a cambiar en un futuro
     tipoEventoId: "1",

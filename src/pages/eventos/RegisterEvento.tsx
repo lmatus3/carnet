@@ -7,7 +7,7 @@ import { FormValidation } from "../../types/useFormTypes";
 import { toast } from "sonner";
 import { GetEstado, GetEventoType } from "../../service/GetCatalogsInfo";
 import { PostEvento } from "../../service/EventosService";
-import { estadoEnum } from "../../types/estadoType";
+import { useUIStore } from "../../stores/UIStore";
 
 type RegisterEventoProps = {
   closeModal: () => void;
@@ -20,7 +20,7 @@ export const RegisterEvento = ({ closeModal }: RegisterEventoProps) => {
     eventoTipoId: "",
     fechaInicio: "", // Fecha y hora incluida
     fechaFin: "", // Fecha y hora incluida
-    estadoId: "1", // Opcional, si no se envía se agrega en 1
+    estadoId: "", // Opcional, si no se envía se agrega en 1
   };
   // Validaciones de formulario
   const formValidations: FormValidation = {
@@ -50,60 +50,67 @@ export const RegisterEvento = ({ closeModal }: RegisterEventoProps) => {
     formValues;
   const { nombreValid, eventoTipoIdValid, fechaInicioValid } = formValidation;
 
+  // Loader
+  const SetLoading = useUIStore((state) => state.SetLoading);
+
   const [CATEstados, setCATEstados] = useState<OptionType[]>([]);
   const [CATTipoEvento, setCATTipoEvento] = useState<OptionType[]>([]);
   const getCatalogs = async () => {
     // TODO Consumir los catálogos
+    SetLoading(true);
     const EstadosPromise = GetEstado();
     const TiposEventoPromise = GetEventoType();
-    Promise.all([EstadosPromise, TiposEventoPromise]).then((responses) => {
-      // Adaptando cada catalogo a options de select
-      const EstadosBackendCat = responses[0];
-      if (EstadosBackendCat) {
-        if (EstadosBackendCat.data) {
-          const { data } = EstadosBackendCat.data;
-          if (data) {
-            const { Estados } = data;
-            const CatEstados = Estados?.map((Estado) => {
-              return {
-                value: Estado.id,
-                name: Estado.nombre,
-              };
-            });
-            setCATEstados(CatEstados);
+    Promise.all([EstadosPromise, TiposEventoPromise])
+      .then((responses) => {
+        // Adaptando cada catalogo a options de select
+        const EstadosBackendCat = responses[0];
+        if (EstadosBackendCat) {
+          if (EstadosBackendCat.data) {
+            const { data } = EstadosBackendCat.data;
+            if (data) {
+              const { Estados } = data;
+              const CatEstados = Estados?.map((Estado) => {
+                return {
+                  value: Estado.id,
+                  name: Estado.nombre,
+                };
+              });
+              setCATEstados(CatEstados);
+            }
           }
         }
-      }
-      const TiposEventosCat = responses[1];
-      if (TiposEventosCat) {
-        if (TiposEventosCat.data) {
-          const { data } = TiposEventosCat.data;
-          if (data) {
-            const { EventoTipos } = data;
-            const CatTiposEventos = EventoTipos?.map((tipoEvento) => {
-              return {
-                value: tipoEvento.id,
-                name: tipoEvento.nombre,
-              };
-            });
-            setCATTipoEvento(CatTiposEventos);
+        const TiposEventosCat = responses[1];
+        if (TiposEventosCat) {
+          if (TiposEventosCat.data) {
+            const { data } = TiposEventosCat.data;
+            if (data) {
+              const { EventoTipos } = data;
+              const CatTiposEventos = EventoTipos?.map((tipoEvento) => {
+                return {
+                  value: tipoEvento.id,
+                  name: tipoEvento.nombre,
+                };
+              });
+              setCATTipoEvento(CatTiposEventos);
+            }
           }
         }
-      }
-    });
+      })
+      .finally(() => SetLoading(false));
   };
   const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     sendForm();
     if (isFormValid) {
       // Si todo sale bien
+      SetLoading(true);
       const response = await PostEvento({
         nombre: nombre as string,
         descripcion: descripcion as string,
         estadoId: estadoId as string,
         eventoTipoId: eventoTipoId as string,
-        fechaInicio: fechaInicio as string,
-        fechaFin: fechaFin as string,
+        fechaInicio: (fechaInicio as string).replace("T", " "),
+        fechaFin: (fechaFin as string).replace("T", " "),
       });
       console.log(response);
       if (response.ok) {
@@ -111,9 +118,11 @@ export const RegisterEvento = ({ closeModal }: RegisterEventoProps) => {
         // TODO Redirigiendo a página de evento
         updateForm(initForm);
         closeModal();
+        SetLoading(false);
         return;
       }
       toast.error("No se logró registar el evento");
+      SetLoading(false);
     }
   };
   useEffect(() => {

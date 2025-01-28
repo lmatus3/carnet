@@ -1,7 +1,7 @@
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { MainLayout } from "../../layouts/MainLayout";
 import { eventoInterface } from "../../types/eventoType";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getEstadoName } from "../../utils/getEstadoName";
 import { EstadoBadge } from "../../components/EstadoBadge";
 import { useModalControls } from "../../hooks/useModalControls";
@@ -9,41 +9,82 @@ import { EditEvento } from "./EditEvento";
 import { envs } from "../../plugins/envs";
 import { QR } from "../../plugins/QR";
 import { downloadQRCode } from "../../utils/donwloadQR";
-import { estadoEnum } from "../../types/estadoType";
+import { GetEvento } from "../../service/EventosService";
+import { toast } from "sonner";
+import { FakeData } from "../../data/tempData";
 
 export const Evento = () => {
   const { id } = useParams();
   // Construyendo URL
   const URLQR: string = envs.LINK_APP + "asistencia/" + id;
-  //* Temp data
-  const FakeData: eventoInterface = {
-    id: id as string,
-    nombre: "Ejemplo",
-    descripcion:
-      "Cupidatat ut do elit nulla ipsum occaecat. Nostrud voluptate reprehenderit aliqua amet nostrud sint ullamco. Sit do sit incididunt labore quis commodo ad dolore ipsum cupidatat.",
-    estadoId: estadoEnum.EN_CURSO,
-    fechaHoraInicio: "2025-01-23T17:46",
-    fechaHoraFin: "2025-01-23T20:00",
-    fechaHoraUltimaModificacion: "123123123",
-    creadoPor: "lmatus3@unica.edu.ni",
-    //   Esto va a cambiar en un futuro
-    tipoEventoId: "1",
-  };
   // Datos de evento a renderizar
   const [Data, setData] = useState<eventoInterface>(FakeData);
+  const [FechaInicio, setFechaInicio] = useState<string>();
+  const [FechaFin, setFechaFin] = useState<string>();
+  const [HoraInicio, setHoraInicio] = useState<string>();
+  const [HoraFin, setHoraFin] = useState<string>();
 
   // Modal
   // Controles del modal de las acciones
   const { ModalRef, isModalOpen, setIsModalOpen } = useModalControls();
-  // Descargar QR como imagen
+  const MostrarMensajeError = (duration: number) => {
+    toast.error("No se logró obtener datos del evento", {
+      duration,
+    });
+  };
+  const getEventoInfo = async () => {
+    if (id) {
+      const response = await GetEvento(id);
+      if (response.ok) {
+        if (response.data) {
+          const { Evento } = response.data.data;
+          if (Evento) {
+            // Aca data es el evento ya
+            setData({
+              actualizadoPor: Evento.actualizadoPor,
+              codigo: Evento.codigo,
+              creadoPor: Evento.creadoPor,
+              descripcion: Evento.descripcion,
+              estadoId: Evento.estadoId,
+              fechaInicio: Evento.fechaInicio,
+              fechaFin: Evento.fechaFin,
+              actualizadoEl: Evento.actualizadoEl,
+              id: Evento.id,
+              nombre: Evento.nombre,
+              tipoEventoId: Evento.tipoEventoId,
+            });
+            setFechaInicio(Evento.fechaInicio.split(" ")[0]);
+            setHoraInicio(Evento.fechaInicio.split(" ")[1].split(".")[0]);
+            if (Evento.fechaFin) {
+              setFechaFin(Evento.fechaFin.split(" ")[0]);
+              setHoraFin(Evento.fechaFin.split(" ")[1].split(".")[0]);
+            }
+            toast.info("Datos de evento cargados exitosamente");
+            return;
+          }
+        }
+        MostrarMensajeError(10000);
+      } else {
+        MostrarMensajeError(10000);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getEventoInfo();
+  }, []);
+
+  useEffect(() => {
+    console.log(Data);
+  }, [Data]);
 
   return (
     <MainLayout>
-      <div className="bg-white w-11/12 md:w-1/2 m-auto mt-8 rounded p-4">
+      <div className="bg-white w-11/12 md:w-3/4 h-full m-auto my-8 rounded p-4 relative">
         <h1 className="text-2xl md:text-4xl font-leagueGothic">
-          Evento código: {id}
+          Evento código: {Data.codigo}
         </h1>
-        <div className="mt-2 relative">
+        <div className="mt-2 relative mb-20 md:mb-0">
           <div className="flex justify-between">
             <h2 className="text-xl md:text-2xl">{Data.nombre}</h2>
             <span>
@@ -55,17 +96,15 @@ export const Evento = () => {
             Descripción del evento
           </span>
           <p>{Data.descripcion}</p>
-          {Data.fechaHoraFin && Data.fechaHoraInicio ? (
+          {Data.fechaFin && Data.fechaInicio ? (
             <>
               <span className="block font-bold text-xl">Programación</span>
               <p>
-                El evento se programó a empezar el día:{" "}
-                {Data.fechaHoraInicio.split("T")[0]} a las{" "}
-                <b>{Data.fechaHoraInicio.split("T")[1]}</b>
+                El evento se programó a empezar el día: {FechaInicio} a las{" "}
+                <b>{HoraInicio}</b>
               </p>
               <p>
-                Y <b>concluir</b> el día: {Data.fechaHoraFin.split("T")[0]} a
-                las <b>{Data.fechaHoraFin.split("T")[1]}</b>
+                Y <b>concluir</b> el día: {FechaFin} a las <b>{HoraFin}</b>
               </p>
             </>
           ) : (
@@ -74,9 +113,8 @@ export const Evento = () => {
                 Fecha y hora de inicio
               </span>
               <p>
-                El evento se programó a empezar el día:{" "}
-                {Data.fechaHoraInicio.split("T")[0]} a las{" "}
-                <b>{Data.fechaHoraInicio.split("T")[1]}</b>
+                El evento se programó a empezar el día: {FechaFin} a las{" "}
+                <b>{HoraFin}</b>
               </p>
             </>
           )}
@@ -84,7 +122,7 @@ export const Evento = () => {
           <p className="text-center font-leagueGothic text-2xl md:text-4xl ">
             QR de asistencia
           </p>
-          <div className="bg-OrangeMedium rounded w-64 m-auto p-4 relative group">
+          <div className="bg-OrangeMedium rounded w-64 m-auto p-4 mb-8">
             <button
               type="button"
               onClick={() => downloadQRCode({ id: "QRGenerated" })}
@@ -100,11 +138,20 @@ export const Evento = () => {
             </button>
             <QR id="QRGenerated" URL={URLQR} />
           </div>
-
+        </div>
+        {/* Botones de acciones */}
+        <div className="absolute right-0 bottom-5 w-full   flex  gap-2 justify-center md:w-fit md:right-5 md:flex-col">
+          <Link
+            type="button"
+            to={"/tomar_asistencia/" + id}
+            className="bg-green-700 text-white py-1 px-4 rounded  text-sm md:text-base w-36 md:w-40"
+          >
+            Tomar asistencia
+          </Link>
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="bg-blueDark text-white py-1 px-4 rounded absolute bottom-0 right-0"
+            className="bg-blueDark text-white py-1 px-4 rounded text-sm md:text-base w-36 md:w-40"
           >
             Editar evento
           </button>
@@ -121,6 +168,7 @@ export const Evento = () => {
               <EditEvento
                 closeModal={() => setIsModalOpen(false)}
                 eventoData={Data}
+                update={() => getEventoInfo()}
               />
             </div>
           </div>

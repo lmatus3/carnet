@@ -10,24 +10,25 @@ export const Eventos = () => {
   const [DatosEventos, setDatosEventos] = useState<eventoInterface[]>([]);
   const ObtenerDatos = async () => {
     const response = await GetEventos();
-    console.log(response);
+
     if (response.ok) {
       // Obteniendo eventos
       if (response.data) {
         const { data } = response.data;
         if (data) {
           const { Eventos } = data;
-          console.log(Eventos);
+
           const newEventos: eventoInterface[] = Eventos.map((evento) => {
             return {
               id: evento.id,
+              codigo: evento.codigo,
               nombre: evento.nombre,
               estadoId: evento.estadoId,
               descripcion: evento.descripcion,
               tipoEventoId: evento.tipoEventoId,
               creadoPor: evento.creadoPor,
-              fechaHoraInicio: evento.fechaHoraInicio,
-              fechaHoraUltimaModificacion: evento.fechaHoraUltimaModificacion,
+              fechaInicio: evento.fechaInicio,
+              actualizadoEl: evento.actualizadoEl,
             };
           });
           setDatosEventos(newEventos);
@@ -43,6 +44,9 @@ export const Eventos = () => {
   useEffect(() => {
     ObtenerDatos();
   }, []);
+  useEffect(() => {
+    console.log(DatosEventos);
+  }, [DatosEventos]);
 
   return (
     <MainLayout>

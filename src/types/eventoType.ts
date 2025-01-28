@@ -2,12 +2,13 @@ import { estadoEnum } from "./estadoType";
 
 export interface eventoInterface {
   id: string;
+  codigo?: string;
   nombre: string;
   descripcion?: string;
   estadoId: estadoEnum;
-  fechaHoraInicio: string;
-  fechaHoraFin?: string;
-  fechaHoraUltimaModificacion: string;
+  fechaInicio: string;
+  fechaFin?: string;
+  actualizadoEl: string;
   creadoPor: string;
   actualizadoPor?: string;
   //   Esto va a cambiar en un futuro

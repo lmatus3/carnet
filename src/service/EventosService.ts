@@ -15,7 +15,9 @@ interface ResponseEventosDataInterface {
 }
 interface ResponseEventoDataInterface {
   message: string;
-  data: EventosBackend | null;
+  data: {
+    Evento: EventosBackend;
+  };
   errors: string[] | null;
 }
 
@@ -101,6 +103,25 @@ export const PostEvento: (
     return ValidateError({
       err: error,
       errorMessage: "No se logró registrar el evento",
+    });
+  }
+};
+// Actualizar un evento
+export const PatchEvento: (
+  payload: eventoPostInterface,
+  id: number | string
+) => Promise<ResponseInterface> = async (payload, id) => {
+  try {
+    const response = await BackendApi.patch("/evento/" + id, payload);
+    if (response.status) {
+      return { ok: true, data: response.data };
+    } else {
+      return { ok: false, error: "No se logró actualizar el evento" };
+    }
+  } catch (error) {
+    return ValidateError({
+      err: error,
+      errorMessage: "No se logró actualizar el evento",
     });
   }
 };

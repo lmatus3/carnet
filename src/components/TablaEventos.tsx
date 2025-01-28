@@ -16,6 +16,7 @@ type TablaEventosType = {
 
 export const TablaEventos = ({ Registros }: TablaEventosType) => {
   const [data, setData] = useState<eventoInterface[]>(Registros);
+  const [currentItems, setCurrentItems] = useState<eventoInterface[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>(""); // Termino de búsqueda
   const [searchField, setSearchField] = useState<string>(""); // Propiedad a buscar 1 = id, 2 = nombre, 3 = fechaHoraInicio
   const [itemsPerPage, setItemsPerPage] = useState<string>("5");
@@ -32,14 +33,16 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
   useEffect(() => {
     if (searchTerm && searchField) {
       const filteredData = Registros.filter((item) => {
-        if (searchField === "id") {
-          return item.id.toLowerCase().includes(searchTerm?.toLowerCase());
+        if (searchField === "codigo") {
+          return (item.codigo as string)
+            .toLowerCase()
+            .includes(searchTerm?.toLowerCase());
         }
         if (searchField === "nombre") {
           return item.nombre.toLowerCase().includes(searchTerm?.toLowerCase());
         }
         if (searchField === "fechaHoraInicio") {
-          return item.fechaHoraInicio
+          return item.fechaInicio
             .toLowerCase()
             .includes(searchTerm?.toLowerCase());
         }
@@ -52,9 +55,14 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
     }
   }, [searchTerm, searchField]);
 
-  const indexOfLastItem = currentPage * Number(itemsPerPage);
-  const indexOfFirstItem = indexOfLastItem - Number(itemsPerPage);
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  useEffect(() => {
+    setData(Registros);
+  }, [Registros]);
+  useEffect(() => {
+    const indexOfLastItem = currentPage * Number(itemsPerPage);
+    const indexOfFirstItem = indexOfLastItem - Number(itemsPerPage);
+    setCurrentItems(data.slice(indexOfFirstItem, indexOfLastItem));
+  }, [data]);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -83,10 +91,12 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
             <button
               className="border-t text-start transition-all duration-100 hover:bg-slate-100 hover:rounded "
               onClick={() => {
-                navigator.clipboard.writeText(evento.id).then(() => {
-                  toast.info("Id copiada a cortapapeles");
-                  closePopup();
-                });
+                navigator.clipboard
+                  .writeText(evento.codigo as string)
+                  .then(() => {
+                    toast.info("Código copiado a portapapeles");
+                    closePopup();
+                  });
               }}
             >
               <p>Copiar Id</p>
@@ -168,7 +178,7 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
             selectMessage="Buscar por"
             value={searchField as string}
             options={[
-              { value: "id", name: "ID" },
+              { value: "codigo", name: "Codigo" },
               { value: "nombre", name: "Nombre" },
               { value: "fechaHoraInicio", name: "Fecha" },
             ]}
@@ -220,7 +230,7 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
         <caption className="hidden print:block"></caption>
         <thead className="table-header-group">
           <tr className="table-row">
-            <th>ID</th>
+            <th>Codigo</th>
             <th>Nombre</th>
             <th>Estado</th>
             <th>Fecha</th>
@@ -240,16 +250,14 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
           ) : (
             currentItems.map((evento) => (
               <tr className="border" key={"FilaDeEvento" + evento.id}>
-                <td className="border-x text-center">{evento.id}</td>
+                <td className="border-x text-center">{evento.codigo}</td>
                 <td className="">{evento.nombre}</td>
                 <td className="text-center align-middle p-0">
                   <div className="inline-block">
                     <EstadoBadge estado={getEstadoName(evento.estadoId)} />
                   </div>
                 </td>
-                <td className="text-center">
-                  {evento.fechaHoraInicio.split("T")[0]}
-                </td>
+                <td className="text-center">{evento.fechaInicio}</td>
                 <td className="flex justify-center items-center print:hidden ">
                   <button
                     type="button"
@@ -274,7 +282,7 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
       {popupInfo.visible && (
         <div
           style={{ position: "absolute", top: popupInfo.y, left: popupInfo.x }}
-          className="bg-white border shadow-lg p-2 rounded"
+          className="bg-white border shadow-lg p-2 rounded z-20"
         >
           <div>{popupInfo.content}</div>
           <button
