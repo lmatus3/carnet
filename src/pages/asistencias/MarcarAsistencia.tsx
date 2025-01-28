@@ -9,45 +9,62 @@ import { useModalControls } from "../../hooks/useModalControls";
 import { OptionType, SelectField } from "../../components/SelectField";
 import { GetPerfiles } from "../../service/GetCatalogsInfo";
 import { toast } from "sonner";
+import { FakeData } from "../../data/tempData";
 
 export const MarcarAsistencia = () => {
   const { id } = useParams();
-  const FakeData: eventoInterface = {
-    id: id as string,
-    nombre: "Ejemplo",
-    descripcion:
-      "Cupidatat ut do elit nulla ipsum occaecat. Nostrud voluptate reprehenderit aliqua amet nostrud sint ullamco. Sit do sit incididunt labore quis commodo ad dolore ipsum cupidatat.",
-    estadoId: "1",
-    fechaHoraInicio: "2025-01-23T17:46",
-    fechaHoraFin: "2025-01-23T20:00",
-    actualizadoEl: "123123123",
-    creadoPor: "lmatus3@unica.edu.ni",
-    //   Esto va a cambiar en un futuro
-    tipoEventoId: "1",
-  };
   const [SelectedPerfil, setSelectedPerfil] = useState("");
   const [CATPerfiles, setCATPerfiles] = useState<OptionType[]>([]);
+  const [FechaInicio, setFechaInicio] = useState<string>();
+  const [FechaFin, setFechaFin] = useState<string>();
+  const [HoraInicio, setHoraInicio] = useState<string>();
+  const [HoraFin, setHoraFin] = useState<string>();
+  const [Data, setData] = useState<eventoInterface>(FakeData);
 
   // Obtener catalogo y evento
   const getCatalogs = async () => {
     const EventoPromise = GetEvento(id as string);
     const PerfilesPromise = GetPerfiles();
-    Promise.all([EventoPromise, PerfilesPromise]).then((responses) => {
-      if (responses[0].ok && responses[0].data) {
-        const { data } = responses[0].data;
-        setData(data as eventoInterface);
-      }
-      if (responses[1].ok && responses[1].data) {
-        const { data } = responses[1].data;
-        const CatPerfilesDb = data.map((perfil) => {
-          return {
-            value: perfil.id,
-            name: perfil.name,
-          };
-        });
-        setCATPerfiles(CatPerfilesDb);
-      }
-    });
+    Promise.all([EventoPromise, PerfilesPromise])
+      .then((responses) => {
+        if (responses[0].ok && responses[0].data) {
+          const { Evento } = responses[0].data.data;
+          setData({
+            actualizadoPor: Evento.actualizadoPor,
+            codigo: Evento.codigo,
+            creadoPor: Evento.creadoPor,
+            descripcion: Evento.descripcion,
+            estadoId: Evento.estadoId,
+            fechaInicio: Evento.fechaInicio,
+            fechaFin: Evento.fechaFin,
+            actualizadoEl: Evento.actualizadoEl,
+            id: Evento.id,
+            nombre: Evento.nombre,
+            tipoEventoId: Evento.tipoEventoId,
+          });
+          setFechaInicio(Evento.fechaInicio.split(" ")[0]);
+          setHoraInicio(Evento.fechaInicio.split(" ")[1].split(".")[0]);
+          if (Evento.fechaFin) {
+            setFechaFin(Evento.fechaFin.split(" ")[0]);
+            setHoraFin(Evento.fechaFin.split(" ")[1].split(".")[0]);
+          }
+          toast.info("Datos de evento cargados exitosamente");
+        }
+        console.log(responses);
+        if (responses[1].ok && responses[1].data) {
+          const { Perfiles } = responses[1].data.data;
+          const CatPerfilesDb: OptionType[] = Perfiles.map((perfil) => {
+            return {
+              value: `${perfil.id}`,
+              name: perfil.nombre,
+            };
+          });
+          console.log("PERFILES CAT");
+          console.log(CatPerfilesDb);
+          setCATPerfiles(CatPerfilesDb);
+        }
+      })
+      .catch((e) => console.log(e));
   };
   const handleSendAsistencia = async (ev: React.FormEvent) => {
     ev.preventDefault();
@@ -55,12 +72,14 @@ export const MarcarAsistencia = () => {
       toast.error("Por favor, seleccione el perfil con el que asistirá");
       return;
     }
-    toast.success("Asistencia registrada")
+    toast.success("Asistencia registrada");
+    setIsModalOpen(false);
   };
-  const [Data, setData] = useState<eventoInterface>(FakeData);
+
   useEffect(() => {
     // Cuando se tenga actualizada la bd se obtendrán los catálogos
-    // getCatalogs()
+    console.log("Obteniendo catalogos");
+    getCatalogs();
   }, []);
 
   // Modal
@@ -70,9 +89,9 @@ export const MarcarAsistencia = () => {
     <MainLayout>
       <div className="bg-white w-11/12 md:w-1/2 m-auto mt-8 rounded p-4">
         <h1 className="text-2xl md:text-4xl font-leagueGothic">
-          Evento código: {id}
+          Evento código: {Data.codigo}
         </h1>
-        <div className="mt-2 relative">
+        <div className="mt-2 relative mb-20 md:mb-0">
           <div className="flex justify-between">
             <h2 className="text-xl md:text-2xl">{Data.nombre}</h2>
             <span>
@@ -84,17 +103,15 @@ export const MarcarAsistencia = () => {
             Descripción del evento
           </span>
           <p>{Data.descripcion}</p>
-          {Data.fechaHoraFin && Data.fechaHoraInicio ? (
+          {Data.fechaFin && Data.fechaInicio ? (
             <>
               <span className="block font-bold text-xl">Programación</span>
               <p>
-                El evento se programó a empezar el día:{" "}
-                {Data.fechaHoraInicio.split("T")[0]} a las{" "}
-                <b>{Data.fechaHoraInicio.split("T")[1]}</b>
+                El evento se programó a empezar el día: {FechaInicio} a las{" "}
+                <b>{HoraInicio}</b>
               </p>
               <p>
-                Y <b>concluir</b> el día: {Data.fechaHoraFin.split("T")[0]} a
-                las <b>{Data.fechaHoraFin.split("T")[1]}</b>
+                Y <b>concluir</b> el día: {FechaFin} a las <b>{HoraFin}</b>
               </p>
             </>
           ) : (
@@ -103,9 +120,8 @@ export const MarcarAsistencia = () => {
                 Fecha y hora de inicio
               </span>
               <p>
-                El evento se programó a empezar el día:{" "}
-                {Data.fechaHoraInicio.split("T")[0]} a las{" "}
-                <b>{Data.fechaHoraInicio.split("T")[1]}</b>
+                El evento se programó a empezar el día: {FechaFin} a las{" "}
+                <b>{HoraFin}</b>
               </p>
             </>
           )}

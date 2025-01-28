@@ -17,7 +17,12 @@ interface EventosTypeData {
 }
 interface PerfilesData {
   message: string;
-  data: string[] | null;
+  data: {
+    Perfiles: {
+      id: number;
+      nombre: string;
+    }[];
+  };
   errors: string[] | null;
 }
 
@@ -77,7 +82,7 @@ export const GetEstado: () => Promise<ResponseEstados> = async () => {
 };
 export const GetPerfiles: () => Promise<ResponsePerfiles> = async () => {
   try {
-    const response = await BackendApi.get("estado");
+    const response = await BackendApi.get("perfil");
     if (response.status) {
       return { ok: true, data: response.data as PerfilesData };
     } else {
