@@ -76,7 +76,7 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
         className={`mx-auto ${
           type === "Estudiante posgrado" || type === "Docente posgrado"
             ? " mt-2"
-            : "mt-28"
+            : "mt-[100px]"
         } `}
         onClick={() => {
           if (carnetData.photoUrl) {
@@ -117,7 +117,7 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
         {type === "Estudiante posgrado" && (
           <p
             className={`font-leagueGothic ${
-              (cursoNombre as string).length < 30 ? "text-2xl" : "text-sm"
+              (cursoNombre as string).length < 45 ? " text-2xl " : "text-sm"
             }`}
           >
             {cursoNombre}
@@ -134,7 +134,7 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
         {/* QR Validacion */}
         <div
           className={`w-[100px] ${
-            type === "Estudiante posgrado" ? "mt-4" : "mt-1"
+            type === "Estudiante posgrado" ? "mt-2" : "mt-1"
           } mx-auto p-1 bg-white`}
         >
           <QR
@@ -143,7 +143,7 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
           />
         </div>
         {/* Link de QR */}
-        <small className="text-[8px]"> {url} </small>
+        <small className="text-[8px] w-11/12 mx-auto "> {url} </small>
         {/* Cargo o carrera */}
         <div
           className={`mx-text-center w-full font-bold absolute ${
@@ -168,7 +168,7 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
       </div>
       {/* contacto */}
       {type === "Estudiante posgrado" ? (
-        <div className="flex flex-col my-2">
+        <div className="flex flex-col mt-2">
           <div className="flex text-[8px] m-auto gap-1">
             <span className="flex items-center ">
               <svg

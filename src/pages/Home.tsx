@@ -56,12 +56,15 @@ export const Home = () => {
               ? "Estudiante posgrado"
               : "Estudiante";
 
-          const periodoProcesado = (
-            datosEstudiante.periodoLectivo as string
-          ).split("-");
+          let nuevoPeriodo: string | undefined = undefined;
+          if (datosEstudiante.periodoLectivo) {
+            const periodoProcesado = (
+              datosEstudiante.periodoLectivo as string
+            ).split("-");
+            nuevoPeriodo = periodoProcesado[2];
+          }
 
           // console.log(periodoProcesado)
-          const nuevoPeriodo = periodoProcesado[2];
           const carnet: carnetType = {
             credentialCode: datosEstudiante.estudianteCarne,
             name: datosEstudiante.nombreEstudiante,

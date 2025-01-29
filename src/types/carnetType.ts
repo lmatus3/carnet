@@ -8,7 +8,7 @@ export type carnetType = {
   facultad?: string;
   photoUrl: string;
   credentialCode: string;
-  timeValid: string;
+  timeValid?: string;
   url: string;
   type: TypeOfUser;
 };

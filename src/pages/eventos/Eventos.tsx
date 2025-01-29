@@ -58,7 +58,7 @@ export const Eventos = () => {
           {
             // TODO Lista de eventos
           }
-          <TablaEventos Registros={DatosEventos} />
+          <TablaEventos Registros={DatosEventos} update={ObtenerDatos} />
         </div>
       </div>
     </MainLayout>

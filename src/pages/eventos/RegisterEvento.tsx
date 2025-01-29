@@ -11,9 +11,10 @@ import { useUIStore } from "../../stores/UIStore";
 
 type RegisterEventoProps = {
   closeModal: () => void;
+  update: () => void;
 };
 
-export const RegisterEvento = ({ closeModal }: RegisterEventoProps) => {
+export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
   const initForm = {
     nombre: "",
     descripcion: "",
@@ -119,6 +120,8 @@ export const RegisterEvento = ({ closeModal }: RegisterEventoProps) => {
         updateForm(initForm);
         closeModal();
         SetLoading(false);
+        // Actualizando eventos
+        update();
         return;
       }
       toast.error("No se logró registar el evento");
@@ -190,6 +193,7 @@ export const RegisterEvento = ({ closeModal }: RegisterEventoProps) => {
         <div className="col-span-2">
           <label htmlFor="descripcion">
             <p className="text-sm font-bold">Descipción</p>
+            <span>*</span>
             <TextField
               id="descripcion"
               name="descripcion"
@@ -198,6 +202,7 @@ export const RegisterEvento = ({ closeModal }: RegisterEventoProps) => {
               placeholder="Descripción de evento"
               value={descripcion as string}
               onChange={onChange}
+              required
             />
           </label>
         </div>

@@ -5,7 +5,9 @@ import { useState } from "react";
 
 export const Navbar = () => {
   const onLogout = useSessionStore((state) => state.onLogout);
+  const perfiles = useSessionStore((state) => state.perfiles);
   const [showLogOutPopup, setShowLogOutPopup] = useState(false);
+
   return (
     <>
       <div className="hidden md:flex bg-white w-svw h-auto text-BlueMedium justify-between font-leagueGothic">
@@ -19,14 +21,18 @@ export const Navbar = () => {
           >
             Home
           </NavLink>
-          <NavLink
-            className={({ isActive }) =>
-              ` ${isActive && "text-BlueStrong "} text-2xl`
-            }
-            to={"/eventos"}
-          >
-            Eventos
-          </NavLink>
+          {perfiles?.includes("Docente") ||
+            perfiles?.includes("Docente posgrado") ||
+            (perfiles?.includes("Administrativo") && (
+              <NavLink
+                className={({ isActive }) =>
+                  ` ${isActive && "text-BlueStrong "} text-2xl`
+                }
+                to={"/eventos"}
+              >
+                Eventos
+              </NavLink>
+            ))}
           {/* Las asistencias estaran ocultas */}
           {/* <NavLink
             className={({ isActive }) =>
@@ -74,9 +80,14 @@ export const Navbar = () => {
           <div className="flex flex-col gap-4 m-auto md:hidden bg-white py-4 px-6 rounded">
             <p className="text-center">¿Cerrar sesión?</p>
             <div className="flex gap-2 justify-around">
-              <button className="bg-gray-200 px-4 py-1 w-16 rounded" onClick={() => setShowLogOutPopup(false)}>No</button>
               <button
-              className="bg-blueDark text-white rounded w-16"
+                className="bg-gray-200 px-4 py-1 w-16 rounded"
+                onClick={() => setShowLogOutPopup(false)}
+              >
+                No
+              </button>
+              <button
+                className="bg-blueDark text-white rounded w-16"
                 onClick={() => {
                   onLogout();
                   setShowLogOutPopup(false);

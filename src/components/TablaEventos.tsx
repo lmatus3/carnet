@@ -12,9 +12,10 @@ import { RegisterEvento } from "../pages/eventos/RegisterEvento";
 
 type TablaEventosType = {
   Registros: eventoInterface[];
+  update: () => void;
 };
 
-export const TablaEventos = ({ Registros }: TablaEventosType) => {
+export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
   const [data, setData] = useState<eventoInterface[]>(Registros);
   const [currentItems, setCurrentItems] = useState<eventoInterface[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>(""); // Termino de búsqueda
@@ -249,7 +250,7 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
             </tr>
           ) : (
             currentItems.map((evento) => (
-              <tr className="border" key={"FilaDeEvento" + evento.id}>
+              <tr className="border text-sm md:text-base" key={"FilaDeEvento" + evento.id}>
                 <td className="border-x text-center">{evento.codigo}</td>
                 <td className="">{evento.nombre}</td>
                 <td className="text-center align-middle p-0">
@@ -257,7 +258,7 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
                     <EstadoBadge estado={getEstadoName(evento.estadoId)} />
                   </div>
                 </td>
-                <td className="text-center">{evento.fechaInicio}</td>
+                <td className="text-center">{evento.fechaInicio.split(" ")[0]}</td>
                 <td className="flex justify-center items-center print:hidden ">
                   <button
                     type="button"
@@ -396,7 +397,7 @@ export const TablaEventos = ({ Registros }: TablaEventosType) => {
               ref={ModalRef}
               className="bg-white mt-24 mx-auto w-11/12 md:w-2/3 h-fit p-8 rounded shadow-lg relative"
             >
-              <RegisterEvento closeModal={() => setIsModalOpen(false)} />
+              <RegisterEvento closeModal={() => setIsModalOpen(false)} update={update} />
             </div>
           </div>
         )}

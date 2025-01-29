@@ -199,7 +199,7 @@ export const EditEvento = ({
         </div>
         <div className="col-span-2">
           <label htmlFor="descripcion">
-            <p className="text-sm font-bold">Descipción</p>
+            <p className="text-sm font-bold">Descipción</p><span>*</span>
             <TextField
               id="descripcion"
               name="descripcion"
@@ -208,6 +208,7 @@ export const EditEvento = ({
               placeholder="Descripción de evento"
               value={descripcion as string}
               onChange={onChange}
+              required
             />
           </label>
         </div>

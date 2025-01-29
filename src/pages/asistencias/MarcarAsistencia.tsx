@@ -87,7 +87,7 @@ export const MarcarAsistencia = () => {
   const { ModalRef, isModalOpen, setIsModalOpen } = useModalControls();
   return (
     <MainLayout>
-      <div className="bg-white w-11/12 md:w-1/2 m-auto mt-8 rounded p-4">
+      <div className="bg-white w-11/12 md:w-1/2 m-auto mt-8 rounded p-4 relative">
         <h1 className="text-2xl md:text-4xl font-leagueGothic">
           Evento código: {Data.codigo}
         </h1>
@@ -125,21 +125,21 @@ export const MarcarAsistencia = () => {
               </p>
             </>
           )}
-          <button
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            className="bg-green-700 text-white py-1 px-4 rounded absolute bottom-0 right-0 flex"
-          >
-            <span>Marcar asistencia</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="fill-white h-6"
-              viewBox="0 -960 960 960"
-            >
-              <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
-            </svg>
-          </button>
         </div>
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(true)}
+          className="bg-green-700 text-white py-1 px-4 rounded absolute bottom-4 right-4 flex"
+        >
+          <span>Marcar asistencia</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="fill-white h-6"
+            viewBox="0 -960 960 960"
+          >
+            <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
+          </svg>
+        </button>
         {/* Modal */}
         {isModalOpen && (
           <div

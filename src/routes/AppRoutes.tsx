@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 import { useSessionStore } from "../stores";
 import { Home } from "../pages/Home";
 import { Login } from "../pages/auth/Login";
@@ -51,7 +51,7 @@ export const AppRoutes = () => {
         console.log("Perfiles actuales", perfiles);
       }
     }
-  }, [pathname,session]);
+  }, [pathname, session]);
 
   return (
     <>
@@ -59,10 +59,17 @@ export const AppRoutes = () => {
         {session === "Logged" && token && (
           <>
             <Route path="/" element={<Home />} />
-            <Route path="/eventos" element={<Eventos />} />
-            <Route path="/eventos/:id" element={<Evento />} />
+            {(perfiles && perfiles?.includes("Docente")) ||
+              perfiles?.includes("Docente posgrado") ||
+              (perfiles?.includes("Administrativo") && (
+                <>
+                  <Route path="/eventos" element={<Eventos />} />
+                  <Route path="/eventos/:id" element={<Evento />} />
+                  <Route path="/tomar_asistencia/:id" element={<TomarAsistencia />} />
+                </>
+              ))}
             <Route path="/asistencia/:id" element={<MarcarAsistencia />} />
-            <Route path="/tomar_asistencia/:id" element={<TomarAsistencia />} />
+            <Route path="/*" element={<Navigate to={"/"} replace />} />
             {/* <Route path="/noticias" element={<Noticias />} /> */}
           </>
         )}
