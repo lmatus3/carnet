@@ -113,8 +113,8 @@ export const Evento = () => {
                 Fecha y hora de inicio
               </span>
               <p>
-                El evento se programó a empezar el día: {FechaFin} a las{" "}
-                <b>{HoraFin}</b>
+                El evento se programó a empezar el día: {FechaInicio} a las{" "}
+                <b>{HoraInicio}</b>
               </p>
             </>
           )}

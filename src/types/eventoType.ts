@@ -20,7 +20,7 @@ export interface eventoPostInterface {
   descripcion: string;
   eventoTipoId: string;
   fechaInicio: string; //Aplica a validación de fecha actual
-  fechaFin: string; //Opcional, Aplica a validación de fecha respecto a la de inicio y la actual\
+  fechaFin?: string; //Opcional, Aplica a validación de fecha respecto a la de inicio y la actual\
   estadoId: string; //Opcional
 }
 

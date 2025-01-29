@@ -111,7 +111,10 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
         estadoId: estadoId as string,
         eventoTipoId: eventoTipoId as string,
         fechaInicio: (fechaInicio as string).replace("T", " "),
-        fechaFin: (fechaFin as string).replace("T", " "),
+        fechaFin:
+          (fechaFin as string).length > 0
+            ? (fechaFin as string).replace("T", " ")
+            : undefined,
       });
       console.log(response);
       if (response.ok) {
