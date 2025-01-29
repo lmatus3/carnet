@@ -72,6 +72,7 @@ export const MarcarAsistencia = () => {
       toast.error("Por favor, seleccione el perfil con el que asistirá");
       return;
     }
+    
     toast.success("Asistencia registrada");
     setIsModalOpen(false);
   };

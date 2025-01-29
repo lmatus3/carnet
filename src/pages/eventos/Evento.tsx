@@ -74,9 +74,9 @@ export const Evento = () => {
     getEventoInfo();
   }, []);
 
-  useEffect(() => {
-    console.log(Data);
-  }, [Data]);
+  // useEffect(() => {
+  //   console.log(Data);
+  // }, [Data]);
 
   return (
     <MainLayout>
@@ -122,11 +122,11 @@ export const Evento = () => {
           <p className="text-center font-leagueGothic text-2xl md:text-4xl ">
             QR de asistencia
           </p>
-          <div className="bg-OrangeMedium rounded w-64 m-auto p-4 mb-8">
+          <div className="bg-OrangeMedium rounded w-64 m-auto p-4 mb-8 relative">
             <button
               type="button"
               onClick={() => downloadQRCode({ id: "QRGenerated" })}
-              className="w-full h-full bg-white opacity-40 absolute top-0 left-0 rounded hidden group-hover:block"
+              className="w-full h-full bg-white  absolute top-0 left-0 rounded opacity-0 hover:opacity-55"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -140,7 +140,7 @@ export const Evento = () => {
           </div>
         </div>
         {/* Botones de acciones */}
-        <div className="absolute right-0 bottom-5 w-full   flex  gap-2 justify-center md:w-fit md:right-5 md:flex-col">
+        <div className="absolute right-0 bottom-5 w-full flex  gap-2 justify-center md:w-fit md:right-2 md:flex-col">
           <Link
             type="button"
             to={"/tomar_asistencia/" + id}

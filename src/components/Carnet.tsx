@@ -32,7 +32,7 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
         "bg-gradient-to-br from-blueSemiDark to-blueDark"
       } ${type === "Estudiante posgrado" && "bg-BlackPosgrado text-white"} 
       ${type === "Docente posgrado" && "bg-BlackPosgrado"} 
-      relative flex flex-col print:mx-auto print:mt-56 print:border print:border-black print:scale-150`}
+      relative flex flex-col print:mx-auto print:mt-56 print:border print:border-black print:scale-120`}
     >
       {/* Link de descarga */}
       <button

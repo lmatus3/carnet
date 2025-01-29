@@ -48,7 +48,7 @@ export const AppRoutes = () => {
         // Consultando por perfil
         obtenerPerfilesUsuario();
       } else {
-        console.log("Perfiles actuales", perfiles);
+        // console.log("Perfiles actuales", perfiles);
       }
     }
   }, [pathname, session]);
