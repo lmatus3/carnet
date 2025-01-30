@@ -10,7 +10,8 @@ import { Evento } from "../pages/eventos/Evento";
 import { MarcarAsistencia } from "../pages/asistencias/MarcarAsistencia";
 import { GetPerfilesDeUsuario } from "../service/GetPerfilesDeUsuario";
 import { TypeOfUser } from "../types/userTypes";
-import { TomarAsistencia } from "../pages/TomarAsistencia";
+import { VerAsistencia } from "../pages/asistencias/VerAsistencia";
+import { TomarAsistencia } from "../pages/asistencias/TomarAsistencia";
 
 export const AppRoutes = () => {
   const session = useSessionStore((state) => state.session);
@@ -66,6 +67,7 @@ export const AppRoutes = () => {
                   <Route path="/eventos" element={<Eventos />} />
                   <Route path="/eventos/:id" element={<Evento />} />
                   <Route path="/tomar_asistencia/:id" element={<TomarAsistencia />} />
+                  <Route path="/ver_asistencia/:id" element={<VerAsistencia />} />
                 </>
               ))}
             <Route path="/asistencia/:id" element={<MarcarAsistencia />} />

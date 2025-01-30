@@ -1,60 +1,29 @@
-import { isAxiosError } from "axios";
 import { ResponseInterface } from "../types/GeneralTypes";
-import { eventoInterface } from "../types/eventoType";
 import { BackendApi } from "../api/config";
-
-interface AsistenciaBackend extends eventoInterface {
-  // TODO Adaptar a datos con filtros
-  prueba: string;
-}
+import {
+  asistenciaInterface,
+  asistenciasDBInterface,
+} from "../types/asistenciaType";
+import { ValidateError } from "./ValidateError";
 
 interface ResponseAsistenciasDataInterface {
   message: string;
-  data: { asistencias: AsistenciaBackend[] } | null;
-  errors: string[] | null;
-}
-interface ResponseAsistenciaDataInterface {
-  message: string;
-  data: AsistenciaBackend | null;
+  data: { EventoAsistencias: asistenciasDBInterface[] };
   errors: string[] | null;
 }
 
 interface ResponseAsistencias extends ResponseInterface {
   data?: ResponseAsistenciasDataInterface;
 }
-interface ResponseAsistencia extends ResponseInterface {
-  data?: ResponseAsistenciaDataInterface;
-}
 
-const ValidateError: ({
-  err,
-  errorMessage,
-}: {
-  err: unknown;
-  errorMessage?: string;
-}) => {
-  ok: boolean;
-  error: string;
-  status?: number;
-} = (err, errorMessage = "No se logró obtener los datos") => {
-  console.log(err);
-  if (isAxiosError(err)) {
-    // Access to config, request, and response
-    const { response } = err;
-    if (response && response.data) {
-      const { message }: { message: string } = response.data;
-      return { ok: false, error: message, status: err.status };
-    }
-    return { ok: false, error: errorMessage };
-  } else {
-    // Error no de backend
-    return { ok: false, error: errorMessage };
-  }
-};
-// Obtener todos los eventos
-export const GetAsistencias: () => Promise<ResponseAsistencias> = async () => {
+// Obtener todas las asistencias de un evento
+export const GetAsistencias: (
+  eventoId: string
+) => Promise<ResponseAsistencias> = async (eventoId) => {
   try {
-    const response = await BackendApi.get("/eventoAsistencia");
+    const response = await BackendApi.get(
+      `/eventoAsistencia?include[]=Perfil&include[]=Evento.EventoTipo&eventoId[eq]=${eventoId}`
+    );
     if (response.status) {
       return {
         ok: true,
@@ -65,36 +34,14 @@ export const GetAsistencias: () => Promise<ResponseAsistencias> = async () => {
     }
   } catch (error) {
     return ValidateError({
-      err: error,
+      error: error,
       errorMessage: "No se logró obtener las asistencias",
     });
   }
 };
-// Obtener un evento específico
-export const GetAsistencia: (
-  id: string
-) => Promise<ResponseAsistencia> = async (id) => {
-  try {
-    const response = await BackendApi.get("/eventoAsistencia/" + id);
-    if (response.status) {
-      return {
-        ok: true,
-        data: response.data as ResponseAsistenciaDataInterface,
-      };
-    } else {
-      return { ok: false, error: "No se logró obtener la asistencia" };
-    }
-  } catch (error) {
-    return ValidateError({
-      err: error,
-      errorMessage: "No se logró obtener la asistencia",
-    });
-  }
-};
-
-// Registrar un evento
+// Registrar una asistencia
 export const PostAsistencia: (
-  payload: eventoInterface
+  payload: asistenciaInterface
 ) => Promise<ResponseInterface> = async (payload) => {
   try {
     const response = await BackendApi.post("/eventoAsistencia", payload);
@@ -105,7 +52,7 @@ export const PostAsistencia: (
     }
   } catch (error) {
     return ValidateError({
-      err: error,
+      error: error,
       errorMessage: "No se logró registrar la asistencia",
     });
   }

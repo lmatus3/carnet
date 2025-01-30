@@ -9,7 +9,8 @@ import { useModalControls } from "../../hooks/useModalControls";
 import { OptionType, SelectField } from "../../components/SelectField";
 import { GetPerfiles } from "../../service/GetCatalogsInfo";
 import { toast } from "sonner";
-import { FakeData } from "../../data/tempData";
+import { PostAsistencia } from "../../service/AsistenciaService";
+import { useUIStore } from "../../stores/UIStore";
 
 export const MarcarAsistencia = () => {
   const { id } = useParams();
@@ -19,12 +20,15 @@ export const MarcarAsistencia = () => {
   const [FechaFin, setFechaFin] = useState<string>();
   const [HoraInicio, setHoraInicio] = useState<string>();
   const [HoraFin, setHoraFin] = useState<string>();
-  const [Data, setData] = useState<eventoInterface>(FakeData);
+  const [Data, setData] = useState<eventoInterface>();
+  const SetLoading = useUIStore((state) => state.SetLoading);
+  const loading = useUIStore((state) => state.loading);
 
   // Obtener catalogo y evento
   const getCatalogs = async () => {
     const EventoPromise = GetEvento(id as string);
     const PerfilesPromise = GetPerfiles();
+    SetLoading(true);
     Promise.all([EventoPromise, PerfilesPromise])
       .then((responses) => {
         if (responses[0].ok && responses[0].data) {
@@ -40,7 +44,7 @@ export const MarcarAsistencia = () => {
             actualizadoEl: Evento.actualizadoEl,
             id: Evento.id,
             nombre: Evento.nombre,
-            tipoEventoId: Evento.tipoEventoId,
+            eventoTipoId: Evento.eventoTipoId,
           });
           setFechaInicio(Evento.fechaInicio.split(" ")[0]);
           setHoraInicio(Evento.fechaInicio.split(" ")[1].split(".")[0]);
@@ -50,7 +54,6 @@ export const MarcarAsistencia = () => {
           }
           toast.info("Datos de evento cargados exitosamente");
         }
-        console.log(responses);
         if (responses[1].ok && responses[1].data) {
           const { Perfiles } = responses[1].data.data;
           const CatPerfilesDb: OptionType[] = Perfiles.map((perfil) => {
@@ -59,12 +62,11 @@ export const MarcarAsistencia = () => {
               name: perfil.nombre,
             };
           });
-          console.log("PERFILES CAT");
-          console.log(CatPerfilesDb);
           setCATPerfiles(CatPerfilesDb);
         }
       })
-      .catch((e) => console.log(e));
+      .catch((e) => console.log(e))
+      .finally(() => SetLoading(false));
   };
   const handleSendAsistencia = async (ev: React.FormEvent) => {
     ev.preventDefault();
@@ -72,14 +74,30 @@ export const MarcarAsistencia = () => {
       toast.error("Por favor, seleccione el perfil con el que asistirá");
       return;
     }
-    
-    toast.success("Asistencia registrada");
-    setIsModalOpen(false);
+
+    if (!Data) {
+      toast.error("No se tienen los datos necesarios para marcar asistencia");
+      return;
+    }
+    // ! Aca se tendra que enviar correo ahora
+    const response = await PostAsistencia({
+      eventoId: Data.id,
+      perfilId: SelectedPerfil,
+    });
+    if (response.ok) {
+      toast.success("Asistencia registrada");
+      setIsModalOpen(false);
+    } else {
+      if (response.error) {
+        toast.error(response.error);
+      } else {
+        toast.error("No se logró registrar asistencia");
+      }
+    }
   };
 
   useEffect(() => {
     // Cuando se tenga actualizada la bd se obtendrán los catálogos
-    console.log("Obteniendo catalogos");
     getCatalogs();
   }, []);
 
@@ -89,58 +107,68 @@ export const MarcarAsistencia = () => {
   return (
     <MainLayout>
       <div className="bg-white w-11/12 md:w-1/2 m-auto mt-8 rounded p-4 relative">
-        <h1 className="text-2xl md:text-4xl font-leagueGothic">
-          Evento código: {Data.codigo}
-        </h1>
-        <div className="mt-2 relative mb-20 md:mb-0">
-          <div className="flex justify-between">
-            <h2 className="text-xl md:text-2xl">{Data.nombre}</h2>
-            <span>
-              <EstadoBadge estado={getEstadoName(Data.estadoId)} />
-            </span>
-          </div>
-          <hr className="border-blueDark" />
-          <span className="block font-bold text-xl">
-            Descripción del evento
-          </span>
-          <p>{Data.descripcion}</p>
-          {Data.fechaFin && Data.fechaInicio ? (
-            <>
-              <span className="block font-bold text-xl">Programación</span>
-              <p>
-                El evento se programó a empezar el día: {FechaInicio} a las{" "}
-                <b>{HoraInicio}</b>
-              </p>
-              <p>
-                Y <b>concluir</b> el día: {FechaFin} a las <b>{HoraFin}</b>
-              </p>
-            </>
-          ) : (
-            <>
+        <div></div>
+        {loading ? (
+          <div>Cargando...</div>
+        ) : Data ? (
+          <div>
+            <h1 className="text-2xl md:text-4xl font-leagueGothic">
+              Evento código: {Data.codigo}
+            </h1>
+            <div className="mt-2 relative mb-20 md:mb-0">
+              <div className="flex justify-between">
+                <h2 className="text-xl md:text-2xl">{Data.nombre}</h2>
+                <span>
+                  <EstadoBadge estado={getEstadoName(Data.estadoId)} />
+                </span>
+              </div>
+              <hr className="border-blueDark my-1"/>
               <span className="block font-bold text-xl">
-                Fecha y hora de inicio
+                Descripción del evento
               </span>
-              <p>
-                El evento se programó a empezar el día: {FechaInicio} a las{" "}
-                <b>{HoraInicio}</b>
-              </p>
-            </>
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="bg-green-700 text-white py-1 px-4 rounded absolute bottom-4 right-4 flex"
-        >
-          <span>Marcar asistencia</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="fill-white h-6"
-            viewBox="0 -960 960 960"
-          >
-            <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
-          </svg>
-        </button>
+              <p>{Data.descripcion}</p>
+              {Data.fechaFin && Data.fechaInicio ? (
+                <>
+                  <span className="block font-bold text-xl">Programación</span>
+                  <p>
+                    El evento se programó a empezar el día: {FechaInicio} a las{" "}
+                    <b>{HoraInicio}</b>
+                  </p>
+                  <p>
+                    Y <b>concluir</b> el día: {FechaFin} a las <b>{HoraFin}</b>
+                  </p>
+                </>
+              ) : (
+                <>
+                  <span className="block font-bold text-xl">
+                    Fecha y hora de inicio
+                  </span>
+                  <p>
+                    El evento se programó a empezar el día: {FechaInicio} a las{" "}
+                    <b>{HoraInicio}</b>
+                  </p>
+                </>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="bg-green-700 text-white py-1 px-4 rounded absolute bottom-4 right-4 flex"
+            >
+              <span>Marcar asistencia</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="fill-white h-6"
+                viewBox="0 -960 960 960"
+              >
+                <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
+              </svg>
+            </button>
+          </div>
+        ) : (
+          <div>No se logró cargar los datos de este evento </div>
+        )}
+
         {/* Modal */}
         {isModalOpen && (
           <div

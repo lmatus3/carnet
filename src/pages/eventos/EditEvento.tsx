@@ -21,11 +21,10 @@ export const EditEvento = ({
   eventoData,
   update,
 }: EditEventoProps) => {
-  console.log(eventoData);
   const initForm = {
     nombre: eventoData.nombre as string,
     descripcion: eventoData.descripcion as string,
-    eventoTipoId: eventoData.tipoEventoId as string,
+    eventoTipoId: eventoData.eventoTipoId as string,
     fechaInicio: eventoData.fechaInicio as string, // Fecha y hora incluida
     fechaFin: eventoData.fechaFin as string, // Fecha y hora incluida
     estadoId: eventoData.estadoId as string, // Opcional, si no se envía se agrega en 1
@@ -118,11 +117,12 @@ export const EditEvento = ({
           estadoId: estadoId as string,
           eventoTipoId: eventoTipoId as string,
           fechaInicio: (fechaInicio as string).replace("T", " "),
-          fechaFin: (fechaFin as string).replace("T", " "),
+          fechaFin: fechaFin
+            ? (fechaFin as string).replace("T", " ")
+            : undefined,
         },
         eventoData.id
       );
-      console.log(response);
       if (response.ok) {
         toast.success("Evento actualizado exitósamente");
         // TODO Redirigiendo a página de evento
@@ -199,7 +199,9 @@ export const EditEvento = ({
         </div>
         <div className="col-span-2">
           <label htmlFor="descripcion">
-            <p className="text-sm font-bold">Descipción<span>*</span></p>
+            <p className="text-sm font-bold">
+              Descipción<span>*</span>
+            </p>
             <TextField
               id="descripcion"
               name="descripcion"

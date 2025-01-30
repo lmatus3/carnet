@@ -4,7 +4,7 @@ export interface eventoInterface {
   id: string;
   codigo?: string;
   nombre: string;
-  descripcion?: string;
+  descripcion: string;
   estadoId: estadoEnum;
   fechaInicio: string;
   fechaFin?: string;
@@ -12,7 +12,9 @@ export interface eventoInterface {
   creadoPor: string;
   actualizadoPor?: string;
   //   Esto va a cambiar en un futuro
-  tipoEventoId: string;
+  // tipoEventoId: string;
+  eventoTipoId: string;
+  creadoEl?: string;
 }
 
 export interface eventoPostInterface {

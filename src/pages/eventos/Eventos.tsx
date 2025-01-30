@@ -3,11 +3,14 @@ import { TablaEventos } from "../../components/TablaEventos";
 // import { EventosTempData } from "../../data/tempData";
 import { MainLayout } from "../../layouts/MainLayout";
 import { GetEventos } from "../../service/EventosService";
-import { ValidateError } from "../../service/ValidateError";
 import { eventoInterface } from "../../types/eventoType";
+import { useSessionStore } from "../../stores";
+import { toast } from "sonner";
+import { validateResponseError } from "../../utils/validateResponseError";
 
 export const Eventos = () => {
   const [DatosEventos, setDatosEventos] = useState<eventoInterface[]>([]);
+  const onLogout = useSessionStore((state) => state.onLogout);
   const ObtenerDatos = async () => {
     const response = await GetEventos();
 
@@ -17,7 +20,6 @@ export const Eventos = () => {
         const { data } = response.data;
         if (data) {
           const { Eventos } = data;
-
           const newEventos: eventoInterface[] = Eventos.map((evento) => {
             return {
               id: evento.id,
@@ -25,7 +27,7 @@ export const Eventos = () => {
               nombre: evento.nombre,
               estadoId: evento.estadoId,
               descripcion: evento.descripcion,
-              tipoEventoId: evento.tipoEventoId,
+              eventoTipoId: evento.eventoTipoId,
               creadoPor: evento.creadoPor,
               fechaInicio: evento.fechaInicio,
               actualizadoEl: evento.actualizadoEl,
@@ -35,19 +37,20 @@ export const Eventos = () => {
         }
       }
     } else {
-      ValidateError({
-        error: response.error,
-        errorMessage: "No se logró obtener los eventos",
-      });
+      const { error, status } = response;
+      if (status) {
+        validateResponseError(status, onLogout);
+        return;
+      }
+      console.log(error);
+      toast.error(
+        "No se logró obtener la información de los eventos"
+      );
     }
   };
   useEffect(() => {
     ObtenerDatos();
   }, []);
-  useEffect(() => {
-    console.log(DatosEventos);
-  }, [DatosEventos]);
-
   return (
     <MainLayout>
       <div className="flex flex-col my-6 gap-4">

@@ -12,7 +12,7 @@ export const Navbar = () => {
     <>
       <div className="hidden md:flex bg-white w-svw h-auto text-BlueMedium justify-between font-leagueGothic">
         <div className="flex items-center gap-4">
-          <span className=" text-h3 md:text-h2 ml-2">CARNET APP</span>
+          <span className=" text-h3 md:text-h2 ml-2">CARNET UNICA</span>
           <NavLink
             className={({ isActive }) =>
               ` ${isActive && "text-BlueStrong "} text-2xl`

@@ -9,6 +9,8 @@ import { Link } from "react-router";
 import { usePrint } from "../plugins/print";
 import { useModalControls } from "../hooks/useModalControls";
 import { RegisterEvento } from "../pages/eventos/RegisterEvento";
+import { concluirEvento } from "../utils/concluirEvento";
+import { empezarEvento } from "../utils/empezarEvento";
 
 type TablaEventosType = {
   Registros: eventoInterface[];
@@ -100,7 +102,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
                   });
               }}
             >
-              <p>Copiar Id</p>
+              <p>Copiar código</p>
             </button>
             <Link
               className={
@@ -111,8 +113,43 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
               <p>Ver evento</p>
             </Link>
             {evento.estadoId === "2" && (
-              <button className="text-start transition-all duration-100 hover:bg-slate-100 hover:rounded ">
+              <button
+                onClick={() => {
+                  concluirEvento(evento, evento.id).then((res) => {
+                    if (res.ok) {
+                      toast.success("Evento concluído");
+                      closePopup();
+                      update();
+                    } else {
+                      toast.info(
+                        "No se pudo concluir el evento " + evento.codigo
+                      );
+                    }
+                  });
+                }}
+                className="text-start transition-all duration-100 hover:bg-slate-100 hover:rounded "
+              >
                 <p>Concluir evento</p>
+              </button>
+            )}
+            {evento.estadoId === "1" && (
+              <button
+                onClick={() => {
+                  empezarEvento(evento, evento.id).then((res) => {
+                    if (res.ok) {
+                      toast.success("Evento empezado");
+                      closePopup();
+                      update();
+                    } else {
+                      toast.info(
+                        "No se pudo empezar el evento " + evento.codigo
+                      );
+                    }
+                  });
+                }}
+                className="text-start transition-all duration-100 hover:bg-slate-100 hover:rounded "
+              >
+                <p>Empezar evento</p>
               </button>
             )}
             <button
@@ -231,6 +268,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
         <caption className="hidden print:block"></caption>
         <thead className="table-header-group">
           <tr className="table-row">
+            <th>ID</th>
             <th>Codigo</th>
             <th>Nombre</th>
             <th>Estado</th>
@@ -250,7 +288,11 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
             </tr>
           ) : (
             currentItems.map((evento) => (
-              <tr className="border text-sm md:text-base" key={"FilaDeEvento" + evento.id}>
+              <tr
+                className="border text-sm md:text-base"
+                key={"FilaDeEvento" + evento.id}
+              >
+                <td className="border-x text-center">{evento.id}</td>
                 <td className="border-x text-center">{evento.codigo}</td>
                 <td className="">{evento.nombre}</td>
                 <td className="text-center align-middle p-0">
@@ -258,7 +300,9 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
                     <EstadoBadge estado={getEstadoName(evento.estadoId)} />
                   </div>
                 </td>
-                <td className="text-center">{evento.fechaInicio.split(" ")[0]}</td>
+                <td className="text-center">
+                  {evento.fechaInicio.split(" ")[0]}
+                </td>
                 <td className="flex justify-center items-center print:hidden ">
                   <button
                     type="button"
@@ -397,7 +441,10 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
               ref={ModalRef}
               className="bg-white mt-24 mx-auto w-11/12 md:w-2/3 h-fit p-8 rounded shadow-lg relative"
             >
-              <RegisterEvento closeModal={() => setIsModalOpen(false)} update={update} />
+              <RegisterEvento
+                closeModal={() => setIsModalOpen(false)}
+                update={update}
+              />
             </div>
           </div>
         )}
