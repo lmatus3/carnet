@@ -70,11 +70,14 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
             const { data } = EstadosBackendCat.data;
             if (data) {
               const { Estados } = data;
-              const CatEstados = Estados?.map((Estado) => {
-                return {
-                  value: Estado.id,
-                  name: Estado.nombre,
-                };
+              const CatEstados: OptionType[] = [];
+              Estados?.map((Estado) => {
+                if (Estado.id != "1" && Estado.id != "2") {
+                  CatEstados.push({
+                    value: Estado.id,
+                    name: Estado.nombre,
+                  });
+                }
               });
               setCATEstados(CatEstados);
             }

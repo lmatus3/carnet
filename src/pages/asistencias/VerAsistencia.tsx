@@ -1,17 +1,24 @@
 import { useNavigate, useParams } from "react-router";
 import { MainLayout } from "../../layouts/MainLayout";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GetEvento } from "../../service/EventosService";
 import { eventoInterface } from "../../types/eventoType";
 import { toast } from "sonner";
 import { GetAsistencias } from "../../service/AsistenciaService";
-import { asistenciasDBInterface } from "../../types/asistenciaType";
+import {
+  asistenciasDBInterface,
+  asistenciasReporteInterface,
+} from "../../types/asistenciaType";
 import { exportToExcel } from "../../utils/exportToExcel";
+import { usePrint } from "../../plugins/print";
 
 export const VerAsistencia = () => {
   const { id } = useParams();
   const [Data, setData] = useState<eventoInterface>();
   const [Asistencias, setAsistencias] = useState<asistenciasDBInterface[]>([]);
+  const [AsistenciaReportData, setAsistenciaReportData] = useState<
+    asistenciasReporteInterface[]
+  >([]);
   const [FechaInicio, setFechaInicio] = useState<string>();
   const [FechaFin, setFechaFin] = useState<string>();
   const [HoraInicio, setHoraInicio] = useState<string>();
@@ -42,8 +49,7 @@ export const VerAsistencia = () => {
           id: Evento.id,
           nombre: Evento.nombre,
           eventoTipoId: Evento.eventoTipoId,
-          creadoEl: Evento.creadoEl
-
+          creadoEl: Evento.creadoEl,
         });
         setFechaInicio(Evento.fechaInicio.split(" ")[0]);
         setHoraInicio(Evento.fechaInicio.split(" ")[1].split(".")[0]);
@@ -64,6 +70,19 @@ export const VerAsistencia = () => {
       const { EventoAsistencias } = response.data.data;
       // console.log(EventoAsistencias);
       setAsistencias(EventoAsistencias);
+      const tempReportasistenicas: asistenciasReporteInterface[] =
+        EventoAsistencias.map((Asistencia) => {
+          return {
+            id: Asistencia.id,
+            EventoID: Asistencia.Evento.codigo || "N/A",
+            Codigo: Asistencia.codigo,
+            Nombre: Asistencia.nombre,
+            EstadoId: Asistencia.Estado.nombre,
+            CreadoEl: Asistencia.creadoEl.replace("T", " ").split(".")[0],
+            CreadoPor: Asistencia.creadoPor,
+          };
+        });
+      setAsistenciaReportData(tempReportasistenicas);
       return;
     }
     MostrarMensajeError(10000);
@@ -77,6 +96,11 @@ export const VerAsistencia = () => {
       navegar("/");
     }
   }, []);
+
+  // Imprimir
+  // Ref a div
+  const contentRef = useRef<HTMLTableElement>(null);
+  const { printNode } = usePrint(contentRef);
 
   return (
     <MainLayout>
@@ -111,7 +135,7 @@ export const VerAsistencia = () => {
                     title="Exportar a excel"
                     className="border rounded h-8 w-20 bg-green-700 text-white"
                     onClick={() => {
-                      exportToExcel(Asistencias, "ejemplo");
+                      exportToExcel(AsistenciaReportData, "ejemplo");
                     }}
                   >
                     Excel
@@ -119,12 +143,16 @@ export const VerAsistencia = () => {
                   <button
                     title="Exportar a PDF"
                     className="border rounded h-8 w-20"
+                    onClick={() => printNode()}
                   >
                     Imprimir
                   </button>
                 </div>
               </div>
-              <table className="table w-11/12 m-auto mt-6 print:mt-4 mb-5">
+              <table
+                ref={contentRef}
+                className="table w-11/12 m-auto mt-6 print:mt-4 mb-5"
+              >
                 <caption className="font-bold">Asistencia de evento</caption>
                 <thead className="table-header-group">
                   <tr className="table-row">
@@ -141,16 +169,16 @@ export const VerAsistencia = () => {
                       <td className="border break-inside-avoid">{i + 1}</td>
                       {/* En un futuro se debe de pode traer el carnet y el nombre */}
                       <td className="border break-inside-avoid">
-                        {item.participante}
+                        {item.codigo || "N/A"}
                       </td>
                       <td className="border break-inside-avoid">
-                        {item.participante}
+                        {item.nombre}
                       </td>
                       <td className="border break-inside-avoid">
                         {item.Perfil.nombre}
                       </td>
                       <td className="border break-inside-avoid">
-                        {item.creadoEl}
+                        {item.creadoEl.replace("T", " ").split(".")[0]}
                       </td>
                     </tr>
                   ))}

@@ -22,7 +22,7 @@ export const GetAsistencias: (
 ) => Promise<ResponseAsistencias> = async (eventoId) => {
   try {
     const response = await BackendApi.get(
-      `/eventoAsistencia?include[]=Perfil&include[]=Evento.EventoTipo&eventoId[eq]=${eventoId}`
+      `/eventoAsistencia?include[]=Perfil&include[]=Estado&include[]=Evento.EventoTipo&eventoId[eq]=${eventoId}`
     );
     if (response.status) {
       return {

@@ -11,6 +11,11 @@ import { GetPerfiles } from "../../service/GetCatalogsInfo";
 import { toast } from "sonner";
 import { PostAsistencia } from "../../service/AsistenciaService";
 import { useUIStore } from "../../stores/UIStore";
+import { GetUserInfo } from "../../service/GetUserInfo";
+import { estudianteInterface } from "../../types/estudianteType";
+import { useSessionStore } from "../../stores";
+
+type UserDataType = { code: string; type: string; typeId: string };
 
 export const MarcarAsistencia = () => {
   const { id } = useParams();
@@ -21,15 +26,18 @@ export const MarcarAsistencia = () => {
   const [HoraInicio, setHoraInicio] = useState<string>();
   const [HoraFin, setHoraFin] = useState<string>();
   const [Data, setData] = useState<eventoInterface>();
+  const [userData, setUserData] = useState<UserDataType[]>([]);
   const SetLoading = useUIStore((state) => state.SetLoading);
+  const onLogout = useSessionStore((state) => state.onLogout);
   const loading = useUIStore((state) => state.loading);
 
   // Obtener catalogo y evento
   const getCatalogs = async () => {
     const EventoPromise = GetEvento(id as string);
     const PerfilesPromise = GetPerfiles();
+    const UserInfoPromise = GetUserInfo();
     SetLoading(true);
-    Promise.all([EventoPromise, PerfilesPromise])
+    Promise.all([EventoPromise, PerfilesPromise, UserInfoPromise])
       .then((responses) => {
         if (responses[0].ok && responses[0].data) {
           const { Evento } = responses[0].data.data;
@@ -54,6 +62,7 @@ export const MarcarAsistencia = () => {
           }
           toast.info("Datos de evento cargados exitosamente");
         }
+        let tempPerfiles: OptionType[] = [];
         if (responses[1].ok && responses[1].data) {
           const { Perfiles } = responses[1].data.data;
           const CatPerfilesDb: OptionType[] = Perfiles.map((perfil) => {
@@ -62,7 +71,85 @@ export const MarcarAsistencia = () => {
               name: perfil.nombre,
             };
           });
-          setCATPerfiles(CatPerfilesDb);
+          tempPerfiles = CatPerfilesDb;
+        }
+        if (responses[2].ok && responses[2].data) {
+          // console.log(response.data);
+          const { data } = responses[2].data;
+          const { administrativo, docente, estudiante } = data.informacion;
+          const newCarnetsCodes: UserDataType[] = [];
+          //* Casos de carnet
+          //? Caso de estudiante
+          if (estudiante.length > 0) {
+            (estudiante as estudianteInterface[]).map((datosEstudiante) => {
+              //! La validación es basada en el estado de este estudiante para la carrera actual del mismo
+              if (
+                datosEstudiante.estado == "Expulsado" ||
+                datosEstudiante.estado == "Retirado" ||
+                datosEstudiante.estado == "Inactivo" ||
+                datosEstudiante.estado == "Graduado"
+              ) {
+                return;
+              }
+              // * Aqui se asignan los datos del estudiante
+              // console.log(periodoProcesado)
+              const carnet = {
+                code: datosEstudiante.estudianteCarne,
+                type: "Estudiante",
+                typeId: "1",
+              };
+              newCarnetsCodes.push(carnet);
+            });
+          } else {
+            tempPerfiles = tempPerfiles.filter((item) => item.value != "1");
+          }
+          //? Caso de administrativo
+          if (administrativo.length > 0) {
+            const datosAdministrativo = administrativo[0];
+            if (
+              datosAdministrativo.estatus === "1" &&
+              datosAdministrativo.fechabaja === null
+            ) {
+              // Caso carnet valido
+              const carnet = {
+                code: datosAdministrativo.no_emple,
+                type: "Administrativo",
+                typeId: "3",
+              };
+              newCarnetsCodes.push(carnet);
+            }
+          } else {
+            tempPerfiles = tempPerfiles.filter((item) => item.value != "3");
+          }
+          //? Caso de docente
+          if (docente.length > 0) {
+            const datosDocente = docente[0];
+            const carnet = {
+              code: datosDocente.iddocente,
+              type: "Docente",
+              typeId: "2",
+            };
+            newCarnetsCodes.push(carnet);
+          } else {
+            tempPerfiles = tempPerfiles.filter((item) => item.value != "2");
+          }
+          setUserData(newCarnetsCodes);
+          setCATPerfiles(tempPerfiles);
+        } else {
+          // Manejando acceso no autorizado
+          if (responses[2].status === 401) {
+            toast.error(
+              "Su sesión no es valida, por favor inicie sesión nuevamente"
+            );
+            onLogout();
+          } else {
+            // Manejando errores distintos
+            toast.info(
+              responses[2].error ||
+                "No se logró obtener los datos necesarios para registrar su asistencia",
+              { duration: 100000 }
+            );
+          }
         }
       })
       .catch((e) => console.log(e))
@@ -74,15 +161,22 @@ export const MarcarAsistencia = () => {
       toast.error("Por favor, seleccione el perfil con el que asistirá");
       return;
     }
-
+    const carnetNum = userData.find((data) => data.typeId == SelectedPerfil);
     if (!Data) {
       toast.error("No se tienen los datos necesarios para marcar asistencia");
+      return;
+    }
+    if (!carnetNum) {
+      toast.error(
+        "Usted no puede participar con el perfil seleccionado al evento"
+      );
       return;
     }
     // ! Aca se tendra que enviar correo ahora
     const response = await PostAsistencia({
       eventoId: Data.id,
       perfilId: SelectedPerfil,
+      codigo: carnetNum.code,
     });
     if (response.ok) {
       toast.success("Asistencia registrada");
@@ -122,7 +216,7 @@ export const MarcarAsistencia = () => {
                   <EstadoBadge estado={getEstadoName(Data.estadoId)} />
                 </span>
               </div>
-              <hr className="border-blueDark my-1"/>
+              <hr className="border-blueDark my-1" />
               <span className="block font-bold text-xl">
                 Descripción del evento
               </span>

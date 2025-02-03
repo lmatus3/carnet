@@ -1,10 +1,21 @@
-import { estadoEnum } from "./estadoType";
+import { EstadoBDType, estadoEnum } from "./estadoType";
 import { eventoInterface } from "./eventoType";
 import { perfilInterface } from "./perfilType";
 
 export interface asistenciaInterface {
   eventoId: string;
   perfilId: string;
+  codigo: string;
+}
+
+export interface asistenciasReporteInterface {
+  id: number;
+  EventoID: string;
+  Codigo: string;
+  Nombre: string;
+  EstadoId: string;
+  CreadoEl: string;
+  CreadoPor: string; //Correo
 }
 
 export interface asistenciasDBInterface {
@@ -13,8 +24,10 @@ export interface asistenciasDBInterface {
   Evento: eventoInterface;
   perfilId: string;
   Perfil: perfilInterface;
+  nombre: string;
+  codigo: string;
   estadoId: estadoEnum;
-  participante: string; //Correo
+  Estado: EstadoBDType
   creadoEl: string;
   actualizadoEl: string;
   creadoPor: string;

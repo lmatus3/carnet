@@ -9,6 +9,7 @@ type SelectFieldType = {
   id: string;
   name: string;
   value: string | number;
+  title?: string;
   options: OptionType[];
   cx?: string; // Extra class properties
   selectMessage?: string;
@@ -20,6 +21,7 @@ export const SelectField = ({
   id,
   name,
   value,
+  title,
   cx,
   options,
   selectMessage = "Seleccione una opción",
@@ -34,6 +36,7 @@ export const SelectField = ({
       className={` border p-1 rounded ${cx}`}
       required={required}
       onChange={onChange}
+      title={title}
     >
       <option value="" disabled>
         {selectMessage}

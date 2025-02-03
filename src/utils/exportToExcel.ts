@@ -22,5 +22,5 @@ export const exportToExcel = (data: object[], fileName: string) => {
   // Convertir el buffer en un Blob y descargarlo
   const dataBlob = GetDataBlob(excelBuffer);
 
-  SaveAs(dataBlob, `${fileName}.xlsx`);
+  SaveAs(dataBlob, `${fileName}`);
 };

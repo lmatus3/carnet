@@ -4,6 +4,7 @@ type InputFieldType = {
   id: string;
   name: string;
   value: string | number;
+  title?: string;
   placeholder?: string;
   type?: "text" | "number" | "email" | "password" | "date" | "datetime-local";
   required?: boolean;
@@ -15,6 +16,7 @@ export const InputField = ({
   id,
   name,
   value,
+  title,
   placeholder = "Buscar evento...",
   required = false,
   readOnly = false,
@@ -28,10 +30,13 @@ export const InputField = ({
       name={name}
       value={value}
       type={type}
+      title={title}
       required={required}
       onChange={onChange}
       placeholder={placeholder}
-      className={`border rounded text-black p-1 ${readOnly && " bg-slate-200 cursor-not-allowed select-none "} ${cx}`}
+      className={`border rounded text-black p-1 ${
+        readOnly && " bg-slate-200 cursor-not-allowed select-none "
+      } ${cx}`}
       readOnly={readOnly}
     />
   );

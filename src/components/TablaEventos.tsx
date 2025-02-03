@@ -6,7 +6,7 @@ import { EstadoBadge } from "./EstadoBadge";
 import { getEstadoName } from "../utils/getEstadoName";
 import { toast } from "sonner";
 import { Link } from "react-router";
-import { usePrint } from "../plugins/print";
+// import { usePrint } from "../plugins/print";
 import { useModalControls } from "../hooks/useModalControls";
 import { RegisterEvento } from "../pages/eventos/RegisterEvento";
 import { concluirEvento } from "../utils/concluirEvento";
@@ -192,8 +192,8 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
 
   // Imprimir
   // Ref a div
-  const contentRef = useRef<HTMLTableElement>(null);
-  const { printNode } = usePrint(contentRef);
+  // const contentRef = useRef<HTMLTableElement>(null);
+  // const { printNode } = usePrint(contentRef);
 
   // Modal
   // Controles del modal de las acciones
@@ -205,6 +205,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
           <InputField
             id="searchTerm"
             name="searchTerm"
+            title="Escribe para buscar"
             onChange={(e) => setSearchTerm(e.target.value)}
             type="text"
             cx="w-28 md:w-44"
@@ -215,6 +216,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
             name="selectColumn"
             selectMessage="Buscar por"
             value={searchField as string}
+            title="Aplicar filtros"
             options={[
               { value: "codigo", name: "Codigo" },
               { value: "nombre", name: "Nombre" },
@@ -240,7 +242,11 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
               </svg>
             </button>
           )}
-          <button onClick={() => setIsModalOpen(true)} type="button">
+          <button
+            title="Registrar nuevo evento"
+            onClick={() => setIsModalOpen(true)}
+            type="button"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-8 rounded hover:bg-black hover:fill-white duration-150 transition-all"
@@ -250,7 +256,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
             </svg>
           </button>
         </div>
-        <button type="button" onClick={() => printNode()}>
+        {/* <button type="button" onClick={() => printNode()}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-8"
@@ -258,10 +264,10 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
           >
             <path d="M320-120q-33 0-56.5-23.5T240-200v-80h-80q-33 0-56.5-23.5T80-360v-160q0-51 35-85.5t85-34.5h560q51 0 85.5 34.5T880-520v160q0 33-23.5 56.5T800-280h-80v80q0 33-23.5 56.5T640-120H320ZM160-360h80q0-33 23.5-56.5T320-440h320q33 0 56.5 23.5T720-360h80v-160q0-17-11.5-28.5T760-560H200q-17 0-28.5 11.5T160-520v160Zm480-280v-120H320v120h-80v-120q0-33 23.5-56.5T320-840h320q33 0 56.5 23.5T720-760v120h-80Zm80 180q17 0 28.5-11.5T760-500q0-17-11.5-28.5T720-540q-17 0-28.5 11.5T680-500q0 17 11.5 28.5T720-460Zm-80 260v-160H320v160h320ZM160-560h640-640Z" />
           </svg>
-        </button>
+        </button> */}
       </div>
       <table
-        ref={contentRef}
+        // ref={contentRef}
         className="w-full table-auto print:w-11/12 print:m-8"
       >
         {/* Columns */}
@@ -374,45 +380,53 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
           </button>
 
           {/* Números dinámicos */}
-          {rowsCount &&
-            (() => {
-              const totalPages = Math.ceil(data.length / Number(itemsPerPage));
-              const pageNumbers = [];
-              if (totalPages <= 3) {
-                // Si hay 3 páginas o menos, muestra todas
-                for (let i = 1; i <= totalPages; i++) {
-                  pageNumbers.push(i);
-                }
-              } else {
-                if (currentPage === 1) {
-                  // Si está en la primera página, muestra las primeras 3
-                  pageNumbers.push(1, 2, 3);
-                } else if (currentPage === totalPages) {
-                  // Si está en la última página, muestra las últimas 3
-                  pageNumbers.push(totalPages - 2, totalPages - 1, totalPages);
+          {rowsCount && data.length > 0
+            ? (() => {
+                const totalPages = Math.ceil(
+                  data.length / Number(itemsPerPage)
+                );
+                const pageNumbers = [];
+
+                if (totalPages <= 3) {
+                  // Si hay 3 páginas o menos, muestra todas
+                  for (let i = 1; i <= totalPages; i++) {
+                    pageNumbers.push(i);
+                  }
                 } else {
-                  // Si está en el medio, muestra la página actual y sus adyacentes
-                  pageNumbers.push(
-                    currentPage - 1,
-                    currentPage,
-                    currentPage + 1
-                  );
+                  if (currentPage === 1) {
+                    // Si está en la primera página, muestra las primeras 3
+                    pageNumbers.push(1, 2, 3);
+                  } else if (currentPage === totalPages) {
+                    // Si está en la última página, muestra las últimas 3
+                    pageNumbers.push(
+                      totalPages - 2,
+                      totalPages - 1,
+                      totalPages
+                    );
+                  } else {
+                    // Si está en el medio, muestra la página actual y sus adyacentes
+                    pageNumbers.push(
+                      currentPage - 1,
+                      currentPage,
+                      currentPage + 1
+                    );
+                  }
                 }
-              }
-              return pageNumbers.map((page) => (
-                <button
-                  key={"botonPagina" + page}
-                  onClick={() => paginate(page)}
-                  className={`w-8 h-8 p-0 border rounded ${
-                    page === currentPage
-                      ? "bg-gray-700 text-white"
-                      : "bg-slate-100 text-black"
-                  }`}
-                >
-                  {page}
-                </button>
-              ));
-            })()}
+                return pageNumbers.map((page) => (
+                  <button
+                    key={"botonPagina" + page}
+                    onClick={() => paginate(page)}
+                    className={`w-8 h-8 p-0 border rounded ${
+                      page === currentPage
+                        ? "bg-gray-700 text-white"
+                        : "bg-slate-100 text-black"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ));
+              })()
+            : null}
 
           {/* Botón de página siguiente */}
           <button
@@ -432,6 +446,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
             &gt;
           </button>
         </div>
+
         {/* Modal */}
         {isModalOpen && (
           <div
