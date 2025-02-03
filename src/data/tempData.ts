@@ -1,7 +1,4 @@
 import Aviso from "../assets/imgs/Aviso.png";
-import { estadoEnum } from "../types/estadoType";
-import { eventoInterface } from "../types/eventoType";
-
 export interface noticia {
   id: number;
   titulo: string;
@@ -275,15 +272,15 @@ export const noticias: noticia[] = [
 //   },
 // ];
 
-export const FakeData: eventoInterface = {
-  id: "",
-  nombre: "",
-  descripcion: "",
-  estadoId: estadoEnum.EN_CURSO,
-  fechaInicio: "",
-  fechaFin: "",
-  actualizadoEl: "",
-  creadoPor: "",
-  //   Esto va a cambiar en un futuro
-  tipoEventoId: "",
-};
+// export const FakeData: eventoInterface = {
+//   id: "",
+//   nombre: "",
+//   descripcion: "",
+//   estadoId: estadoEnum.EN_CURSO,
+//   fechaInicio: "",
+//   fechaFin: "",
+//   actualizadoEl: "",
+//   creadoPor: "",
+//   //   Esto va a cambiar en un futuro
+//   tipoEventoId: "",
+// };

@@ -112,7 +112,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
             >
               <p>Ver evento</p>
             </Link>
-            {evento.estadoId === "2" && (
+            {evento.estadoId === "4" && (
               <button
                 onClick={() => {
                   concluirEvento(evento, evento.id).then((res) => {
@@ -132,7 +132,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
                 <p>Concluir evento</p>
               </button>
             )}
-            {evento.estadoId === "1" && (
+            {evento.estadoId === "3" && (
               <button
                 onClick={() => {
                   empezarEvento(evento, evento.id).then((res) => {
