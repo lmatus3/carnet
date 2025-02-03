@@ -15,11 +15,11 @@ export type EstadosEstudianteTypes =
   | "Culminación de estudios";
 
 export enum estadoEnum {
-  PROGRAMADO = "1",
-  EN_CURSO = "2",
-  CONCLUIDO = "3",
-  DESCONOCIDO = "4",
-  CANCELADO = "5",
+  PROGRAMADO = "3",
+  EN_CURSO = "4",
+  CONCLUIDO = "5",
+  DESCONOCIDO = "6",
+  CANCELADO = "7",
 }
 export type EstadoBDType = {
   id: string;

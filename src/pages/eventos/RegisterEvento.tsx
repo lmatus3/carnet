@@ -71,6 +71,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
             if (data) {
               const { Estados } = data;
               const CatEstados: OptionType[] = [];
+              console.log(Estados)
               Estados?.map((Estado) => {
                 if (Estado.id != "1" && Estado.id != "2") {
                   CatEstados.push({

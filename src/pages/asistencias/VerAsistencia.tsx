@@ -135,7 +135,7 @@ export const VerAsistencia = () => {
                     title="Exportar a excel"
                     className="border rounded h-8 w-20 bg-green-700 text-white"
                     onClick={() => {
-                      exportToExcel(AsistenciaReportData, "ejemplo");
+                      exportToExcel(AsistenciaReportData, "Asistencia-evento-"+Data.codigo);
                     }}
                   >
                     Excel
