@@ -40,7 +40,11 @@ export const ValidateError: (props: ValidateErrorProps) => {
     // Obteniendo mensaje de error de backend
     const { response } = error;
     if (response && response.data) {
-      const { message }: { message: string } = response.data;
+      const { message, errors }: { message: string; errors?: string[] } =
+        response.data;
+      if (errors) {
+        return { ok: false, error: message, status: response.status, errors };
+      }
       return { ok: false, error: message, status: response.status };
     } else {
       // Otro tipo de error
