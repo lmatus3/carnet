@@ -21,18 +21,18 @@ export const Navbar = () => {
           >
             Home
           </NavLink>
-          {perfiles?.includes("Docente") ||
+          {(perfiles?.includes("Docente") ||
             perfiles?.includes("Docente posgrado") ||
-            (perfiles?.includes("Administrativo") && (
-              <NavLink
-                className={({ isActive }) =>
-                  ` ${isActive && "text-BlueStrong "} text-2xl`
-                }
-                to={"/eventos"}
-              >
-                Eventos
-              </NavLink>
-            ))}
+            perfiles?.includes("Administrativo")) && (
+            <NavLink
+              className={({ isActive }) =>
+                ` ${isActive && "text-BlueStrong "} text-2xl`
+              }
+              to={"/eventos"}
+            >
+              Eventos
+            </NavLink>
+          )}
           {/* Las asistencias estaran ocultas */}
           {/* <NavLink
             className={({ isActive }) =>
