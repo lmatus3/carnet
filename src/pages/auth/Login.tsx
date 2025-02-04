@@ -54,7 +54,7 @@ export const Login = () => {
     // Empezando loader
     SetLoading(true);
     // TODO Enviando a backend
-    const payload = { user: user as string, password: password as string };
+    const payload = { user: (user as string).toLocaleLowerCase(), password: password as string };
     LoginCredentials(payload).then((res) => {
       // Caso de error
       if (res.error) {

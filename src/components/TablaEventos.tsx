@@ -24,7 +24,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
   const [searchField, setSearchField] = useState<string>(""); // Propiedad a buscar 1 = id, 2 = nombre, 3 = fechaHoraInicio
   const [itemsPerPage, setItemsPerPage] = useState<string>("5");
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsCount, setRowsCount] = useState<number>(); // Cantidad de registros actuales (Con o sin filtro)
+  const [contador, setContador] = useState<number[]>([]);
   const [popupInfo, setPopupInfo] = useState<{
     visible: boolean;
     x: number;
@@ -65,7 +65,32 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
     const indexOfLastItem = currentPage * Number(itemsPerPage);
     const indexOfFirstItem = indexOfLastItem - Number(itemsPerPage);
     setCurrentItems(data.slice(indexOfFirstItem, indexOfLastItem));
-  }, [data]);
+  }, [data, itemsPerPage, currentPage]);
+
+  useEffect(() => {
+    // Páginas
+    const totalPages = Math.ceil(data.length / Number(itemsPerPage));
+    const pageNumbers = [];
+
+    if (totalPages <= 3) {
+      // Si hay 3 páginas o menos, muestra todas
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      if (currentPage === 1) {
+        // Si está en la primera página, muestra las primeras 3
+        pageNumbers.push(1, 2, 3);
+      } else if (currentPage === totalPages) {
+        // Si está en la última página, muestra las últimas 3
+        pageNumbers.push(totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        // Si está en el medio, muestra la página actual y sus adyacentes
+        pageNumbers.push(currentPage - 1, currentPage, currentPage + 1);
+      }
+    }
+    setContador(pageNumbers);
+  }, [data, itemsPerPage, currentPage]);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -73,9 +98,6 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-  useEffect(() => {
-    setRowsCount(Registros.length);
-  }, []);
 
   // Popup
   const handleButtonClick = (
@@ -238,7 +260,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
                 className="w-8 rounded hover:bg-black hover:fill-white duration-150 transition-all"
                 viewBox="0 -960 960 960"
               >
-                <path d="m480-424 116 116q11 11 28 11t28-11q11-11 11-28t-11-28L536-480l116-116q11-11 11-28t-11-28q-11-11-28-11t-28 11L480-536 364-652q-11-11-28-11t-28 11q-11 11-11 28t11 28l116 116-116 116q-11 11-11 28t11 28q11 11 28 11t28-11l116-116Zm0 344q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+                <path d="m480-424 116 116q11 11 28 11t28-11q11-11 11-28t-11-28L536-480l116-116q11-11 11-28t-11-28q-11-11-28-11t-28 11L480-536 364-652q-11-11-28-11t-28 11q-11 11-11 28t11 28l116 116-116 116q-11 11-11 28t11 28q11 11 28 11t28-11l116-116Zm0 344q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-320Z" />
               </svg>
             </button>
           )}
@@ -380,7 +402,24 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
           </button>
 
           {/* Números dinámicos */}
-          {rowsCount && data.length > 0
+          {contador && (
+            <>
+              {contador.map((page) => (
+                <button
+                  key={"botonPagina" + page}
+                  onClick={() => paginate(page)}
+                  className={`w-8 h-8 p-0 border rounded ${
+                    page === currentPage
+                      ? "bg-gray-700 text-white"
+                      : "bg-slate-100 text-black"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </>
+          )}
+          {/* {rowsCount
             ? (() => {
                 const totalPages = Math.ceil(
                   data.length / Number(itemsPerPage)
@@ -426,7 +465,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
                   </button>
                 ));
               })()
-            : null}
+            : null} */}
 
           {/* Botón de página siguiente */}
           <button

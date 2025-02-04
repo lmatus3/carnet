@@ -89,16 +89,19 @@ export const MarcarAsistencia = () => {
                 datosEstudiante.estado == "Inactivo" ||
                 datosEstudiante.estado == "Graduado"
               ) {
-                return;
+                // ? Caso negativo
+                // Si está en uno de estos estados no puede asistir como estudiante
+                tempPerfiles = tempPerfiles.filter((item) => item.value != "1");
+              } else {
+                // * Aqui se asignan los datos del estudiante
+                // console.log(periodoProcesado)
+                const carnet = {
+                  code: datosEstudiante.estudianteCarne,
+                  type: "Estudiante",
+                  typeId: "1",
+                };
+                newCarnetsCodes.push(carnet);
               }
-              // * Aqui se asignan los datos del estudiante
-              // console.log(periodoProcesado)
-              const carnet = {
-                code: datosEstudiante.estudianteCarne,
-                type: "Estudiante",
-                typeId: "1",
-              };
-              newCarnetsCodes.push(carnet);
             });
           } else {
             tempPerfiles = tempPerfiles.filter((item) => item.value != "1");
@@ -134,6 +137,7 @@ export const MarcarAsistencia = () => {
             tempPerfiles = tempPerfiles.filter((item) => item.value != "2");
           }
           setUserData(newCarnetsCodes);
+          // TODO Mostrar sólo los perfiles que estén disponibles con los del usuario
           setCATPerfiles(tempPerfiles);
         } else {
           // Manejando acceso no autorizado
@@ -157,15 +161,18 @@ export const MarcarAsistencia = () => {
   };
   const handleSendAsistencia = async (ev: React.FormEvent) => {
     ev.preventDefault();
+    // Validando selección de perfil
     if (SelectedPerfil.length === 0) {
       toast.error("Por favor, seleccione el perfil con el que asistirá");
       return;
     }
+    // Buscando el carnet según el perfil seleccionado
     const carnetNum = userData.find((data) => data.typeId == SelectedPerfil);
     if (!Data) {
       toast.error("No se tienen los datos necesarios para marcar asistencia");
       return;
     }
+    // Validando la existencia del evento
     if (!carnetNum) {
       toast.error(
         "Usted no puede participar con el perfil seleccionado al evento"
@@ -200,7 +207,7 @@ export const MarcarAsistencia = () => {
   const { ModalRef, isModalOpen, setIsModalOpen } = useModalControls();
   return (
     <MainLayout>
-      <div className="bg-white w-11/12 md:w-1/2 m-auto mt-8 rounded p-4 relative">
+      <div className="bg-white w-11/12 md:w-2/3 m-auto mt-8 rounded p-4 md:pb-14 relative">
         <div></div>
         {loading ? (
           <div>Cargando...</div>

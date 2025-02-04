@@ -11,6 +11,8 @@ import {
 } from "../../types/asistenciaType";
 import { exportToExcel } from "../../utils/exportToExcel";
 import { usePrint } from "../../plugins/print";
+import { EstadoBadge } from "../../components/EstadoBadge";
+import { getEstadoName } from "../../utils/getEstadoName";
 
 export const VerAsistencia = () => {
   const { id } = useParams();
@@ -77,6 +79,7 @@ export const VerAsistencia = () => {
             EventoID: Asistencia.Evento.codigo || "N/A",
             Codigo: Asistencia.codigo,
             Nombre: Asistencia.nombre,
+            TipoAsistencia: Asistencia.Perfil.nombre,
             EstadoId: Asistencia.Estado.nombre,
             CreadoEl: Asistencia.creadoEl.replace("T", " ").split(".")[0],
             CreadoPor: Asistencia.creadoPor,
@@ -109,25 +112,49 @@ export const VerAsistencia = () => {
           <div>
             {/* Datos de evento */}
             <div>
-              <h1 className="font-leagueGothic text-2xl flex mx-4 md:text-4xl ">
-                <span>{Data.codigo}</span>
+              <h1 className="text-2xl md:text-4xl font-leagueGothic">
+                Código de evento: {Data.codigo}
               </h1>
-              <div className="mx-2">{Data.descripcion}</div>
             </div>
-            <hr />
+            <div className="flex justify-between">
+              <h2 className="text-xl md:text-2xl">{Data.nombre}</h2>
+              <span>
+                <EstadoBadge estado={getEstadoName(Data.estadoId)} />
+              </span>
+            </div>
+            <hr className="my-1" />
             {/* Tabla de asistencias */}
             <div className="overflow-x-auto my-2 relative">
               <div className="flex w-full gap-2 justify-between">
                 <div>
-                  <p>
-                    <b>Fecha inicio evento</b> {FechaInicio} <b> a las </b>
-                    {HoraInicio}
-                  </p>
-                  {FechaFin && (
-                    <p>
-                      <b>Fecha fin de evento</b> {FechaFin} <b> a las </b>
-                      {HoraFin}
-                    </p>
+                  <span className="block font-bold text-xl">
+                    Descripción del evento
+                  </span>
+                  <p>{Data.descripcion}</p>
+                  {Data.fechaFin && Data.fechaInicio ? (
+                    <>
+                      <span className="block font-bold text-xl">
+                        Programación
+                      </span>
+                      <p>
+                        El evento se programó a empezar el día: {FechaInicio} a
+                        las <b>{HoraInicio}</b>
+                      </p>
+                      <p>
+                        Y <b>concluir</b> el día: {FechaFin} a las{" "}
+                        <b>{HoraFin}</b>
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <span className="block font-bold text-xl">
+                        Fecha y hora de inicio
+                      </span>
+                      <p>
+                        El evento se programó a empezar el día: {FechaInicio} a
+                        las <b>{HoraInicio}</b>
+                      </p>
+                    </>
                   )}
                 </div>
                 <div className="flex gap-2">
@@ -135,7 +162,10 @@ export const VerAsistencia = () => {
                     title="Exportar a excel"
                     className="border rounded h-8 w-20 bg-green-700 text-white"
                     onClick={() => {
-                      exportToExcel(AsistenciaReportData, "Asistencia-evento-"+Data.codigo);
+                      exportToExcel(
+                        AsistenciaReportData,
+                        "Asistencia-evento-" + Data.codigo
+                      );
                     }}
                   >
                     Excel
@@ -153,7 +183,9 @@ export const VerAsistencia = () => {
                 ref={contentRef}
                 className="table w-11/12 m-auto mt-6 print:mt-4 mb-5"
               >
-                <caption className="font-bold">Asistencia de evento</caption>
+                <caption className="font-bold">
+                  Asistencia de {Data.nombre}{" "}
+                </caption>
                 <thead className="table-header-group">
                   <tr className="table-row">
                     <th className="border">#</th>

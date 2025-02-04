@@ -97,7 +97,7 @@ export const Evento = () => {
         ) : Data ? (
           <div>
             <h1 className="text-2xl md:text-4xl font-leagueGothic">
-              Evento código: {Data.codigo}
+              Código de evento: {Data.codigo}
             </h1>
             <div className="mt-2 relative mb-20 md:mb-0">
               <div className="flex justify-between">

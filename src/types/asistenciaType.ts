@@ -13,6 +13,7 @@ export interface asistenciasReporteInterface {
   EventoID: string;
   Codigo: string;
   Nombre: string;
+  TipoAsistencia: string;
   EstadoId: string;
   CreadoEl: string;
   CreadoPor: string; //Correo
@@ -27,7 +28,7 @@ export interface asistenciasDBInterface {
   nombre: string;
   codigo: string;
   estadoId: estadoEnum;
-  Estado: EstadoBDType
+  Estado: EstadoBDType;
   creadoEl: string;
   actualizadoEl: string;
   creadoPor: string;
