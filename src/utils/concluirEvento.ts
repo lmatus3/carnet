@@ -6,7 +6,7 @@ export const concluirEvento = async (payload: eventoInterface, id: string) => {
   const newPayload: eventoPostInterface = {
     descripcion: payload.descripcion,
     eventoTipoId: payload.eventoTipoId,
-    estadoId: "3",
+    estadoId: "5",
     fechaInicio: payload.fechaInicio,
     nombre: payload.nombre,
     fechaFin: payload.fechaFin,
