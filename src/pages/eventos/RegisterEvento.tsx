@@ -71,7 +71,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
             if (data) {
               const { Estados } = data;
               const CatEstados: OptionType[] = [];
-              console.log(Estados)
+              console.log(Estados);
               Estados?.map((Estado) => {
                 if (Estado.id != "1" && Estado.id != "2") {
                   CatEstados.push({
@@ -134,10 +134,10 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
         update();
         return;
       }
-      if(response.errors){
-        response.errors.map((validacionError)=>{
-          toast.error(validacionError, { duration: 50000 })
-        })
+      if (response.errors) {
+        response.errors.map((validacionError) => {
+          toast.error(validacionError, { duration: 50000 });
+        });
       }
       toast.error("No se logró registar el evento");
       SetLoading(false);
@@ -257,7 +257,9 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
         </div>
         <div>
           <label htmlFor="estadoId">
-            <p className="text-sm font-bold">Estado de evento <span>*</span></p>
+            <p className="text-sm font-bold">
+              Estado de evento <span>*</span>
+            </p>
             <SelectField
               id="estadoId"
               name="estadoId"

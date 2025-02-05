@@ -127,6 +127,7 @@ export const EditEvento = ({
         eventoData.id
       );
       if (response.ok) {
+        toast.dismiss();
         toast.success("Evento actualizado exitósamente");
         // TODO Redirigiendo a página de evento
         updateForm(initForm);
@@ -134,6 +135,12 @@ export const EditEvento = ({
         SetLoading(false);
         update();
         return;
+      } else {
+        if (response.errors) {
+          response.errors.map((validacionError) => {
+            toast.error(validacionError, { duration: 50000 });
+          });
+        }
       }
       toast.error("No se logró registar el evento");
       SetLoading(false);
