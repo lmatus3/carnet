@@ -77,6 +77,7 @@ export const VerAsistencia = () => {
           return {
             id: Asistencia.id,
             EventoID: Asistencia.Evento.codigo || "N/A",
+            EventoNombre: Asistencia.Evento.nombre || "N/A",
             Codigo: Asistencia.codigo,
             Nombre: Asistencia.nombre,
             TipoAsistencia: Asistencia.Perfil.nombre,

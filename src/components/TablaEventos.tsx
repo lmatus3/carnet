@@ -134,6 +134,14 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
             >
               <p>Ver evento</p>
             </Link>
+            <Link
+              className={
+                "text-start transition-all duration-100 hover:bg-slate-100 hover:rounded "
+              }
+              to={`/ver_asistencia/${evento.id}`}
+            >
+              <p>Ver asistencia</p>
+            </Link>
             {evento.estadoId === "4" && (
               <button
                 onClick={() => {

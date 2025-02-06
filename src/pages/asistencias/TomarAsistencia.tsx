@@ -76,11 +76,10 @@ export const TomarAsistencia = () => {
       return;
     }
     // Enviando asistencia a backend
-    // ! Aca se tendra que enviar el correo ahora
     const response = await PostAsistencia({
       eventoId: `${Data.id}`,
       perfilId: `${DatosCarnet.type}`,
-      codigo: DatosCarnet.numeroCarnet,
+      codigo: `${DatosCarnet.numeroCarnet}`,
     });
     if (response.ok) {
       toast.success("Asistencia registrada");

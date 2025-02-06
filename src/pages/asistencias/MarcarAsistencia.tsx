@@ -183,7 +183,7 @@ export const MarcarAsistencia = () => {
     const response = await PostAsistencia({
       eventoId: Data.id,
       perfilId: SelectedPerfil,
-      codigo: carnetNum.code,
+      codigo: `${carnetNum.code}`,
     });
     if (response.ok) {
       toast.success("Asistencia registrada");
