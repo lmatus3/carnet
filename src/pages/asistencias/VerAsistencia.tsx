@@ -5,33 +5,41 @@ import { GetEvento } from "../../service/EventosService";
 import { eventoInterface } from "../../types/eventoType";
 import { toast } from "sonner";
 import { GetAsistencias } from "../../service/AsistenciaService";
-import {
-  asistenciasDBInterface,
-  asistenciasReporteInterface,
-} from "../../types/asistenciaType";
-import { exportToExcel } from "../../utils/exportToExcel";
+import { asistenciasDBInterface } from "../../types/asistenciaType";
 import { usePrint } from "../../plugins/print";
 import { EstadoBadge } from "../../components/EstadoBadge";
 import { getEstadoName } from "../../utils/getEstadoName";
+import { useModalControls } from "../../hooks/useModalControls";
+import { GenerarReporte } from "../../components/GenerarReporte";
+import { useSessionStore } from "../../stores";
 
 export const VerAsistencia = () => {
   const { id } = useParams();
   const [Data, setData] = useState<eventoInterface>();
   const [Asistencias, setAsistencias] = useState<asistenciasDBInterface[]>([]);
-  const [AsistenciaReportData, setAsistenciaReportData] = useState<
-    asistenciasReporteInterface[]
-  >([]);
   const [FechaInicio, setFechaInicio] = useState<string>();
   const [FechaFin, setFechaFin] = useState<string>();
   const [HoraInicio, setHoraInicio] = useState<string>();
   const [HoraFin, setHoraFin] = useState<string>();
   const navegar = useNavigate();
 
+  const onLogout = useSessionStore((state) => state.onLogout);
+
   const MostrarMensajeError = (duration: number) => {
     toast.error("No se logró obtener datos del evento", {
       duration,
     });
   };
+  const {
+    ModalRef: ModalRefReport,
+    isModalOpen: isModalOpenReport,
+    setIsModalOpen: setIsModalOpenReport,
+  } = useModalControls();
+
+  const closeReportModal = () => {
+    setIsModalOpenReport(false);
+  };
+
   const getEventoInfo = async (idEvento: string) => {
     const response = await GetEvento(idEvento);
     if (response.ok && response.data) {
@@ -63,6 +71,12 @@ export const VerAsistencia = () => {
         return;
       }
       MostrarMensajeError(10000);
+    } else {
+      if (response.status === 401) {
+        onLogout();
+        toast.info("Sesión no válida, vuelva a iniciar sesión");
+        return;
+      }
     }
   };
 
@@ -72,22 +86,28 @@ export const VerAsistencia = () => {
       const { EventoAsistencias } = response.data.data;
       // console.log(EventoAsistencias);
       setAsistencias(EventoAsistencias);
-      const tempReportasistenicas: asistenciasReporteInterface[] =
-        EventoAsistencias.map((Asistencia) => {
-          return {
-            id: Asistencia.id,
-            EventoID: Asistencia.Evento.codigo || "N/A",
-            EventoNombre: Asistencia.Evento.nombre || "N/A",
-            Codigo: Asistencia.codigo,
-            Nombre: Asistencia.nombre,
-            TipoAsistencia: Asistencia.Perfil.nombre,
-            EstadoId: Asistencia.Estado.nombre,
-            CreadoEl: Asistencia.creadoEl.replace("T", " ").split(".")[0],
-            CreadoPor: Asistencia.creadoPor,
-          };
-        });
-      setAsistenciaReportData(tempReportasistenicas);
+      // const tempReportasistenicas: asistenciasReporteInterface[] =
+      //   EventoAsistencias.map((Asistencia) => {
+      //     return {
+      //       id: Asistencia.id,
+      //       EventoID: Asistencia.Evento.codigo || "N/A",
+      //       EventoNombre: Asistencia.Evento.nombre || "N/A",
+      //       Codigo: Asistencia.codigo,
+      //       Nombre: Asistencia.nombre,
+      //       TipoAsistencia: Asistencia.Perfil.nombre,
+      //       EstadoId: Asistencia.Estado.nombre,
+      //       CreadoEl: Asistencia.creadoEl.replace("T", " ").split(".")[0],
+      //       CreadoPor: Asistencia.creadoPor,
+      //     };
+      //   });
+      // setAsistenciaReportData(tempReportasistenicas);
       return;
+    } else {
+      if (response.status === 401) {
+        onLogout();
+        toast.info("Sesión no válida, vuelva a iniciar sesión");
+        return;
+      }
     }
     MostrarMensajeError(10000);
   };
@@ -160,16 +180,17 @@ export const VerAsistencia = () => {
                 </div>
                 <div className="flex gap-2">
                   <button
-                    title="Exportar a excel"
-                    className="border rounded h-8 w-20 bg-green-700 text-white"
+                    title="Abrir interfaz de reporte"
+                    className="border rounded h-8 w-20 bg-red-600 text-white"
                     onClick={() => {
-                      exportToExcel(
-                        AsistenciaReportData,
-                        "Asistencia-evento-" + Data.codigo
-                      );
+                      setIsModalOpenReport(true);
+                      // exportToExcel(
+                      //   AsistenciaReportData,
+                      //   "Asistencia-evento-" + Data.codigo
+                      // );
                     }}
                   >
-                    Excel
+                    Reporte
                   </button>
                   <button
                     title="Exportar a PDF"
@@ -222,6 +243,23 @@ export const VerAsistencia = () => {
         ) : (
           <div className="w-full">
             <h1 className="font-leagueGothic text-2xl">Cargando...</h1>
+          </div>
+        )}
+
+        {/* Modal de reporte */}
+        {isModalOpenReport && Data && (
+          <div
+            className={`fixed top-0 left-0 w-full h-svh flex z-10 backdrop-blur-sm`}
+          >
+            <div
+              ref={ModalRefReport}
+              className="bg-white mt-24 mx-auto w-11/12 md:w-2/3 h-fit p-8 rounded shadow-lg relative"
+            >
+              <GenerarReporte
+                asistencias={Asistencias}
+                closeModal={closeReportModal}
+              />
+            </div>
           </div>
         )}
       </div>

@@ -59,7 +59,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
   }, [searchTerm, searchField]);
 
   useEffect(() => {
-    setData(Registros);
+    setData(Registros.reverse());
   }, [Registros]);
   useEffect(() => {
     const indexOfLastItem = currentPage * Number(itemsPerPage);
@@ -219,11 +219,6 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  // Imprimir
-  // Ref a div
-  // const contentRef = useRef<HTMLTableElement>(null);
-  // const { printNode } = usePrint(contentRef);
 
   // Modal
   // Controles del modal de las acciones
@@ -427,54 +422,6 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
               ))}
             </>
           )}
-          {/* {rowsCount
-            ? (() => {
-                const totalPages = Math.ceil(
-                  data.length / Number(itemsPerPage)
-                );
-                const pageNumbers = [];
-
-                if (totalPages <= 3) {
-                  // Si hay 3 páginas o menos, muestra todas
-                  for (let i = 1; i <= totalPages; i++) {
-                    pageNumbers.push(i);
-                  }
-                } else {
-                  if (currentPage === 1) {
-                    // Si está en la primera página, muestra las primeras 3
-                    pageNumbers.push(1, 2, 3);
-                  } else if (currentPage === totalPages) {
-                    // Si está en la última página, muestra las últimas 3
-                    pageNumbers.push(
-                      totalPages - 2,
-                      totalPages - 1,
-                      totalPages
-                    );
-                  } else {
-                    // Si está en el medio, muestra la página actual y sus adyacentes
-                    pageNumbers.push(
-                      currentPage - 1,
-                      currentPage,
-                      currentPage + 1
-                    );
-                  }
-                }
-                return pageNumbers.map((page) => (
-                  <button
-                    key={"botonPagina" + page}
-                    onClick={() => paginate(page)}
-                    className={`w-8 h-8 p-0 border rounded ${
-                      page === currentPage
-                        ? "bg-gray-700 text-white"
-                        : "bg-slate-100 text-black"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ));
-              })()
-            : null} */}
-
           {/* Botón de página siguiente */}
           <button
             onClick={() =>

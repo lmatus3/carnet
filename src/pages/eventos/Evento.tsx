@@ -106,7 +106,7 @@ export const Evento = () => {
                   <EstadoBadge estado={getEstadoName(Data.estadoId)} />
                 </span>
               </div>
-              <hr className="border-blueDark my-1"/>
+              <hr className="border-blueDark my-1" />
               <span className="block font-bold text-xl">
                 Descripción del evento
               </span>

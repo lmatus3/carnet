@@ -14,7 +14,10 @@ type RegisterEventoProps = {
   update: () => void;
 };
 
-export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
+export const RegisterEvento = ({
+  closeModal,
+  update,
+}: RegisterEventoProps) => {
   const initForm = {
     nombre: "",
     descripcion: "",
