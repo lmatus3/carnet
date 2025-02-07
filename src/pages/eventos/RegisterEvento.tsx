@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { GetEstado, GetEventoType } from "../../service/GetCatalogsInfo";
 import { PostEvento } from "../../service/EventosService";
 import { useUIStore } from "../../stores/UIStore";
+import { useSessionStore } from "../../stores";
 
 type RegisterEventoProps = {
   closeModal: () => void;
@@ -53,6 +54,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
 
   // Loader
   const SetLoading = useUIStore((state) => state.SetLoading);
+  const onLogout = useSessionStore((state) => state.onLogout);
 
   const [CATEstados, setCATEstados] = useState<OptionType[]>([]);
   const [CATTipoEvento, setCATTipoEvento] = useState<OptionType[]>([]);
@@ -101,6 +103,12 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
           }
         }
       })
+      .catch((error) => {
+        console.log(error);
+        toast.info(
+          "No se logró obtener los catálogos para el registro, por favor recargue la página"
+        );
+      })
       .finally(() => SetLoading(false));
   };
   const handleSubmit = async (ev: React.FormEvent) => {
@@ -132,6 +140,12 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
         SetLoading(false);
         // Actualizando eventos
         update();
+        return;
+      }
+      // ! Agregando cierre de sesión al enviar token vencido
+      if (response.status === 401) {
+        toast.error("La sesión no es válida");
+        onLogout();
         return;
       }
       if (response.errors) {

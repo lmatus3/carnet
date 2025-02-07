@@ -59,7 +59,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
   }, [searchTerm, searchField]);
 
   useEffect(() => {
-    setData(Registros);
+    setData(Registros.reverse());
   }, [Registros]);
   useEffect(() => {
     const indexOfLastItem = currentPage * Number(itemsPerPage);
