@@ -48,7 +48,11 @@ export const ValidateError: (props: ValidateErrorProps) => {
       return { ok: false, error: message, status: response.status };
     } else {
       // Otro tipo de error
-      return { ok: false, error: errorMessage };
+      return {
+        ok: false,
+        error:
+          "Estamos presentando dificultados, por favor recargue la página",
+      };
     }
   } else {
     // Error no de axios

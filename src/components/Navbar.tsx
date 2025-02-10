@@ -75,27 +75,26 @@ export const Navbar = () => {
           </svg>
         </button>
       </div>
+      {/* Logout popup for phone */}
       {showLogOutPopup && (
-        <div className="w-screen h-screen absolute top-0 left-0 flex z-30">
-          <div className="flex flex-col gap-4 m-auto md:hidden bg-white py-4 px-6 rounded">
-            <p className="text-center">¿Cerrar sesión?</p>
-            <div className="flex gap-2 justify-around">
-              <button
-                className="bg-gray-200 px-4 py-1 w-16 rounded"
-                onClick={() => setShowLogOutPopup(false)}
-              >
-                No
-              </button>
-              <button
-                className="bg-blueDark text-white rounded w-16"
-                onClick={() => {
-                  onLogout();
-                  setShowLogOutPopup(false);
-                }}
-              >
-                Sí
-              </button>
-            </div>
+        <div className="flex flex-col gap-4 border border-blueDark fixed top-1/4 left-1/4 bg-white py-4 px-6 rounded md:hidden">
+          <p className="text-center">¿Cerrar sesión?</p>
+          <div className="flex gap-2 justify-around">
+            <button
+              className="bg-gray-200 px-4 py-1 w-16 rounded"
+              onClick={() => setShowLogOutPopup(false)}
+            >
+              No
+            </button>
+            <button
+              className="bg-blueDark text-white rounded w-16"
+              onClick={() => {
+                onLogout();
+                setShowLogOutPopup(false);
+              }}
+            >
+              Sí
+            </button>
           </div>
         </div>
       )}

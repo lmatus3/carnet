@@ -330,7 +330,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
               >
                 <td className="border-x text-center">{evento.id}</td>
                 <td className="border-x text-center">{evento.codigo}</td>
-                <td className="">{evento.nombre}</td>
+                <td className="text-center align-middle hyphens-auto line-clamp-3">{evento.nombre}</td>
                 <td className="text-center align-middle p-0">
                   <div className="inline-block">
                     <EstadoBadge estado={getEstadoName(evento.estadoId)} />
@@ -339,7 +339,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
                 <td className="text-center">
                   {evento.fechaInicio.split(" ")[0]}
                 </td>
-                <td className="flex justify-center items-center print:hidden ">
+                <td className="align-middle print:hidden ">
                   <button
                     type="button"
                     ref={buttonRef}
