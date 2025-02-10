@@ -102,7 +102,7 @@ export const Evento = () => {
             <div className="mt-2 relative mb-20 md:mb-0">
               <div className="flex justify-between">
                 <h2 className="text-xl md:text-2xl">{Data.nombre}</h2>
-                <span>
+                <span className="flex items-center gap-2">
                   <EstadoBadge estado={getEstadoName(Data.estadoId)} />
                 </span>
               </div>
@@ -110,7 +110,7 @@ export const Evento = () => {
               <span className="block font-bold text-xl">
                 Descripción del evento
               </span>
-              <p>{Data.descripcion}</p>
+              <p className="text-pretty">{Data.descripcion}</p>
               {Data.fechaFin && Data.fechaInicio ? (
                 <>
                   <span className="block font-bold text-xl">Programación</span>
@@ -155,7 +155,7 @@ export const Evento = () => {
               </div>
             </div>
             {/* Botones de acciones */}
-            <div className="absolute right-0 bottom-5 w-full flex  gap-2 justify-center md:w-fit md:right-2 md:flex-col">
+            <div className="absolute right-0 bottom-5 w-full flex  gap-2 justify-center items-center md:w-fit md:right-2 md:flex-col px-2">
               <Link
                 type="button"
                 to={"/tomar_asistencia/" + id}

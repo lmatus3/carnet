@@ -29,6 +29,7 @@ export const MarcarAsistencia = () => {
   const [userData, setUserData] = useState<UserDataType[]>([]);
   const SetLoading = useUIStore((state) => state.SetLoading);
   const onLogout = useSessionStore((state) => state.onLogout);
+  const [blockSubmit, setBlockSubmit] = useState(false);
   const loading = useUIStore((state) => state.loading);
 
   // Obtener catalogo y evento
@@ -85,8 +86,8 @@ export const MarcarAsistencia = () => {
               //! La validación es basada en el estado de este estudiante para la carrera actual del mismo
               if (
                 datosEstudiante.estado == "Expulsado" ||
-                datosEstudiante.estado == "Retirado" ||
-                datosEstudiante.estado == "Inactivo" ||
+                // datosEstudiante.estado == "Retirado" ||
+                // datosEstudiante.estado == "Inactivo" ||
                 datosEstudiante.estado == "Graduado"
               ) {
                 // ? Caso negativo
@@ -180,20 +181,26 @@ export const MarcarAsistencia = () => {
       return;
     }
     // ! Aca se tendra que enviar correo ahora
+    setBlockSubmit(true);
+    SetLoading(true);
     const response = await PostAsistencia({
       eventoId: Data.id,
       perfilId: SelectedPerfil,
       codigo: `${carnetNum.code}`,
     });
     if (response.ok) {
-      toast.success("Asistencia registrada");
+      toast.success("Asistencia registrada", { duration: 10000 });
       setIsModalOpen(false);
+      setBlockSubmit(false);
+      SetLoading(false);
     } else {
       if (response.error) {
         toast.error(response.error);
       } else {
         toast.error("No se logró registrar asistencia");
       }
+      setBlockSubmit(false);
+      SetLoading(false);
     }
   };
 
@@ -321,7 +328,8 @@ export const MarcarAsistencia = () => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-blueDark text-white w-28 py-1 rounded shadow"
+                    disabled={blockSubmit}
+                    className="bg-blueDark text-white w-28 py-1 rounded shadow disabled:opacity-50"
                   >
                     Confirmar
                   </button>

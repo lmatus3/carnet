@@ -155,7 +155,7 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
               {cargo}
             </p>
           )}
-          {type === "Estudiante" && <p className={``}>{carrera}</p>}
+          {type === "Estudiante" && <p className={`${(carrera as string).length > 25 ? "text-sm" :"text-xl" }`}>{carrera}</p>}
           {type === "Docente" && (
             <p className=" text-yellowLight">PROFESOR GRADO</p>
           )}
@@ -215,7 +215,7 @@ export const Carnet = ({ carnetData }: { carnetData: carnetType }) => {
           className={`w-full absolute bottom-4 ${
             type === "Docente posgrado"
               ? "h-[18px] text-xl font-monserrat text-white"
-              : "h-[60px] text-2xl font-black bg-white"
+              : "h-[55px] text-2xl font-black bg-white"
           }  flex items-center justify-center`}
         >
           <p>{carnetData.timeValid}</p>

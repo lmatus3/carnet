@@ -6,7 +6,7 @@ export const CarnetApp = () => {
     <div className="h-auto min-h-screen bg-BlueStrong font-inter flex">
       <AppRoutes />
       {/* Alertas */}
-      <Toaster richColors expand  />
+      <Toaster richColors expand position="top-right"  />
     </div>
   );
 };
