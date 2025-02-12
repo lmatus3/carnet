@@ -5,7 +5,11 @@ import { GetEvento } from "../../service/EventosService";
 import { eventoInterface } from "../../types/eventoType";
 import { toast } from "sonner";
 import { GetAsistencias } from "../../service/AsistenciaService";
-import { asistenciasDBInterface } from "../../types/asistenciaType";
+import {
+  asistenciasDBInterface,
+  asistenciasReporteInterface,
+} from "../../types/asistenciaType";
+import { exportToExcel } from "../../utils/exportToExcel";
 import { usePrint } from "../../plugins/print";
 import { EstadoBadge } from "../../components/EstadoBadge";
 import { getEstadoName } from "../../utils/getEstadoName";
@@ -25,23 +29,11 @@ export const VerAsistencia = () => {
   const [HoraFin, setHoraFin] = useState<string>();
   const navegar = useNavigate();
 
-  const onLogout = useSessionStore((state) => state.onLogout);
-
   const MostrarMensajeError = (duration: number) => {
     toast.error("No se logró obtener datos del evento", {
       duration,
     });
   };
-  const {
-    ModalRef: ModalRefReport,
-    isModalOpen: isModalOpenReport,
-    setIsModalOpen: setIsModalOpenReport,
-  } = useModalControls();
-
-  const closeReportModal = () => {
-    setIsModalOpenReport(false);
-  };
-
   const getEventoInfo = async (idEvento: string) => {
     const response = await GetEvento(idEvento);
     if (response.ok && response.data) {
