@@ -15,8 +15,10 @@ export interface asistenciasReporteInterface {
   Nombre: string;
   TipoAsistencia: string;
   EstadoId: string;
-  CreadoEl: string;
+  CreadoEl?: string;
   CreadoPor: string; //Correo
+  Carrera?: string;
+  Sexo?: string;
 }
 
 export interface asistenciasDBInterface {
@@ -26,6 +28,8 @@ export interface asistenciasDBInterface {
   perfilId: string;
   Perfil: perfilInterface;
   nombre: string;
+  carrera: string;
+  sexo: string;
   codigo: string;
   estadoId: estadoEnum;
   Estado: EstadoBDType;
