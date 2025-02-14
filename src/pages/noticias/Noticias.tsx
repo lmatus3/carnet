@@ -1,8 +1,31 @@
-import { HighlightText } from "../components/HighlightText";
-import { noticias } from "../data/tempData";
-import { MainLayout } from "../layouts/MainLayout";
+import { useEffect } from "react";
+import { HighlightText } from "../../components/HighlightText";
+import { noticias } from "../../data/tempData";
+import { MainLayout } from "../../layouts/MainLayout";
+import { GetNoticias, GetValidUsers } from "../../service/NoticiasService";
+import { toast } from "sonner";
 
 export const Noticias = () => {
+  // TODO
+
+  // Obtener los correos validos para administrar noticias y evaluar con el usuario actual
+  const GetCatalogs = () => {
+    const noticias = GetNoticias();
+    const correosValidos = GetValidUsers();
+    Promise.all([noticias, correosValidos]).then((values) => {
+      if (values[0].ok) {
+        toast.info("Datos de noticias cargados correctamente");
+      }
+      if (values[1].ok) {
+        toast.info(
+          "Correos de administración de noticias cargados correctamente"
+        );
+      }
+    });
+  };
+
+  useEffect(() => {}, []);
+
   return (
     <MainLayout>
       <div className="text-center flex flex-col">

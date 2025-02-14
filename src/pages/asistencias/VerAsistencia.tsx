@@ -85,7 +85,7 @@ export const VerAsistencia = () => {
             TipoAsistencia: Asistencia.Perfil.nombre,
             EstadoId: Asistencia.Estado.nombre,
             Carrera: Asistencia.carrera ? Asistencia.carrera : "N/A",
-            Sexo: Asistencia.sexo == "1" ? "Femenino" : "Masculino",
+            Sexo: Asistencia.sexo == "1" ? "Mujer" : "Hombre",
             CreadoPor: Asistencia.creadoPor,
           };
         });
