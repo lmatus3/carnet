@@ -1,15 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 
-export const useModalControls = (fn?: () => void) => {
+// Estas props son opcionales
+type ModalControlProps = {
+  // Función que se ejecuta al cerrar el modal
+  onClose?: () => void;
+  // Permitir cerrar el modal al hacer clic fuera de él (Por defecto se permite el comportamiento)
+  allowCloseOnClickOutside?: boolean;
+};
+
+export const useModalControls = ({
+  onClose,
+  allowCloseOnClickOutside = true,
+}: ModalControlProps = {}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const ModalRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
+    if (!allowCloseOnClickOutside) return;
     // Verifica si el clic fue fuera del div interno
     if (ModalRef.current && !ModalRef.current.contains(event.target as Node)) {
       setIsModalOpen(false);
-      if (fn) {
-        fn();
+      if (onClose) {
+        onClose();
       }
     }
   };

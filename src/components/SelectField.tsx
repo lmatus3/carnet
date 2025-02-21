@@ -42,7 +42,7 @@ export const SelectField = ({
         {selectMessage}
       </option>
       {options.map((option) => (
-        <option key={option.value} value={option.value}>
+        <option key={option.value + option.name} value={option.value}>
           {option.name}
         </option>
       ))}
