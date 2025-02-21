@@ -12,6 +12,7 @@ import { GetPerfilesDeUsuario } from "../service/GetPerfilesDeUsuario";
 import { TypeOfUser } from "../types/userTypes";
 import { VerAsistencia } from "../pages/asistencias/VerAsistencia";
 import { TomarAsistencia } from "../pages/asistencias/TomarAsistencia";
+// import { Noticias } from "../pages/noticias/Noticias";
 
 export const AppRoutes = () => {
   const session = useSessionStore((state) => state.session);

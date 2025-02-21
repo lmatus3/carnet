@@ -49,7 +49,7 @@ export const PhoneNavbar = () => {
         ),
         to: "/",
       },
-      // Aqui iran las noticias
+      // TODO Aqui iran las noticias
     ];
   }
   return data.map((item, i) => (

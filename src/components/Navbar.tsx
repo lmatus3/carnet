@@ -33,6 +33,14 @@ export const Navbar = () => {
               Eventos
             </NavLink>
           )}
+          {/* <NavLink
+            className={({ isActive }) =>
+              ` ${isActive && "text-BlueStrong "} text-2xl`
+            }
+            to={"/noticias"}
+          >
+            Noticias
+          </NavLink> */}
           {/* Las asistencias estaran ocultas */}
           {/* <NavLink
             className={({ isActive }) =>
@@ -77,7 +85,7 @@ export const Navbar = () => {
       </div>
       {/* Logout popup for phone */}
       {showLogOutPopup && (
-        <div className="flex flex-col gap-4 border border-blueDark fixed top-1/4 left-1/4 bg-white py-4 px-6 rounded md:hidden">
+        <div className="flex flex-col gap-4 border border-blueDark fixed top-1/4 left-1/4 bg-white py-4 px-6 z-10 rounded md:hidden">
           <p className="text-center">¿Cerrar sesión?</p>
           <div className="flex gap-2 justify-around">
             <button
