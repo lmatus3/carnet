@@ -23,6 +23,8 @@ export const VerAsistencia = () => {
     asistenciasReporteInterface[]
   >([]);
   const [asistenciaCargando, setAsistenciaCargando] = useState(true);
+  const [errorCargandoAsistencias, setErrorCargandoAsistencias] =
+    useState(false);
   const [FechaInicio, setFechaInicio] = useState<string>();
   const [FechaFin, setFechaFin] = useState<string>();
   const [HoraInicio, setHoraInicio] = useState<string>();
@@ -38,7 +40,6 @@ export const VerAsistencia = () => {
     const response = await GetEvento(idEvento);
     if (response.ok && response.data) {
       const { Evento } = response.data.data;
-
       if (Evento) {
         // Aca data es el evento ya
         setData({
@@ -69,6 +70,7 @@ export const VerAsistencia = () => {
   };
 
   const getAsistenciaEvento = async (idEvento: string) => {
+    setErrorCargandoAsistencias(false);
     const response = await GetAsistencias(idEvento);
     if (response.ok && response.data) {
       const { EventoAsistencias } = response.data.data;
@@ -93,7 +95,11 @@ export const VerAsistencia = () => {
       setAsistenciaCargando(false);
       return;
     }
+    // Estableciendo error en la obtención de asistencias
+    setErrorCargandoAsistencias(true);
+    // Deteniendo estado de carga de asistencias
     setAsistenciaCargando(false);
+    // Mensaje de error
     toast.error(
       "No se logró obtener la asistencia de este evento, por favor, recargue la página",
       { duration: 10000 }
@@ -222,11 +228,25 @@ export const VerAsistencia = () => {
                         <td colSpan={5}>Cargando...</td>
                       </tr>
                     )}
-                    {asistenciaCargando === false && Asistencias.length === 0 && (
-                      <tr>
-                        <td colSpan={5}>No se logró cargar la asistencia del evento, por favor recargue la página</td>
-                      </tr>
-                    )}
+                    {asistenciaCargando === false &&
+                      Asistencias.length === 0 &&
+                      errorCargandoAsistencias === true && (
+                        <tr>
+                          <td colSpan={5}>
+                            No se logró cargar la asistencia del evento, por
+                            favor recargue la página
+                          </td>
+                        </tr>
+                      )}
+                    {asistenciaCargando === false &&
+                      Asistencias.length === 0 &&
+                      errorCargandoAsistencias === false && (
+                        <tr>
+                          <td colSpan={5}>
+                            No se cuentan con asistencias en este evento
+                          </td>
+                        </tr>
+                      )}
                     {Asistencias.map((item, i) => (
                       <tr key={i} className={`table-row print:mb-4 `}>
                         <td className="border break-inside-avoid">{i + 1}</td>

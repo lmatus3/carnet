@@ -1,6 +1,5 @@
 import { ResponseInterface } from "../types/GeneralTypes";
-import { BackendApi } from "../api/config";
-import { ValidateError } from "./ValidateError";
+
 import { noticiaInterface } from "../types/noticiaType";
 
 interface NoticiasBakend extends noticiaInterface {

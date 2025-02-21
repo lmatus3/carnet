@@ -33,14 +33,14 @@ export const Navbar = () => {
               Eventos
             </NavLink>
           )}
-          <NavLink
+          {/* <NavLink
             className={({ isActive }) =>
               ` ${isActive && "text-BlueStrong "} text-2xl`
             }
             to={"/noticias"}
           >
             Noticias
-          </NavLink>
+          </NavLink> */}
           {/* Las asistencias estaran ocultas */}
           {/* <NavLink
             className={({ isActive }) =>

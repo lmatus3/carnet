@@ -12,7 +12,7 @@ import { GetPerfilesDeUsuario } from "../service/GetPerfilesDeUsuario";
 import { TypeOfUser } from "../types/userTypes";
 import { VerAsistencia } from "../pages/asistencias/VerAsistencia";
 import { TomarAsistencia } from "../pages/asistencias/TomarAsistencia";
-import { Noticias } from "../pages/noticias/Noticias";
+// import { Noticias } from "../pages/noticias/Noticias";
 
 export const AppRoutes = () => {
   const session = useSessionStore((state) => state.session);
@@ -80,7 +80,7 @@ export const AppRoutes = () => {
               )}
             <Route path="/asistencia/:id" element={<MarcarAsistencia />} />
             <Route path="/*" element={<Navigate to={"/"} replace />} />
-            <Route path="/noticias" element={<Noticias />} />
+            {/* <Route path="/noticias" element={<Noticias />} /> */}
           </>
         )}
         {session === "NotLogged" && (
