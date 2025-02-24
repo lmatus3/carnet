@@ -4,6 +4,8 @@ import { SelectField } from "../../components/SelectField";
 import { useForm } from "../../hooks/useForm";
 import { TagsField } from "../../components/TagsField";
 import { RichTextEditor } from "../../components/RichText/RichText";
+import { toast } from "sonner";
+import { noticiaInterface } from "../../types/noticiaType";
 
 export const RegistrarNoticia = () => {
   const initForm = {
@@ -27,30 +29,54 @@ export const RegistrarNoticia = () => {
   } = useForm(initForm);
   const {
     titulo,
+    mensaje,
     severidadId,
     categoria,
     fechaDePublicacion,
     fechaDeExpiracion,
     estadoId,
+    publico,
   } = formValues;
   const {
     tituloValid,
+    mensajeValid,
     severidadIdValid,
     categoriaValid,
     fechaDePublicacionValid,
     fechaDeExpiracionValid,
     estadoIdValid,
+    publicoIdValid,
   } = formValidation;
   //   Publicos objetivos
   const [estudiante, setEstudiante] = useState(false);
   const [docente, setDocente] = useState(false);
   const [administrativo, setAdministrativo] = useState(false);
-  const [perfilesObjetivo, setPerfilesObjetivo] = useState<string[]>([]);
-  const [mensajeNoticia, setMensajeNoticia] = useState("");
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isFormValid) {
-      console.log(formValues, { perfilesObjetivo });
+      // Caso positivo
+      // Armando datos finales
+      const newNoticia: noticiaInterface = {
+        categoria: categoria as string,
+        estadoId: estadoId as "1" | "2",
+        fechaDePublicacion: fechaDePublicacion as string,
+        fechaDeExpiracion: fechaDeExpiracion as string,
+        mensaje: mensaje as string,
+        publico: publico as string,
+        severidadId: severidadId as "1" | "2" | "3",
+        titulo: titulo as string,
+      };
+      console.log(newNoticia);
+      // TODO Enviar a backend para registrar noticia
+    } else {
+      if (mensajeValid) {
+        toast.info("Por favor, ingrese el mensaje de la noticia.");
+      }
+      if (publicoIdValid) {
+        toast.info(
+          "Por favor, seleccione el público objetivo para la noticia."
+        );
+      }
     }
   };
   const clearForm = () => {
@@ -59,32 +85,39 @@ export const RegistrarNoticia = () => {
     setAdministrativo(false);
     setEstudiante(false);
   };
+  const ChoosePublic = () => {
+    let tempPublico: string = "";
+    if (estudiante) {
+      tempPublico += "1,";
+    } else {
+      tempPublico.replace("1,", "");
+    }
+    if (docente) {
+      tempPublico += "2,";
+    } else {
+      tempPublico.replace("2,", "");
+    }
+    if (administrativo) {
+      tempPublico += "3,";
+    } else {
+      tempPublico.replace("1,", "");
+    }
+    // Eliminando última coma
+    if (tempPublico.length > 0) {
+      tempPublico = tempPublico.slice(0, -1);
+    }
+    updateForm({ ...formValues, publico: tempPublico });
+  };
   useEffect(() => {
     console.log(formValues);
   }, [formValues]);
   useEffect(() => {
-    let publicosObjetivo: string[] = [];
-    if (estudiante) {
-      publicosObjetivo.push("1");
-    } else {
-      publicosObjetivo = publicosObjetivo.filter((item) => item != "1");
-    }
-    if (docente) {
-      publicosObjetivo.push("2");
-    } else {
-      publicosObjetivo = publicosObjetivo.filter((item) => item != "2");
-    }
-    if (administrativo) {
-      publicosObjetivo.push("3");
-    } else {
-      publicosObjetivo = publicosObjetivo.filter((item) => item != "3");
-    }
-    console.log(publicosObjetivo);
-    setPerfilesObjetivo(publicosObjetivo);
+    ChoosePublic();
   }, [estudiante, docente, administrativo]);
-  useEffect(() => {
-    console.log(mensajeNoticia);
-  }, [mensajeNoticia]);
+  // useEffect(() => {
+  //   // Esto es en html
+  //   console.log(mensajeNoticia);
+  // }, [mensajeNoticia]);
 
   return (
     <div className="bg-white p-2 rounded">
@@ -139,8 +172,10 @@ export const RegistrarNoticia = () => {
           </p>
           <div className="min-h-64 overflow-auto">
             <RichTextEditor
-              value={mensajeNoticia}
-              onChange={setMensajeNoticia}
+              value={mensaje as string}
+              onChange={(value) =>
+                updateForm({ ...formValues, mensaje: value })
+              }
             />
           </div>
         </div>

@@ -16,11 +16,11 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
   };
 
   return (
-    <div className="h-full min-h-[100px]">
+    <div className="h-full min-h-[100px] max-h-[500px] overflow-auto pb-10">
       <ReactQuill
         value={editorValue}
         onChange={handleChange}
-        theme="snow"
+        // theme="snow"
         style={{
           height: "100%",
           paddingBottom: "5px",
@@ -41,7 +41,6 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
           "underline",
           "strike",
           "list",
-          "bullet",
           "link",
           "image",
         ]}
