@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
+import 'react-quill-new/dist/quill.snow.css';
 
 interface RichTextEditorProps {
   value: string;
@@ -20,7 +20,7 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
       <ReactQuill
         value={editorValue}
         onChange={handleChange}
-        // theme="snow"
+        theme="snow"
         style={{
           height: "100%",
           paddingBottom: "5px",

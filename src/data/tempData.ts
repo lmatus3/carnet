@@ -1,10 +1,11 @@
 import { noticiaInterface } from "../types/noticiaType";
 
-
 export const tempNoticias: noticiaInterface[] = [
   {
+    id: "1",
     titulo: "Mantenimiento programado",
-    mensaje: "<p><strong>Aviso de mantenimiento</strong></p><p>El sistema estará en mantenimiento.</p>",
+    mensaje:
+      "<p><strong>Aviso de mantenimiento</strong></p><p>El sistema estará en mantenimiento.</p>",
     severidadId: "2",
     categoria: "2",
     fechaDePublicacion: "2025-02-24",
@@ -12,11 +13,13 @@ export const tempNoticias: noticiaInterface[] = [
     etiquetas: "mantenimiento,sistema",
     publico: "1,2",
     estadoId: "1",
-    creadoPor: "admin@example.com"
+    creadoPor: "admin@example.com",
   },
   {
+    id: "2",
     titulo: "Nueva función disponible",
-    mensaje: "<p><strong>Actualización</strong></p><p>Se ha agregado una nueva funcionalidad.</p>",
+    mensaje:
+      "<p><strong>Actualización</strong></p><p>Se ha agregado una nueva funcionalidad.</p>",
     severidadId: "1",
     categoria: "3",
     fechaDePublicacion: "2025-02-24",
@@ -24,11 +27,13 @@ export const tempNoticias: noticiaInterface[] = [
     etiquetas: "actualización,funcionalidad",
     publico: "1",
     estadoId: "1",
-    creadoPor: "dev@example.com"
+    creadoPor: "dev@example.com",
   },
   {
+    id: "3",
     titulo: "Recordatorio de pago",
-    mensaje: "<p><strong>Importante</strong></p><p>El plazo para el pago vence pronto.</p>",
+    mensaje:
+      "<p><strong>Importante</strong></p><p>El plazo para el pago vence pronto.</p>",
     severidadId: "3",
     categoria: "4",
     fechaDePublicacion: "2025-02-20",
@@ -36,11 +41,13 @@ export const tempNoticias: noticiaInterface[] = [
     etiquetas: "pagos,recordatorio",
     publico: "1,3",
     estadoId: "1",
-    creadoPor: "finanzas@example.com"
+    creadoPor: "finanzas@example.com",
   },
   {
+    id: "4",
     titulo: "Horario especial",
-    mensaje: "<p><strong>Información</strong></p><p>El horario cambiará temporalmente.</p>",
+    mensaje:
+      "<p><strong>Información</strong></p><p>El horario cambiará temporalmente.</p>",
     severidadId: "2",
     categoria: "5",
     fechaDePublicacion: "2025-02-22",
@@ -48,11 +55,13 @@ export const tempNoticias: noticiaInterface[] = [
     etiquetas: "horario,cambio",
     publico: "2,3",
     estadoId: "1",
-    creadoPor: "admin@example.com"
+    creadoPor: "admin@example.com",
   },
   {
+    id: "5",
     titulo: "Suspensión de servicio",
-    mensaje: "<p><strong>Atención</strong></p><p>El servicio estará suspendido por mantenimiento.</p>",
+    mensaje:
+      "<p><strong>Atención</strong></p><p>El servicio estará suspendido por mantenimiento.</p>",
     severidadId: "3",
     categoria: "6",
     fechaDePublicacion: "2025-02-25",
@@ -60,11 +69,13 @@ export const tempNoticias: noticiaInterface[] = [
     etiquetas: "suspensión,mantenimiento",
     publico: "1,2,3",
     estadoId: "1",
-    creadoPor: "soporte@example.com"
+    creadoPor: "soporte@example.com",
   },
   {
+    id: "6",
     titulo: "Nueva política de seguridad",
-    mensaje: "<p><strong>Importante</strong></p><p>Se ha actualizado la política de seguridad.</p>",
+    mensaje:
+      "<p><strong>Importante</strong></p><p>Se ha actualizado la política de seguridad.</p>",
     severidadId: "2",
     categoria: "7",
     fechaDePublicacion: "2025-02-21",
@@ -72,11 +83,13 @@ export const tempNoticias: noticiaInterface[] = [
     etiquetas: "seguridad,política",
     publico: "1",
     estadoId: "1",
-    creadoPor: "seguridad@example.com"
+    creadoPor: "seguridad@example.com",
   },
   {
+    id: "7",
     titulo: "Evento especial",
-    mensaje: "<p><strong>Invitación</strong></p><p>Te invitamos a nuestro evento especial.</p>",
+    mensaje:
+      "<p><strong>Invitación</strong></p><p>Te invitamos a nuestro evento especial.</p>",
     severidadId: "1",
     categoria: "8",
     fechaDePublicacion: "2025-02-19",
@@ -84,11 +97,13 @@ export const tempNoticias: noticiaInterface[] = [
     etiquetas: "evento,invitación",
     publico: "1,2",
     estadoId: "1",
-    creadoPor: "eventos@example.com"
+    creadoPor: "eventos@example.com",
   },
   {
+    id: "8",
     titulo: "Revisión médica gratuita",
-    mensaje: "<p><strong>Salud</strong></p><p>Se realizará una jornada de salud gratuita.</p>",
+    mensaje:
+     "<h1>Muestra de ejemplo</h1><p>Esto es un ejemplo de lo que se puede conseguir con las noticias</p><h2>Enumeración</h2><ol><li data-list=\"ordered\"><span class=\"ql-ui\" contenteditable=\"false\"></span>Uno</li><li data-list=\"ordered\"><span class=\"ql-ui\" contenteditable=\"false\"></span>Dos</li><li data-list=\"ordered\"><span class=\"ql-ui\" contenteditable=\"false\"></span>Tres</li></ol><h2>Balas</h2><ol><li data-list=\"bullet\"><span class=\"ql-ui\" contenteditable=\"false\"></span>Prueba</li></ol><h2>Imágenes</h2><p><img src=\"data:image/png;base64,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\"></p>",
     severidadId: "1",
     categoria: "9",
     fechaDePublicacion: "2025-02-23",
@@ -96,11 +111,13 @@ export const tempNoticias: noticiaInterface[] = [
     etiquetas: "salud,revisión",
     publico: "2,3",
     estadoId: "1",
-    creadoPor: "bienestar@example.com"
+    creadoPor: "bienestar@example.com",
   },
   {
+    id: "9",
     titulo: "Alerta climática",
-    mensaje: "<p><strong>Precaución</strong></p><p>Se esperan lluvias intensas en la zona.</p>",
+    mensaje:
+      "<p><strong>Precaución</strong></p><p>Se esperan lluvias intensas en la zona.</p>",
     severidadId: "3",
     categoria: "10",
     fechaDePublicacion: "2025-02-24",
@@ -108,11 +125,13 @@ export const tempNoticias: noticiaInterface[] = [
     etiquetas: "clima,alerta",
     publico: "1,2,3",
     estadoId: "1",
-    creadoPor: "clima@example.com"
+    creadoPor: "clima@example.com",
   },
   {
+    id: "10",
     titulo: "Felicitaciones a los graduados",
-    mensaje: "<p><strong>Éxito</strong></p><p>Felicitamos a los nuevos graduados.</p>",
+    mensaje:
+      "<p><strong>Éxito</strong></p><p>Felicitamos a los nuevos graduados.</p>",
     severidadId: "1",
     categoria: "11",
     fechaDePublicacion: "2025-02-24",
@@ -120,6 +139,6 @@ export const tempNoticias: noticiaInterface[] = [
     etiquetas: "graduación,felicidades",
     publico: "1",
     estadoId: "1",
-    creadoPor: "universidad@example.com"
-  }
+    creadoPor: "universidad@example.com",
+  },
 ];
