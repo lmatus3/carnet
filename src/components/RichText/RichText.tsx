@@ -27,15 +27,16 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
         }}
         modules={{
           toolbar: [
-            [{ header: [1, 2, 3, false] }],
+            // [{ header: [1, 2, 3, false] }],
             ["bold", "italic", "underline", "strike"],
             [{ list: "ordered" }, { list: "bullet" }],
             ["link", "image"],
+            [{ align: [] }], // Agrega la opción de alineación
             ["clean"],
           ],
         }}
         formats={[
-          "header",
+          // "header",
           "bold",
           "italic",
           "underline",
@@ -43,6 +44,7 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
           "list",
           "link",
           "image",
+          "align",
         ]}
       />
     </div>

@@ -8,12 +8,14 @@ import { toast } from "sonner";
 import { noticiaInterface } from "../../types/noticiaType";
 import { EstadosNoticiasBadge } from "../../components/Badges/EstadosNoticiasBadge";
 import { SeveridadNoticiasBadge } from "../../components/Badges/SeveridadNoticiasBadge";
+import { EditarNoticia } from "./EditarNoticia";
 // import { GetNoticias, GetValidUsers } from "../../service/NoticiasService";
 // import { toast } from "sonner";
 
 export const Noticias = () => {
   const [cargandoNoticias, setCargandoNoticias] = useState(true);
   const [errorObteniendoNoticias, setErrorObteniendoNoticias] = useState(false);
+  const [noticiaPorEditar, setNoticiaPorEditar] = useState<noticiaInterface>();
 
   // TODO
   // ? Acá se podría usar un endpoint que tenga dos funciones
@@ -35,16 +37,26 @@ export const Noticias = () => {
   //     }
   //   });
   // };
-  // Controles del modal de las acciones
+  // Modal de lista de noticias
   const { ModalRef, isModalOpen, setIsModalOpen } = useModalControls({
     // Evitando que se cierre el modal al hacer click afuera (Esto elimina la activación de fn si se pasa)
     allowCloseOnClickOutside: false,
   });
+  // Modal de registro de noticias
   const {
     ModalRef: ModalRef2,
     isModalOpen: isModalOpen2,
     setIsModalOpen: setIsModalOpen2,
   } = useModalControls();
+  // Modal de Edición de noticias
+  const {
+    ModalRef: ModalEdicionRef,
+    isModalOpen: isModalEdicionOpen,
+    setIsModalOpen: setIsModalEdicionOpen,
+  } = useModalControls({
+    // Evitando que se cierre el modal al hacer click afuera (Esto elimina la activación de fn si se pasa)
+    allowCloseOnClickOutside: false,
+  });
   useEffect(() => {
     // Simulando backend
     setTimeout(() => {
@@ -83,6 +95,17 @@ export const Noticias = () => {
               }}
             >
               <p>Copiar Id</p>
+            </button>
+            <button
+              className="border-t text-start transition-all duration-100 hover:bg-slate-100 hover:rounded "
+              onClick={() => {
+                setNoticiaPorEditar(noticia);
+                setIsModalEdicionOpen(true);
+                setIsModalOpen(false);
+                closePopup();
+              }}
+            >
+              <p>Editar</p>
             </button>
             <button
               className="text-start transition-all duration-100 hover:bg-slate-100 hover:rounded "
@@ -315,6 +338,35 @@ export const Noticias = () => {
                 </svg>
               </button>
               <RegistrarNoticia />
+            </div>
+          </div>
+        )}
+        {isModalEdicionOpen && (
+          <div
+            className={`fixed top-0 left-0 w-full h-svh flex z-10 backdrop-blur-sm text-white overflow-auto `}
+          >
+            <div
+              ref={ModalEdicionRef}
+              className="bg-blueDark my-10 mx-auto w-full md:w-8/12 h-fit p-8 rounded shadow-lg relative"
+            >
+              <div className="flex justify-between mb-2">
+                <h1 className="font-leagueGothic text-2xl md:text-4xl">
+                  Editando noticia
+                </h1>
+              </div>
+              <button
+                onClick={() => setIsModalEdicionOpen(false)}
+                className="absolute right-6 top-4 opacity-70 transition-all duration-150 bg-white rounded hover:opacity-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8"
+                  viewBox="0 -960 960 960"
+                >
+                  <path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z" />
+                </svg>
+              </button>
+              {noticiaPorEditar && <EditarNoticia noticia={noticiaPorEditar} />}
             </div>
           </div>
         )}
