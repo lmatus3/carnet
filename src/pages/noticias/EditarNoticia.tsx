@@ -6,11 +6,25 @@ import { TagsField } from "../../components/TagsField";
 import { RichTextEditor } from "../../components/RichText/RichText";
 import { toast } from "sonner";
 import { noticiaInterface } from "../../types/noticiaType";
+import { Tag } from "react-tag-input";
 
 type EditarNoticiaTypes = {
   noticia: noticiaInterface;
 };
 export const EditarNoticia = ({ noticia }: EditarNoticiaTypes) => {
+  // Adaptando campos a formato de formulario
+  // console.log(noticia);
+  // Adaptando etiquetas
+  const initialTags: Tag[] = [];
+  if (noticia.etiquetas) {
+    noticia.etiquetas?.split(",").map((registro) => {
+      initialTags.push({ id: registro, text: registro, className: "" });
+    });
+  }
+  // Adaptando público objetivo
+  const evaluarSiContieneId = (id: string) => {
+    return noticia.publico.includes(id);
+  };
   const initForm = {
     titulo: noticia.titulo as string,
     mensaje: noticia.mensaje as string,
@@ -28,6 +42,7 @@ export const EditarNoticia = ({ noticia }: EditarNoticiaTypes) => {
     isFormSent,
     isFormValid,
     onChange,
+    resetForm,
     updateForm,
   } = useForm(initForm);
   const {
@@ -37,6 +52,7 @@ export const EditarNoticia = ({ noticia }: EditarNoticiaTypes) => {
     categoria,
     fechaDePublicacion,
     fechaDeExpiracion,
+    etiquetas,
     estadoId,
     publico,
   } = formValues;
@@ -51,9 +67,11 @@ export const EditarNoticia = ({ noticia }: EditarNoticiaTypes) => {
     publicoIdValid,
   } = formValidation;
   //   Publicos objetivos
-  const [estudiante, setEstudiante] = useState(false);
-  const [docente, setDocente] = useState(false);
-  const [administrativo, setAdministrativo] = useState(false);
+  const [estudiante, setEstudiante] = useState(evaluarSiContieneId("1"));
+  const [docente, setDocente] = useState(evaluarSiContieneId("2"));
+  const [administrativo, setAdministrativo] = useState(
+    evaluarSiContieneId("3")
+  );
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isFormValid) {
@@ -64,6 +82,7 @@ export const EditarNoticia = ({ noticia }: EditarNoticiaTypes) => {
         estadoId: estadoId as "1" | "2",
         fechaDePublicacion: fechaDePublicacion as string,
         fechaDeExpiracion: fechaDeExpiracion as string,
+        etiquetas: etiquetas as string,
         mensaje: mensaje as string,
         publico: publico as string,
         severidadId: severidadId as "1" | "2" | "3",
@@ -83,10 +102,10 @@ export const EditarNoticia = ({ noticia }: EditarNoticiaTypes) => {
     }
   };
   const clearForm = () => {
-    updateForm(initForm);
-    setDocente(false);
-    setAdministrativo(false);
-    setEstudiante(false);
+    resetForm()
+    setEstudiante(evaluarSiContieneId("1"));
+    setDocente(evaluarSiContieneId("2"));
+    setAdministrativo(evaluarSiContieneId("3"));
   };
   const ChoosePublic = () => {
     let tempPublico: string = "";
@@ -111,16 +130,12 @@ export const EditarNoticia = ({ noticia }: EditarNoticiaTypes) => {
     }
     updateForm({ ...formValues, publico: tempPublico });
   };
-  useEffect(() => {
-    console.log(formValues);
-  }, [formValues]);
+  // useEffect(() => {
+  //   console.log(formValues);
+  // }, [formValues]);
   useEffect(() => {
     ChoosePublic();
   }, [estudiante, docente, administrativo]);
-  // useEffect(() => {
-  //   // Esto es en html
-  //   console.log(mensajeNoticia);
-  // }, [mensajeNoticia]);
 
   return (
     <div className="bg-white p-2 rounded">
@@ -187,6 +202,7 @@ export const EditarNoticia = ({ noticia }: EditarNoticiaTypes) => {
           <p className="text-sm font-bold">Etiquetas</p>
           <div>
             <TagsField
+              initialTags={initialTags}
               onTagsChange={(tags) => {
                 let newTags = "";
                 tags.map((tag) => {
@@ -333,7 +349,7 @@ export const EditarNoticia = ({ noticia }: EditarNoticiaTypes) => {
             type="button"
             className="text-blueDark bg-white border w-20 py-1 rounded shadow"
           >
-            Limpiar
+            Revertir
           </button>
           <button
             type="submit"

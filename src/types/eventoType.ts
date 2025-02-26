@@ -15,6 +15,17 @@ export interface eventoInterface {
   // tipoEventoId: string;
   eventoTipoId: string;
   creadoEl?: string;
+  // Grupo
+  EventoGrupo?: {
+    id: number;
+    miembro: string;
+    eventoId: string;
+    estadoId: string;
+    creadoEl: string;
+    actualizadoEl: string;
+    creadoPor: string;
+    actualizadoPor: string;
+  }[];
 }
 
 export interface eventoPostInterface {
@@ -24,6 +35,16 @@ export interface eventoPostInterface {
   fechaInicio: string; //Aplica a validación de fecha actual
   fechaFin?: string; //Opcional, Aplica a validación de fecha respecto a la de inicio y la actual\
   estadoId: string; //Opcional
+  eventoGrupo?: string[];
+}
+export interface eventoPatchInterface {
+  nombre: string;
+  descripcion: string;
+  eventoTipoId: string;
+  fechaInicio: string; //Aplica a validación de fecha actual
+  fechaFin?: string; //Opcional, Aplica a validación de fecha respecto a la de inicio y la actual\
+  estadoId: string; //Opcional
+  eventoGrupo?: string[];
 }
 
 export type eventoTypeType = {

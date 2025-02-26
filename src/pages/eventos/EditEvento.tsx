@@ -3,10 +3,10 @@ import { useForm } from "../../hooks/useForm";
 import { InputField } from "../../components/InputField";
 import { TextField } from "../../components/TextField";
 import { OptionType, SelectField } from "../../components/SelectField";
-import { FormValidation } from "../../types/useFormTypes";
+import { FormValidation, FormValues } from "../../types/useFormTypes";
 import { toast } from "sonner";
 import { GetEstado, GetEventoType } from "../../service/GetCatalogsInfo";
-import { eventoInterface } from "../../types/eventoType";
+import { eventoInterface, eventoPatchInterface } from "../../types/eventoType";
 import { useUIStore } from "../../stores/UIStore";
 import { PatchEvento } from "../../service/EventosService";
 
@@ -21,6 +21,19 @@ export const EditEvento = ({
   eventoData,
   update,
 }: EditEventoProps) => {
+  const grupo = eventoData.EventoGrupo;
+  let integrantesForm: FormValues[] = [];
+  if (grupo && grupo.length > 0) {
+    integrantesForm = grupo.map((integrante) => {
+      return { correoIntegrante: integrante.miembro };
+    });
+    console.log(integrantesForm);
+    // updateForm({
+    //   ...formValues,
+    //   agregarGrupo: "1",
+    //   eventoGrupo: integrantesForm,
+    // });
+  }
   const initForm = {
     nombre: eventoData.nombre as string,
     descripcion: eventoData.descripcion as string,
@@ -28,6 +41,8 @@ export const EditEvento = ({
     fechaInicio: eventoData.fechaInicio as string, // Fecha y hora incluida
     fechaFin: eventoData.fechaFin as string, // Fecha y hora incluida
     estadoId: eventoData.estadoId as string, // Opcional, si no se envía se agrega en 1
+    agregarGrupo: integrantesForm.length > 0 ? "1" : "0", // Opcional y para lógica de frontend 0 false y 1 true
+    eventoGrupo: integrantesForm,
   };
   // Validaciones de formulario
   const validations: FormValidation = {
@@ -43,6 +58,10 @@ export const EditEvento = ({
       (value) => value.length > 0,
       "Favor, ingrese la fecha y hora de inicio",
     ],
+    agregarGrupo: [
+      (value) => value === "0" || value === "1",
+      "Favor, seleccione si quiere o no crear un grupo",
+    ],
   };
   const {
     formValues,
@@ -52,10 +71,24 @@ export const EditEvento = ({
     updateForm,
     sendForm,
     onChange,
+    onChangeMultiNested,
   } = useForm(initForm, validations);
-  const { nombre, descripcion, eventoTipoId, fechaInicio, fechaFin, estadoId } =
-    formValues;
-  const { nombreValid, eventoTipoIdValid, fechaInicioValid } = formValidation;
+  const {
+    nombre,
+    descripcion,
+    eventoTipoId,
+    fechaInicio,
+    fechaFin,
+    estadoId,
+    agregarGrupo,
+    eventoGrupo,
+  } = formValues;
+  const {
+    nombreValid,
+    eventoTipoIdValid,
+    fechaInicioValid,
+    agregarGrupoValid,
+  } = formValidation;
 
   const SetLoading = useUIStore((state) => state.SetLoading);
 
@@ -113,19 +146,41 @@ export const EditEvento = ({
     if (isFormValid) {
       // Si todo sale bien
       SetLoading(true);
-      const response = await PatchEvento(
-        {
-          nombre: nombre as string,
-          descripcion: descripcion as string,
-          estadoId: estadoId as string,
-          eventoTipoId: eventoTipoId as string,
-          fechaInicio: (fechaInicio as string).replace("T", " "),
-          fechaFin: fechaFin
-            ? (fechaFin as string).replace("T", " ")
-            : undefined,
-        },
-        eventoData.id
-      );
+      const payload: eventoPatchInterface = {
+        nombre: nombre as string,
+        descripcion: descripcion as string,
+        estadoId: estadoId as string,
+        eventoTipoId: eventoTipoId as string,
+        fechaInicio: (fechaInicio as string).replace("T", " "),
+        fechaFin: fechaFin ? (fechaFin as string).replace("T", " ") : undefined,
+        eventoGrupo: [],
+      };
+      let integrantesValidos = true;
+      if (agregarGrupo === "1") {
+        // Consiguiendo valores de grupo
+        (eventoGrupo as FormValues[]).map((Integrante, i) => {
+          if (
+            (Integrante.correoIntegrante as string).length > 0 &&
+            (Integrante.correoIntegrante as string).includes("@unica.edu.ni") &&
+            payload.eventoGrupo
+          ) {
+            payload.eventoGrupo.push(Integrante.correoIntegrante as string);
+          } else {
+            toast.info(
+              `El integrante ${
+                i + 1
+              } no es válido, debe ingresar un correo institucional`
+            );
+            integrantesValidos = false;
+            return;
+          }
+        });
+      }
+      if (!integrantesValidos) {
+        SetLoading(false);
+        return;
+      }
+      const response = await PatchEvento(payload, eventoData.id);
       if (response.ok) {
         toast.dismiss();
         toast.success("Evento actualizado exitósamente");
@@ -149,6 +204,16 @@ export const EditEvento = ({
   useEffect(() => {
     getCatalogs();
   }, []);
+
+  // En caso de no agregar un grupo se reestablecen los campos a sus datos iniciales
+  useEffect(() => {
+    if (agregarGrupo === "0") {
+      updateForm({ ...formValues, eventoGrupo: [] });
+    }
+  }, [agregarGrupo]);
+  useEffect(() => {
+    console.log(formValues);
+  }, [formValues]);
 
   return (
     <>
@@ -274,6 +339,111 @@ export const EditEvento = ({
             )}
           </label>
         </div>
+        <div>
+          <label htmlFor="agregarGrupo">
+            <p className="text-sm font-bold">
+              ¿Crear grupo para este evento?<span>*</span>
+            </p>
+
+            <SelectField
+              id="agregarGrupo"
+              name="agregarGrupo"
+              options={[
+                { value: "0", name: "No" },
+                { value: "1", name: "Si" },
+              ]}
+              cx="w-full"
+              selectMessage="Seleccione una opción"
+              value={agregarGrupo as string}
+              onChange={onChange}
+              required
+            />
+            {isFormSent && (
+              <span className="text-red-500">{agregarGrupoValid}</span>
+            )}
+          </label>
+        </div>
+        {/* Grupo de evento */}
+        {agregarGrupo === "1" && (
+          <div className="col-span-2 bg-slate-50 rounded p-2">
+            <p className="font-bold">Grupo de evento</p>
+            <span>
+              Todos los integrantes podrán consultar y editar la información de
+              este evento, incluyendo la asistencia del mismo.
+            </span>
+            {Array.isArray(formValues.eventoGrupo) &&
+              formValues.eventoGrupo.every(
+                (item) => typeof item === "object"
+              ) &&
+              formValues.eventoGrupo.map((eventoGrupo, i) => (
+                <div key={`integrante${i}`}>
+                  <label htmlFor={`eventoGrupo.${i}.correoIntegrante`}>
+                    <p className="text-sm font-bold">
+                      Correo integrante {i + 1}
+                      <span>*</span>
+                    </p>
+                    <InputField
+                      id={`eventoGrupo.${i}.correoIntegrante`}
+                      name={`eventoGrupo.${i}.correoIntegrante`}
+                      cx="w-full"
+                      placeholder="Correo integrante"
+                      value={eventoGrupo.correoIntegrante as string}
+                      onChange={onChangeMultiNested}
+                      required
+                    />
+                  </label>
+                  {/* Separador, sólo se activa si no es la última posición */}
+                  <hr
+                    className={`my-4 md:my-1  ${
+                      (formValues.eventoGrupo as FormValues[]).length - 1 ===
+                        i && "hidden"
+                    }`}
+                  />
+                </div>
+              ))}
+
+            <div className="my-2 w-full flex justify-start gap-2">
+              <button
+                onClick={() => {
+                  // Haciendo una copia de la comision
+                  const tempEnventoGrupo = [
+                    ...(formValues.eventoGrupo as FormValues[]),
+                  ];
+                  // Si se tiene más de un registro se elimina el último
+                  if (tempEnventoGrupo.length > 1) {
+                    // Eliminando el último registro
+                    tempEnventoGrupo.pop();
+                    // Actualizando el formulario
+                    updateForm({
+                      ...formValues,
+                      eventoGrupo: tempEnventoGrupo,
+                    });
+                  }
+                }}
+                type="button"
+                className="border bg-white border-black rounded px-4 py-1 transition-all duration-200 hover:bg-black hover:text-white"
+              >
+                Eliminar integrantes
+              </button>
+              <button
+                onClick={() => {
+                  // Haciendo una copia de la comision
+                  const tempEnventoGrupo = [
+                    ...(formValues.eventoGrupo as FormValues[]),
+                  ];
+                  // Agregando un nuevo registro por defecto con rol colaborador
+                  tempEnventoGrupo.push({ correoIntegrante: "" });
+                  // Actualizando el formulario
+                  updateForm({ ...formValues, eventoGrupo: tempEnventoGrupo });
+                }}
+                type="button"
+                className="border bg-white border-black rounded px-4 py-1 transition-all duration-200 hover:bg-black hover:text-white"
+              >
+                Añadir integrantes
+              </button>
+            </div>
+          </div>
+        )}
         <div className="md:col-span-2 flex justify-around">
           <button
             onClick={() => updateForm(initForm)}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { WithContext as ReactTags, Tag } from "react-tag-input";
 
 interface TagInputProps {
+  // Para funcionar se tiene que enviar id como value, text como campo a mostrar y classname como estilo
   initialTags?: Tag[];
   suggestions?: Tag[];
   placeholder?: string;

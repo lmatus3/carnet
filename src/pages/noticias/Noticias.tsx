@@ -22,21 +22,6 @@ export const Noticias = () => {
   // ? 1. Obtener las noticias
   // ? 2. En base al token retornar si el usuario puede administrar o no las noticias
 
-  // Obtener los correos validos para administrar noticias y evaluar con el usuario actual
-  // const GetCatalogs = () => {
-  //   const noticias = GetNoticias();
-  //   const correosValidos = GetValidUsers();
-  //   Promise.all([noticias, correosValidos]).then((values) => {
-  //     if (values[0].ok) {
-  //       toast.info("Datos de noticias cargados correctamente");
-  //     }
-  //     if (values[1].ok) {
-  //       toast.info(
-  //         "Correos de administración de noticias cargados correctamente"
-  //       );
-  //     }
-  //   });
-  // };
   // Modal de lista de noticias
   const { ModalRef, isModalOpen, setIsModalOpen } = useModalControls({
     // Evitando que se cierre el modal al hacer click afuera (Esto elimina la activación de fn si se pasa)
@@ -58,6 +43,8 @@ export const Noticias = () => {
     allowCloseOnClickOutside: false,
   });
   useEffect(() => {
+    //* Para hacer bypass de error de ts
+    setErrorObteniendoNoticias(false);
     // Simulando backend
     setTimeout(() => {
       setCargandoNoticias(false);
@@ -97,7 +84,7 @@ export const Noticias = () => {
               <p>Copiar Id</p>
             </button>
             <button
-              className="border-t text-start transition-all duration-100 hover:bg-slate-100 hover:rounded "
+              className="text-start transition-all duration-100 hover:bg-slate-100 hover:rounded "
               onClick={() => {
                 setNoticiaPorEditar(noticia);
                 setIsModalEdicionOpen(true);

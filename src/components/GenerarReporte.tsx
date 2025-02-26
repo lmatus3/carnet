@@ -32,9 +32,9 @@ export const GenerarReporte = ({
     });
   const CrearReporte = () => {
       // TODO Cambiar los datos que se envían
-    const datosReporte = asistencias.map((asistencia) => {
-    //   console.log(asistencia);
-    });
+    // const datosReporte = asistencias.map((asistencia) => {
+    // //   console.log(asistencia);
+    // });
     exportToExcel(asistencias, asistencias[0].Evento.nombre);
     toast.info("Reporte creado");
   };

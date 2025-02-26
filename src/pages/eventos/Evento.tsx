@@ -58,6 +58,7 @@ export const Evento = () => {
               id: Evento.id,
               nombre: Evento.nombre,
               eventoTipoId: Evento.eventoTipoId,
+              EventoGrupo: Evento.EventoGrupo,
             });
             setFechaInicio(Evento.fechaInicio.split(" ")[0]);
             setHoraInicio(Evento.fechaInicio.split(" ")[1].split(".")[0]);
@@ -189,11 +190,11 @@ export const Evento = () => {
         {/* Modal */}
         {isModalOpen && Data && (
           <div
-            className={`fixed top-0 left-0 w-full h-svh flex z-10 backdrop-blur-sm`}
+            className={`fixed top-0 left-0 w-full h-svh flex z-10 backdrop-blur-sm overflow-auto`}
           >
             <div
               ref={ModalRef}
-              className="bg-white mt-24 mx-auto w-11/12 md:w-2/3 h-fit p-8 rounded shadow-lg relative"
+              className="bg-white my-12 mx-auto w-11/12 md:w-2/3 h-fit p-8 rounded shadow-lg relative"
             >
               <EditEvento
                 closeModal={() => setIsModalOpen(false)}

@@ -34,6 +34,7 @@ export const RegistrarNoticia = () => {
     categoria,
     fechaDePublicacion,
     fechaDeExpiracion,
+    etiquetas,
     estadoId,
     publico,
   } = formValues;
@@ -61,6 +62,7 @@ export const RegistrarNoticia = () => {
         estadoId: estadoId as "1" | "2",
         fechaDePublicacion: fechaDePublicacion as string,
         fechaDeExpiracion: fechaDeExpiracion as string,
+        etiquetas: etiquetas as string,
         mensaje: mensaje as string,
         publico: publico as string,
         severidadId: severidadId as "1" | "2" | "3",
