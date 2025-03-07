@@ -15,24 +15,34 @@ import { TomarAsistencia } from "../pages/asistencias/TomarAsistencia";
 import { Noticias } from "../pages/noticias/Noticias";
 
 export const AppRoutes = () => {
+  // Instanciando herramientas de sesión
+  // La sesión es un string y puede ser "Logged" | "NotLogged" | "Checking"
   const session = useSessionStore((state) => state.session);
-  const onLogout = useSessionStore((state) => state.onLogout);
+  // El token viene del backend y es la credencial del cliente para procesos
   const token = useSessionStore((state) => state.token);
+  // Los perfiles pueden ser "Estudiante" | "Administrativo" | "Docente"
   const perfiles = useSessionStore((state) => state.perfiles);
+  // Función para cerrar sesión
+  const onLogout = useSessionStore((state) => state.onLogout);
+  // Función para cargar los perfiles al estado (Cliente)
   const onLoadProfiles = useSessionStore((state) => state.onLoadProfiles);
+  // Instanciando posición actual
+  const { pathname } = useLocation();
   // Validando sesión actual
   const validarSesion = () => {
-    // console.log(session);
-    if (!session) {
+    //? Si no existe una sesión o token significa que no tengo acceso a la aplicación
+    //? Con esta lógica también, al entrar a la página se crean los estados en la aplicación
+    // Validando sesión
+    console.log(token, session)
+    if (!session || !token) {
       onLogout();
     }
   };
   useEffect(() => {
     validarSesion();
-  }, []);
+  }, [pathname, token]);
 
   // Consiguiendo periles de usuario
-  const { pathname } = useLocation();
   const obtenerPerfilesUsuario = async () => {
     // onLoadProfile();
     const response = await GetPerfilesDeUsuario();
