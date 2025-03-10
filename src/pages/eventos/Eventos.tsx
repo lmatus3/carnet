@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { TablaEventos } from "../../components/TablaEventos";
-// import { EventosTempData } from "../../data/tempData";
 import { MainLayout } from "../../layouts/MainLayout";
 import { GetEventos } from "../../service/EventosService";
 import { eventoInterface } from "../../types/eventoType";

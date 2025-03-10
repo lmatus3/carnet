@@ -12,7 +12,7 @@ import { GetPerfilesDeUsuario } from "../service/GetPerfilesDeUsuario";
 import { TypeOfUser } from "../types/userTypes";
 import { VerAsistencia } from "../pages/asistencias/VerAsistencia";
 import { TomarAsistencia } from "../pages/asistencias/TomarAsistencia";
-import { Noticias } from "../pages/noticias/Noticias";
+// import { Noticias } from "../pages/noticias/Noticias";
 
 export const AppRoutes = () => {
   // Instanciando herramientas de sesión
@@ -33,7 +33,7 @@ export const AppRoutes = () => {
     //? Si no existe una sesión o token significa que no tengo acceso a la aplicación
     //? Con esta lógica también, al entrar a la página se crean los estados en la aplicación
     // Validando sesión
-    console.log(token, session)
+    // console.log(token, session)
     if (!session || !token) {
       onLogout();
     }
@@ -90,7 +90,7 @@ export const AppRoutes = () => {
               )}
             <Route path="/asistencia/:id" element={<MarcarAsistencia />} />
             <Route path="/*" element={<Navigate to={"/"} replace />} />
-            <Route path="/noticias" element={<Noticias />} />
+            {/* <Route path="/noticias" element={<Noticias />} /> */}
           </>
         )}
         {session === "NotLogged" && (

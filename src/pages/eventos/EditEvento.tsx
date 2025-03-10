@@ -9,6 +9,8 @@ import { GetEstado, GetEventoType } from "../../service/GetCatalogsInfo";
 import { eventoInterface, eventoPatchInterface } from "../../types/eventoType";
 import { useUIStore } from "../../stores/UIStore";
 import { PatchEvento } from "../../service/EventosService";
+import { validateResponseError } from "../../utils/validateResponseError";
+import { useSessionStore } from "../../stores";
 
 type EditEventoProps = {
   closeModal: () => void;
@@ -94,6 +96,7 @@ export const EditEvento = ({
 
   const [CATEstados, setCATEstados] = useState<OptionType[]>([]);
   const [CATTipoEvento, setCATTipoEvento] = useState<OptionType[]>([]);
+  const onLogOut = useSessionStore((state) => state.onLogout);
   const getCatalogs = async () => {
     SetLoading(true);
     // TODO Consumir los catálogos
@@ -191,13 +194,18 @@ export const EditEvento = ({
         update();
         return;
       } else {
+        if (response.status == 401 || response.status == 403) {
+          validateResponseError(response.status, onLogOut);
+          SetLoading(false);
+          return
+        }
         if (response.errors) {
           response.errors.map((validacionError) => {
             toast.error(validacionError, { duration: 50000 });
           });
         }
       }
-      toast.error("No se logró registar el evento");
+      toast.error("No se logró actualizar el evento");
       SetLoading(false);
     }
   };

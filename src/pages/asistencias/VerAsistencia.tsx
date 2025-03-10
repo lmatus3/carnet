@@ -14,6 +14,8 @@ import { usePrint } from "../../plugins/print";
 import { EstadoBadge } from "../../components/EstadoBadge";
 import { getEstadoName } from "../../utils/getEstadoName";
 import { useModalControls } from "../../hooks/useModalControls";
+import { useSessionStore } from "../../stores";
+import { validateResponseError } from "../../utils/validateResponseError";
 
 export const VerAsistencia = () => {
   const { id } = useParams();
@@ -29,6 +31,7 @@ export const VerAsistencia = () => {
   const [FechaFin, setFechaFin] = useState<string>();
   const [HoraInicio, setHoraInicio] = useState<string>();
   const [HoraFin, setHoraFin] = useState<string>();
+  const onLogout = useSessionStore((state) => state.onLogout);
   const navegar = useNavigate();
 
   const MostrarMensajeError = (duration: number) => {
@@ -65,6 +68,10 @@ export const VerAsistencia = () => {
         toast.info("Datos de evento cargados exitosamente");
         return;
       }
+    }
+    if (response.status == 401 || response.status == 404) {
+      validateResponseError(response.status, onLogout);
+      return;
     }
     MostrarMensajeError(10000);
   };
