@@ -246,7 +246,6 @@ export const MarcarAsistencia = () => {
     getCatalogs();
   }, []);
   useEffect(() => {
-    console.log(puedeMarcar);
     if (!puedeMarcar) {
       toast.info("Usted ya tiene registrada una asistencia a este evento", {
         duration: 10000,
