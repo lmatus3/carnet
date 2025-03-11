@@ -9,10 +9,12 @@ import { useModalControls } from "../../hooks/useModalControls";
 import { OptionType, SelectField } from "../../components/SelectField";
 import { GetPerfiles } from "../../service/GetCatalogsInfo";
 import { toast } from "sonner";
-import { PostAsistencia } from "../../service/AsistenciaService";
+import {
+  GetPuedeMarcarAsistencia,
+  PostAsistencia,
+} from "../../service/AsistenciaService";
 import { useUIStore } from "../../stores/UIStore";
 import { GetUserInfo } from "../../service/GetUserInfo";
-import { estudianteInterface } from "../../types/estudianteType";
 import { useSessionStore } from "../../stores";
 
 type UserDataType = { code: string; type: string; typeId: string };
@@ -27,6 +29,7 @@ export const MarcarAsistencia = () => {
   const [HoraFin, setHoraFin] = useState<string>();
   const [Data, setData] = useState<eventoInterface>();
   const [userData, setUserData] = useState<UserDataType[]>([]);
+  const [puedeMarcar, setPuedeMarcar] = useState<boolean>(true);
   const SetLoading = useUIStore((state) => state.SetLoading);
   const onLogout = useSessionStore((state) => state.onLogout);
   const [blockSubmit, setBlockSubmit] = useState(false);
@@ -37,8 +40,14 @@ export const MarcarAsistencia = () => {
     const EventoPromise = GetEvento(id as string);
     const PerfilesPromise = GetPerfiles();
     const UserInfoPromise = GetUserInfo();
+    const PuedeMarcarPromise = GetPuedeMarcarAsistencia(id as string);
     SetLoading(true);
-    Promise.all([EventoPromise, PerfilesPromise, UserInfoPromise])
+    Promise.all([
+      EventoPromise,
+      PerfilesPromise,
+      UserInfoPromise,
+      PuedeMarcarPromise,
+    ])
       .then((responses) => {
         if (responses[0].ok && responses[0].data) {
           const { Evento } = responses[0].data.data;
@@ -74,6 +83,7 @@ export const MarcarAsistencia = () => {
           });
           tempPerfiles = CatPerfilesDb;
         }
+        // ! Acá se asignan los perfiles disponibles para el usuario
         if (responses[2].ok && responses[2].data) {
           // console.log(response.data);
           const { data } = responses[2].data;
@@ -82,28 +92,51 @@ export const MarcarAsistencia = () => {
           //* Casos de carnet
           //? Caso de estudiante
           if (estudiante.length > 0) {
-            (estudiante as estudianteInterface[]).map((datosEstudiante) => {
-              //! La validación es basada en el estado de este estudiante para la carrera actual del mismo
-              if (
-                datosEstudiante.estado == "Expulsado" ||
-                // datosEstudiante.estado == "Retirado" ||
-                // datosEstudiante.estado == "Inactivo" ||
-                datosEstudiante.estado == "Graduado"
-              ) {
-                // ? Caso negativo
-                // Si está en uno de estos estados no puede asistir como estudiante
-                tempPerfiles = tempPerfiles.filter((item) => item.value != "1");
-              } else {
-                // * Aqui se asignan los datos del estudiante
-                // console.log(periodoProcesado)
+            // Significa que tengo datos de estudiantes
+            //? Si el estudiante está activo
+            //* Nueva lógica
+            const estaExpulsado = estudiante.find(
+              (est) => est.estado === "Expulsado"
+            );
+            if (estaExpulsado) {
+              // ? Caso negativo
+              tempPerfiles = tempPerfiles.filter((item) => item.value != "1");
+            } else {
+              const estaActivo = estudiante.find(
+                (est) => est.estado === "Activo"
+              );
+              if (estaActivo) {
                 const carnet = {
-                  code: datosEstudiante.estudianteCarne,
+                  code: estaActivo.estudianteCarne,
                   type: "Estudiante",
                   typeId: "1",
                 };
                 newCarnetsCodes.push(carnet);
               }
-            });
+            }
+            // console.log(estaActivo);
+            // (estudiante as estudianteInterface[]).map((datosEstudiante) => {
+            //   //! La validación es basada en el estado de este estudiante para la carrera actual del mismo
+            //   if (
+            //     datosEstudiante.estado == "Expulsado" ||
+            //     // datosEstudiante.estado == "Retirado" ||
+            //     // datosEstudiante.estado == "Inactivo" ||
+            //     datosEstudiante.estado == "Graduado"
+            //   ) {
+            //     // ? Caso negativo
+            //     // Si está en uno de estos estados no puede asistir como estudiante
+            //     tempPerfiles = tempPerfiles.filter((item) => item.value != "1");
+            //   } else {
+            //     // * Aqui se asignan los datos del estudiante
+            //     // console.log(periodoProcesado)
+            //     const carnet = {
+            //       code: datosEstudiante.estudianteCarne,
+            //       type: "Estudiante",
+            //       typeId: "1",
+            //     };
+            //     newCarnetsCodes.push(carnet);
+            //   }
+            // });
           } else {
             tempPerfiles = tempPerfiles.filter((item) => item.value != "1");
           }
@@ -155,6 +188,10 @@ export const MarcarAsistencia = () => {
               { duration: 100000 }
             );
           }
+        }
+        if (responses[3].ok && responses[3].data) {
+          const { data } = responses[3].data;
+          setPuedeMarcar(data.estado);
         }
       })
       .catch((e) => console.log(e))
@@ -208,6 +245,14 @@ export const MarcarAsistencia = () => {
     // Cuando se tenga actualizada la bd se obtendrán los catálogos
     getCatalogs();
   }, []);
+  useEffect(() => {
+    console.log(puedeMarcar);
+    if (!puedeMarcar) {
+      toast.info("Usted ya tiene registrada una asistencia a este evento", {
+        duration: 10000,
+      });
+    }
+  }, [puedeMarcar]);
 
   // Modal
   // Controles del modal de las acciones
@@ -261,9 +306,15 @@ export const MarcarAsistencia = () => {
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="bg-green-700 text-white py-1 px-4 rounded absolute bottom-4 right-4 flex"
+              className="bg-green-700 text-white py-1 px-4 rounded absolute bottom-4 right-4 flex disabled:opacity-80 disabled:cursor-not-allowed"
+              disabled={!puedeMarcar}
             >
-              <span>Marcar asistencia</span>
+              <span>
+                {" "}
+                {puedeMarcar
+                  ? "Marcar asistencia"
+                  : "Asistencia registrada"}
+              </span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="fill-white h-6"

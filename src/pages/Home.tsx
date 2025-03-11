@@ -84,6 +84,8 @@ export const Home = () => {
             cursoNombre:
               tipoEstudiante === "Estudiante posgrado"
                 ? datosEstudiante.cursoNombre
+                  ? datosEstudiante.cursoNombre
+                  : nuevoNombreCarrera
                 : undefined,
           };
           newCarnets.push(carnet);
