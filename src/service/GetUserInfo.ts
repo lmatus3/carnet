@@ -12,6 +12,8 @@ interface ResponseInformacionUsuario {
       estudiante: estudianteInterface[];
       docente: DocenteInterface[];
       administrativo: administrativoInterface[];
+      // TODO Esto es una nueva clasificación
+      directivo: administrativoInterface[];
     };
   };
   errors: string[] | null;

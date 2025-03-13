@@ -161,6 +161,8 @@ export const TomarAsistencia = () => {
             }
             toast.info("El carnet " + carnet + " es invalido");
           }
+          // * Caso directivo
+          // TODO
         } catch (error) {
           console.log(error);
           toast.error("No se pudo obtener información de este carnet.");

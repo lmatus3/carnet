@@ -87,7 +87,7 @@ export const MarcarAsistencia = () => {
         if (responses[2].ok && responses[2].data) {
           // console.log(response.data);
           const { data } = responses[2].data;
-          const { administrativo, docente, estudiante } = data.informacion;
+          const { administrativo, docente, estudiante, directivo } = data.informacion;
           const newCarnetsCodes: UserDataType[] = [];
           //* Casos de carnet
           //? Caso de estudiante
@@ -172,6 +172,10 @@ export const MarcarAsistencia = () => {
             newCarnetsCodes.push(carnet);
           } else {
             tempPerfiles = tempPerfiles.filter((item) => item.value != "2");
+          }
+          if(directivo && directivo.length === 0){
+            // ! asumiendo que directivo será el perfil 4
+            tempPerfiles = tempPerfiles.filter((item) => item.value != "4");
           }
           setUserData(newCarnetsCodes);
           // TODO Mostrar sólo los perfiles que estén disponibles con los del usuario
