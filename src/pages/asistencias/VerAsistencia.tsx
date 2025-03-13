@@ -9,13 +9,15 @@ import {
   asistenciasDBInterface,
   asistenciasReporteInterface,
 } from "../../types/asistenciaType";
-import { exportToExcel } from "../../utils/exportToExcel";
 import { usePrint } from "../../plugins/print";
 import { EstadoBadge } from "../../components/EstadoBadge";
 import { getEstadoName } from "../../utils/getEstadoName";
 import { useModalControls } from "../../hooks/useModalControls";
 import { useSessionStore } from "../../stores";
 import { validateResponseError } from "../../utils/validateResponseError";
+import { DetallesDeEvento } from "../../components/Eventos/DetallesDeEvento";
+import { ExportButtons } from "../../components/Eventos/ExportButtons";
+import { TablaAsistenciasTotales } from "../../components/Eventos/TablaAsistenciasTotales";
 
 export const VerAsistencia = () => {
   const { id } = useParams();
@@ -31,6 +33,27 @@ export const VerAsistencia = () => {
   const [FechaFin, setFechaFin] = useState<string>();
   const [HoraInicio, setHoraInicio] = useState<string>();
   const [HoraFin, setHoraFin] = useState<string>();
+  // Estados para manejar las totalizaciones de asistencias
+  const filtrosAsistenciasInicial = {
+    hombres: 0,
+    mujeres: 0,
+    otro: 0,
+    total: 0,
+  };
+  const [totalAsistencias, setTotalAsistencias] = useState(
+    filtrosAsistenciasInicial
+  );
+  const [totalDocentes, setTotalDocentes] = useState(filtrosAsistenciasInicial);
+  const [totalEstudiantes, setTotalEstudiantes] = useState(
+    filtrosAsistenciasInicial
+  );
+  const [totalAdministrativos, setTotalAdministrativos] = useState(
+    filtrosAsistenciasInicial
+  );
+  const [totalDirectivos, setTotalDirectivos] = useState(
+    filtrosAsistenciasInicial
+  );
+
   const onLogout = useSessionStore((state) => state.onLogout);
   const navegar = useNavigate();
 
@@ -81,10 +104,105 @@ export const VerAsistencia = () => {
     const response = await GetAsistencias(idEvento);
     if (response.ok && response.data) {
       const { EventoAsistencias } = response.data.data;
-      // console.log(EventoAsistencias);
+      // Llenando totalización de asistencias
       setAsistencias(EventoAsistencias);
+      const asistenciasTotales = {
+        hombres: 0,
+        mujeres: 0,
+        otro: 0,
+        total: 0,
+      };
+      const asistenciasEstudiantes = {
+        hombres: 0,
+        mujeres: 0,
+        otro: 0,
+        total: 0,
+      };
+      const asistenciasDocentes = {
+        hombres: 0,
+        mujeres: 0,
+        otro: 0,
+        total: 0,
+      };
+      const asistenciasAdministrativos = {
+        hombres: 0,
+        mujeres: 0,
+        otro: 0,
+        total: 0,
+      };
+      const asistenciasDirectivos = {
+        hombres: 0,
+        mujeres: 0,
+        otro: 0,
+        total: 0,
+      };
       const tempReportasistencias: asistenciasReporteInterface[] =
         EventoAsistencias.map((Asistencia) => {
+          // Llenando totalizaciones
+          const nombrePerfil = Asistencia.Perfil.nombre;
+          const sexo = Asistencia.sexo;
+          asistenciasTotales.total++;
+          if (sexo) {
+            if (sexo === "0") {
+              asistenciasTotales.hombres++;
+            } else {
+              asistenciasTotales.mujeres++;
+            }
+          } else {
+            asistenciasTotales.otro++;
+          }
+          if (nombrePerfil) {
+            switch (nombrePerfil) {
+              case "Estudiante":
+                asistenciasEstudiantes.total++;
+                if (sexo) {
+                  if (sexo === "0") {
+                    asistenciasEstudiantes.hombres++;
+                  } else {
+                    asistenciasEstudiantes.mujeres++;
+                  }
+                } else {
+                  asistenciasEstudiantes.otro++;
+                }
+                break;
+              case "Administrativo":
+                asistenciasAdministrativos.total++;
+                if (sexo) {
+                  if (sexo === "0") {
+                    asistenciasAdministrativos.hombres++;
+                  } else {
+                    asistenciasAdministrativos.mujeres++;
+                  }
+                } else {
+                  asistenciasAdministrativos.otro++;
+                }
+                break;
+              case "Docente":
+                asistenciasDocentes.total++;
+                if (sexo) {
+                  if (sexo === "0") {
+                    asistenciasDocentes.hombres++;
+                  } else {
+                    asistenciasDocentes.mujeres++;
+                  }
+                } else {
+                  asistenciasDocentes.otro++;
+                }
+                break;
+              case "Directivo":
+                asistenciasDirectivos.total++;
+                if (sexo) {
+                  if (sexo === "0") {
+                    asistenciasDirectivos.hombres++;
+                  } else {
+                    asistenciasDirectivos.mujeres++;
+                  }
+                } else {
+                  asistenciasDirectivos.otro++;
+                }
+                break;
+            }
+          }
           return {
             id: Asistencia.id,
             EventoID: Asistencia.Evento.codigo || "N/A",
@@ -103,6 +221,11 @@ export const VerAsistencia = () => {
             CreadoPor: Asistencia.creadoPor,
           };
         });
+      setTotalAsistencias(asistenciasTotales);
+      setTotalEstudiantes(asistenciasEstudiantes);
+      setTotalDocentes(asistenciasDocentes);
+      setTotalAdministrativos(asistenciasAdministrativos);
+      setTotalDirectivos(asistenciasDirectivos);
       setAsistenciaReportData(tempReportasistencias);
       setAsistenciaCargando(false);
       return;
@@ -135,6 +258,11 @@ export const VerAsistencia = () => {
   // Ref a div
   const contentRef = useRef<HTMLTableElement>(null);
   const { printNode } = usePrint(contentRef);
+
+  // Imprimir
+  // Ref a div
+  const contentRefTablaTotales = useRef<HTMLTableElement>(null);
+  // const { printNode: printNodeTotales } = usePrint(contentRefTablaTotales);
   // Controles del modal de las acciones
   const { ModalRef, isModalOpen, setIsModalOpen } = useModalControls();
   return (
@@ -159,65 +287,34 @@ export const VerAsistencia = () => {
               {/* Tabla de asistencias */}
               <div className="overflow-x-auto my-2 relative">
                 <div className="flex w-full gap-2 justify-between">
-                  <div>
-                    <span className="block font-bold text-xl">
-                      Descripción del evento
-                    </span>
-                    <p>{Data.descripcion}</p>
-                    {Data.fechaFin && Data.fechaInicio ? (
-                      <>
-                        <span className="block font-bold text-xl">
-                          Programación
-                        </span>
-                        <p>
-                          El evento se programó a empezar el día: {FechaInicio}{" "}
-                          a las <b>{HoraInicio}</b>
-                        </p>
-                        <p>
-                          Y <b>concluir</b> el día: {FechaFin} a las{" "}
-                          <b>{HoraFin}</b>
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <span className="block font-bold text-xl">
-                          Fecha y hora de inicio
-                        </span>
-                        <p>
-                          El evento se programó a empezar el día: {FechaInicio}{" "}
-                          a las <b>{HoraInicio}</b>
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    {/* <button
-                      onClick={() => setIsModalOpen(true)}
-                      className="border rounded h-8 w-32 bg-red-700 text-white"
-                    >
-                      Armar reporte
-                    </button> */}
-                    <button
-                      title="Exportar a excel"
-                      className="border rounded h-8 w-20 bg-green-700 text-white"
-                      onClick={() => {
-                        exportToExcel(
-                          AsistenciaReportData,
-                          "Asistencia-evento-" + Data.codigo
-                        );
-                      }}
-                    >
-                      Excel
-                    </button>
-                    <button
-                      title="Exportar a PDF"
-                      className="border rounded h-8 w-20"
-                      onClick={() => printNode()}
-                    >
-                      Imprimir
-                    </button>
-                  </div>
+                  <DetallesDeEvento
+                    FechaInicio={FechaInicio as string}
+                    HoraInicio={HoraInicio as string}
+                    FechaFin={FechaFin && (FechaFin as string)}
+                    HoraFin={HoraFin && (HoraFin as string)}
+                    descripcion={Data.descripcion}
+                  />
+
+                  <ExportButtons
+                    data={AsistenciaReportData}
+                    name={Data.nombre}
+                    printFn={printNode}
+                  />
                 </div>
+                {/* Tabla de totales */}
+                <TablaAsistenciasTotales
+                  asistenciaCargando={asistenciaCargando}
+                  contentRefTablaTotales={contentRefTablaTotales}
+                  errorCargandoAsistencias={errorCargandoAsistencias}
+                  seTienenRegistros={Asistencias.length > 0}
+                  totalAdministrativos={totalAdministrativos}
+                  totalAsistencias={totalAsistencias}
+                  totalDirectivos={totalDirectivos}
+                  totalDocentes={totalDocentes}
+                  totalEstudiantes={totalEstudiantes}
+                  nombreEvento={"Asistencias totales " + Data.nombre}
+                />
+
                 <table
                   ref={contentRef}
                   className="table w-11/12 m-auto mt-6 print:mt-4 mb-5"
@@ -234,7 +331,7 @@ export const VerAsistencia = () => {
                       <th className="border">Fecha y hora</th>
                     </tr>
                   </thead>
-                  <tbody className="text-center table-row-group">
+                  <tbody className="text-center table-row-group border">
                     {asistenciaCargando && Asistencias.length === 0 && (
                       <tr>
                         <td colSpan={5}>Cargando...</td>

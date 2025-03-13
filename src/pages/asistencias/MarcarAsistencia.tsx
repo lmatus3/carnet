@@ -112,6 +112,9 @@ export const MarcarAsistencia = () => {
                   typeId: "1",
                 };
                 newCarnetsCodes.push(carnet);
+              } else {
+                // ? Caso negativo
+                tempPerfiles = tempPerfiles.filter((item) => item.value != "1");
               }
             }
             // console.log(estaActivo);
@@ -310,9 +313,7 @@ export const MarcarAsistencia = () => {
             >
               <span>
                 {" "}
-                {puedeMarcar
-                  ? "Marcar asistencia"
-                  : "Asistencia registrada"}
+                {puedeMarcar ? "Marcar asistencia" : "Asistencia registrada"}
               </span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
