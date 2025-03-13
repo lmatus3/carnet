@@ -141,7 +141,7 @@ export const Evento = () => {
               <div className="bg-OrangeMedium rounded w-64 m-auto p-4 mb-8 relative">
                 <button
                   type="button"
-                  onClick={() => downloadQRCode({ id: "QRGenerated" })}
+                  onClick={() => downloadQRCode({ id: "QRGenerated",downloadSize: 720 })}
                   className="w-full h-full bg-white  absolute top-0 left-0 rounded opacity-0 hover:opacity-55"
                 >
                   <svg

@@ -11,6 +11,7 @@ import { useUIStore } from "../../stores/UIStore";
 import { PatchEvento } from "../../service/EventosService";
 import { validateResponseError } from "../../utils/validateResponseError";
 import { useSessionStore } from "../../stores";
+import { ChecklistCatalogo } from "../../components/Eventos/ChecklistCatalogo";
 
 type EditEventoProps = {
   closeModal: () => void;
@@ -45,6 +46,8 @@ export const EditEvento = ({
     estadoId: eventoData.estadoId as string, // Opcional, si no se envía se agrega en 1
     agregarGrupo: integrantesForm.length > 0 ? "1" : "0", // Opcional y para lógica de frontend 0 false y 1 true
     eventoGrupo: integrantesForm,
+    // TODO Obtener del backend el público objetivo
+    publicoObjetivo: "1,2,3",
   };
   // Validaciones de formulario
   const validations: FormValidation = {
@@ -59,6 +62,10 @@ export const EditEvento = ({
     fechaInicio: [
       (value) => value.length > 0,
       "Favor, ingrese la fecha y hora de inicio",
+    ],
+    publicoObjetivo: [
+      (value) => value.length > 0,
+      "Favor, seleccione el público objetivo",
     ],
     agregarGrupo: [
       (value) => value === "0" || value === "1",
@@ -84,6 +91,7 @@ export const EditEvento = ({
     estadoId,
     agregarGrupo,
     eventoGrupo,
+    publicoObjetivo,
   } = formValues;
   const {
     nombreValid,
@@ -197,7 +205,7 @@ export const EditEvento = ({
         if (response.status == 401 || response.status == 403) {
           validateResponseError(response.status, onLogOut);
           SetLoading(false);
-          return
+          return;
         }
         if (response.errors) {
           response.errors.map((validacionError) => {
@@ -330,6 +338,25 @@ export const EditEvento = ({
             />
           </label>
         </div>
+        <ChecklistCatalogo
+          containerClassName="col-span-2"
+          catalogo={[
+            { id: "1", nombre: "Maestras y maestros" },
+            { id: "2", nombre: "Estudiantes" },
+            { id: "3", nombre: "Personal Administrativo" },
+            { id: "4", nombre: "Padres y madres de familia" },
+            { id: "5", nombre: "Personal directivo" },
+            { id: "6", nombre: "Población general" },
+          ]}
+          value={publicoObjetivo ? (publicoObjetivo as string).split(",") : []}
+          onSelectionChange={(selectFields) => {
+            updateForm({
+              ...formValues,
+              publicoObjetivo: selectFields.join(","),
+            });
+          }}
+          titulo="Público objetivo del evento"
+        />
         <div>
           <label htmlFor="estadoId">
             <p className="text-sm font-bold">Estado de evento</p>

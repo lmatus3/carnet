@@ -10,6 +10,7 @@ import { PostEvento } from "../../service/EventosService";
 import { useUIStore } from "../../stores/UIStore";
 import { useSessionStore } from "../../stores";
 import { eventoPostInterface } from "../../types/eventoType";
+import { ChecklistCatalogo } from "../../components/Eventos/ChecklistCatalogo";
 
 type RegisterEventoProps = {
   closeModal: () => void;
@@ -27,6 +28,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
     estadoId: "", // Opcional, si no se envía se agrega en 1
     agregarGrupo: "0", // Opcional y para lógica de frontend 0 false y 1 true
     eventoGrupo: initGrupoStatus,
+    publicoObjetivo: "",
   };
   // Validaciones de formulario
   const formValidations: FormValidation = {
@@ -41,6 +43,10 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
     fechaInicio: [
       (value) => value.length > 0,
       "Favor, ingrese la fecha y hora de inicio",
+    ],
+    publicoObjetivo: [
+      (value) => value.length > 0,
+      "Favor, seleccione el público objetivo",
     ],
     agregarGrupo: [
       (value) => value === "0" || value === "1",
@@ -217,6 +223,10 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
       updateForm({ ...formValues, eventoGrupo: initGrupoStatus });
     }
   }, [agregarGrupo]);
+  // useEffect(() => {
+  //   console.log(formValues)
+  // }, [formValues])
+  
 
   return (
     <>
@@ -326,6 +336,24 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
             />
           </label>
         </div>
+        <ChecklistCatalogo
+          containerClassName="col-span-2"
+          catalogo={[
+            { id: "1", nombre: "Maestras y maestros" },
+            { id: "2", nombre: "Estudiantes" },
+            { id: "3", nombre: "Personal Administrativo" },
+            { id: "4", nombre: "Padres y madres de familia" },
+            { id: "5", nombre: "Personal directivo" },
+            { id: "6", nombre: "Población general" },
+          ]}
+          onSelectionChange={(selectFields) => {
+            updateForm({
+              ...formValues,
+              publicoObjetivo: selectFields.join(","),
+            });
+          }}
+          titulo="Público objetivo del evento"
+        />
         <div>
           <label htmlFor="estadoId">
             <p className="text-sm font-bold">
