@@ -1,4 +1,5 @@
 import { estadoEnum } from "./estadoType";
+import { publicoObjetivoInterface } from "./publicoObjetivoType";
 
 export interface eventoInterface {
   id: string;
@@ -15,6 +16,8 @@ export interface eventoInterface {
   // tipoEventoId: string;
   eventoTipoId: string;
   creadoEl?: string;
+  // eventoPublicoObjetivo: string[];
+  EventoPublicoObjetivo: publicoObjetivoInterface[];
   // Grupo
   EventoGrupo?: {
     id: number;
@@ -36,6 +39,7 @@ export interface eventoPostInterface {
   fechaFin?: string; //Opcional, Aplica a validación de fecha respecto a la de inicio y la actual\
   estadoId: string; //Opcional
   eventoGrupo?: string[];
+  eventoPublicoObjetivo: string[];
 }
 export interface eventoPatchInterface {
   nombre: string;
@@ -45,6 +49,7 @@ export interface eventoPatchInterface {
   fechaFin?: string; //Opcional, Aplica a validación de fecha respecto a la de inicio y la actual\
   estadoId: string; //Opcional
   eventoGrupo?: string[];
+  eventoPublicoObjetivo: string[];
 }
 
 export type eventoTypeType = {

@@ -1,14 +1,10 @@
 import { useState } from "react";
-
-interface CatalogItem {
-  id: string;
-  nombre: string;
-}
+import { OptionType } from "../SelectField";
 
 interface ChecklistProps {
   containerClassName?: string;
   titulo?: string;
-  catalogo: CatalogItem[];
+  catalogo: OptionType[];
   value?: string[];
   onSelectionChange?: (selectedIds: string[]) => void;
 }
@@ -44,16 +40,16 @@ export const ChecklistCatalogo: React.FC<ChecklistProps> = ({
       <div className="text-sm flex flex-wrap gap-2">
         {catalogo.map((item) => (
           <label
-            key={item.id}
+            key={"publicoO" + item.value}
             className="flex items-center space-x-1 cursor-pointer bg-blueDark rounded-md px-2 py-0.5 w-fit"
           >
             <input
               type="checkbox"
-              checked={selectedIds.includes(item.id)}
-              onChange={() => handleCheckboxChange(item.id)}
+              checked={selectedIds.includes(item.value)}
+              onChange={() => handleCheckboxChange(item.value)}
               className="w-4 h-4 text-blue-600 border-gray-300 rounded"
             />
-            <span className="text-white select-none">{item.nombre}</span>
+            <span className="text-white select-none">{item.name}</span>
           </label>
         ))}
       </div>

@@ -82,7 +82,7 @@ export const Login = () => {
     }
     // TODO Enviando credential a backend
     const payload = { client_token: credentialResponse.credential as string };
-    console.log(payload);
+    // console.log(payload);
     LoginGoogle(payload).then((res) => {
       // Caso de error (De axios)
       if (res.error) {

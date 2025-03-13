@@ -3,6 +3,7 @@ import { BackendApi } from "../api/config";
 import { ResponseInterface } from "../types/GeneralTypes";
 import { eventoTypeType } from "../types/eventoType";
 import { EstadoBDType } from "../types/estadoType";
+import { publicoObjetivoInterface } from "../types/publicoObjetivoType";
 
 interface EstadosData {
   message: string;
@@ -13,6 +14,14 @@ interface EstadosData {
 interface EventosTypeData {
   message: string;
   data: { EventoTipos: eventoTypeType[] } | null;
+  errors: string[] | null;
+}
+
+interface PublicoObjetivoTypeData {
+  message: string;
+  data: {
+    PublicosObjetivo: publicoObjetivoInterface[];
+  };
   errors: string[] | null;
 }
 interface PerfilesData {
@@ -34,6 +43,9 @@ interface ResponseEventosType extends ResponseInterface {
 }
 interface ResponsePerfiles extends ResponseInterface {
   data?: PerfilesData;
+}
+interface ResponsePublicosObjetivo extends ResponseInterface {
+  data?: PublicoObjetivoTypeData;
 }
 
 const ValidateError: ({
@@ -98,6 +110,27 @@ export const GetPerfiles: () => Promise<ResponsePerfiles> = async () => {
     });
   }
 };
+export const GetPublicoObjetivo: () => Promise<ResponsePublicosObjetivo> =
+  async () => {
+    try {
+      const response = await BackendApi.get(
+        "publicoObjetivo?include[]=Estado&estadoId[eq]=1"
+      );
+      if (response.status) {
+        return { ok: true, data: response.data as PublicoObjetivoTypeData };
+      } else {
+        return {
+          ok: false,
+          error: "No se lograron obtener los publicos objetivo",
+        };
+      }
+    } catch (error) {
+      return ValidateError({
+        err: error,
+        errorMessage: "No se logró obtener los publicos objetivo",
+      });
+    }
+  };
 export const GetEventoType: () => Promise<ResponseEventosType> = async () => {
   try {
     const response = await BackendApi.get("eventoTipo");

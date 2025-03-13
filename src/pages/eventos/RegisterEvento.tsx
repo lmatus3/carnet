@@ -5,7 +5,11 @@ import { TextField } from "../../components/TextField";
 import { OptionType, SelectField } from "../../components/SelectField";
 import { FormValidation, FormValues } from "../../types/useFormTypes";
 import { toast } from "sonner";
-import { GetEstado, GetEventoType } from "../../service/GetCatalogsInfo";
+import {
+  GetEstado,
+  GetEventoType,
+  GetPublicoObjetivo,
+} from "../../service/GetCatalogsInfo";
 import { PostEvento } from "../../service/EventosService";
 import { useUIStore } from "../../stores/UIStore";
 import { useSessionStore } from "../../stores";
@@ -28,7 +32,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
     estadoId: "", // Opcional, si no se envía se agrega en 1
     agregarGrupo: "0", // Opcional y para lógica de frontend 0 false y 1 true
     eventoGrupo: initGrupoStatus,
-    publicoObjetivo: "",
+    eventoPublicoObjetivo: "",
   };
   // Validaciones de formulario
   const formValidations: FormValidation = {
@@ -44,7 +48,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
       (value) => value.length > 0,
       "Favor, ingrese la fecha y hora de inicio",
     ],
-    publicoObjetivo: [
+    eventoPublicoObjetivo: [
       (value) => value.length > 0,
       "Favor, seleccione el público objetivo",
     ],
@@ -72,6 +76,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
     estadoId,
     agregarGrupo,
     eventoGrupo,
+    eventoPublicoObjetivo,
   } = formValues;
   const {
     nombreValid,
@@ -86,13 +91,17 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
 
   const [CATEstados, setCATEstados] = useState<OptionType[]>([]);
   const [CATTipoEvento, setCATTipoEvento] = useState<OptionType[]>([]);
+  const [CATPublicosObjetivos, setCATPublicosObjetivos] = useState<
+    OptionType[]
+  >([]);
 
   const getCatalogs = async () => {
     // TODO Consumir los catálogos
     SetLoading(true);
     const EstadosPromise = GetEstado();
     const TiposEventoPromise = GetEventoType();
-    Promise.all([EstadosPromise, TiposEventoPromise])
+    const PublicosObjetivoPromise = GetPublicoObjetivo();
+    Promise.all([EstadosPromise, TiposEventoPromise, PublicosObjetivoPromise])
       .then((responses) => {
         // Adaptando cada catalogo a options de select
         const EstadosBackendCat = responses[0];
@@ -131,6 +140,24 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
             }
           }
         }
+        const PublicosObjetivosCat = responses[2];
+        if (PublicosObjetivosCat) {
+          if (PublicosObjetivosCat.data) {
+            const { data } = PublicosObjetivosCat.data;
+            if (data) {
+              const { PublicosObjetivo } = data;
+              const CatPublicosObjetivos = PublicosObjetivo?.map(
+                (publicoObjetivo) => {
+                  return {
+                    value: publicoObjetivo.id,
+                    name: publicoObjetivo.nombre,
+                  };
+                }
+              );
+              setCATPublicosObjetivos(CatPublicosObjetivos);
+            }
+          }
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -144,6 +171,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
     ev.preventDefault();
     sendForm();
     if (isFormValid) {
+      console.log(eventoPublicoObjetivo);
       // Si todo sale bien
       SetLoading(true);
       const payload: eventoPostInterface = {
@@ -153,6 +181,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
         eventoTipoId: eventoTipoId as string,
         fechaInicio: (fechaInicio as string).replace("T", " "),
         eventoGrupo: [],
+        eventoPublicoObjetivo: (eventoPublicoObjetivo as string).split(","),
         fechaFin:
           (fechaFin as string).length > 0
             ? (fechaFin as string).replace("T", " ")
@@ -211,6 +240,10 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
       }
       toast.error("No se logró registar el evento");
       SetLoading(false);
+    } else {
+      if ((eventoPublicoObjetivo as string).length === 0) {
+        toast.info("Por favor seleccione el público objetivo");
+      }
     }
   };
   // Obteniendo catálogos iniciales
@@ -226,7 +259,6 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
   // useEffect(() => {
   //   console.log(formValues)
   // }, [formValues])
-  
 
   return (
     <>
@@ -338,18 +370,11 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
         </div>
         <ChecklistCatalogo
           containerClassName="col-span-2"
-          catalogo={[
-            { id: "1", nombre: "Maestras y maestros" },
-            { id: "2", nombre: "Estudiantes" },
-            { id: "3", nombre: "Personal Administrativo" },
-            { id: "4", nombre: "Padres y madres de familia" },
-            { id: "5", nombre: "Personal directivo" },
-            { id: "6", nombre: "Población general" },
-          ]}
+          catalogo={CATPublicosObjetivos}
           onSelectionChange={(selectFields) => {
             updateForm({
               ...formValues,
-              publicoObjetivo: selectFields.join(","),
+              eventoPublicoObjetivo: selectFields.join(","),
             });
           }}
           titulo="Público objetivo del evento"

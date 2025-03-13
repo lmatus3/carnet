@@ -37,6 +37,7 @@ export const EditEvento = ({
     //   eventoGrupo: integrantesForm,
     // });
   }
+  console.log(eventoData)
   const initForm = {
     nombre: eventoData.nombre as string,
     descripcion: eventoData.descripcion as string,
@@ -47,7 +48,7 @@ export const EditEvento = ({
     agregarGrupo: integrantesForm.length > 0 ? "1" : "0", // Opcional y para lógica de frontend 0 false y 1 true
     eventoGrupo: integrantesForm,
     // TODO Obtener del backend el público objetivo
-    publicoObjetivo: "1,2,3",
+    // publicoObjetivo: (eventoData.EventoPublicoObjetivo as string).join(","),
   };
   // Validaciones de formulario
   const validations: FormValidation = {
