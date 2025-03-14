@@ -1,9 +1,9 @@
 import { PatchEvento } from "../service/EventosService";
-import { eventoInterface, eventoPostInterface } from "../types/eventoType";
+import { eventoInterface, eventoPatchInterface } from "../types/eventoType";
 
 export const empezarEvento = async (payload: eventoInterface, id: string) => {
   console.log(payload);
-  const newPayload: eventoPostInterface = {
+  const newPayload: eventoPatchInterface = {
     descripcion: payload.descripcion,
     eventoTipoId: payload.eventoTipoId,
     estadoId: "4",

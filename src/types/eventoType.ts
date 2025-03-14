@@ -49,7 +49,7 @@ export interface eventoPatchInterface {
   fechaFin?: string; //Opcional, Aplica a validación de fecha respecto a la de inicio y la actual\
   estadoId: string; //Opcional
   eventoGrupo?: string[];
-  eventoPublicoObjetivo: string[];
+  eventoPublicoObjetivo?: string[];
 }
 
 export type eventoTypeType = {

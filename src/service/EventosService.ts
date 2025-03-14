@@ -1,5 +1,5 @@
 import { ResponseInterface } from "../types/GeneralTypes";
-import { eventoInterface, eventoPostInterface } from "../types/eventoType";
+import { eventoInterface, eventoPatchInterface, eventoPostInterface } from "../types/eventoType";
 import { BackendApi } from "../api/config";
 import { ValidateError } from "./ValidateError";
 
@@ -85,7 +85,7 @@ export const PostEvento: (
 };
 // Actualizar un evento
 export const PatchEvento: (
-  payload: eventoPostInterface,
+  payload: eventoPatchInterface,
   id: number | string
 ) => Promise<ResponseInterface> = async (payload, id) => {
   try {
