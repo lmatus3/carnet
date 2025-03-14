@@ -201,6 +201,7 @@ export const TomarAsistencia = () => {
               id: Evento.id,
               nombre: Evento.nombre,
               eventoTipoId: Evento.eventoTipoId,
+              EventoPublicoObjetivo: Evento.EventoPublicoObjetivo
             });
             toast.info("Datos de evento cargados exitosamente");
           }
