@@ -144,7 +144,7 @@ export const VerAsistencia = () => {
           const sexo = Asistencia.sexo;
           asistenciasTotales.total++;
           if (sexo) {
-            if (sexo === "0") {
+            if (sexo === "1") {
               asistenciasTotales.hombres++;
             } else {
               asistenciasTotales.mujeres++;
@@ -169,7 +169,7 @@ export const VerAsistencia = () => {
               case "Administrativo":
                 asistenciasAdministrativos.total++;
                 if (sexo) {
-                  if (sexo === "0") {
+                  if (sexo === "1") {
                     asistenciasAdministrativos.hombres++;
                   } else {
                     asistenciasAdministrativos.mujeres++;
@@ -193,7 +193,7 @@ export const VerAsistencia = () => {
               case "Directivo":
                 asistenciasDirectivos.total++;
                 if (sexo) {
-                  if (sexo === "0") {
+                  if (sexo === "1") {
                     asistenciasDirectivos.hombres++;
                   } else {
                     asistenciasDirectivos.mujeres++;
@@ -216,9 +216,15 @@ export const VerAsistencia = () => {
             Sexo:
               Asistencia.sexo === null
                 ? "N/A"
+                : Asistencia.Perfil.nombre == "Administrativo" ||
+                  Asistencia.Perfil.nombre == "Directivo"
+                ? Asistencia.sexo === "1"
+                  ? "Hombre"
+                  : "Mujer"
                 : Asistencia.sexo === "0"
                 ? "Hombre"
                 : "Mujer",
+
             CreadoPor: Asistencia.creadoPor,
           };
         });
