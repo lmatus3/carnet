@@ -63,13 +63,14 @@ export const MarcarAsistencia = () => {
             id: Evento.id,
             nombre: Evento.nombre,
             eventoTipoId: Evento.eventoTipoId,
+            EventoPublicoObjetivo: Evento.EventoPublicoObjetivo
           });
-          setFechaInicio(Evento.fechaInicio.split(" ")[0]);
-          setHoraInicio(Evento.fechaInicio.split(" ")[1].split(".")[0]);
-          if (Evento.fechaFin) {
-            setFechaFin(Evento.fechaFin.split(" ")[0]);
-            setHoraFin(Evento.fechaFin.split(" ")[1].split(".")[0]);
-          }
+          setFechaInicio(Evento.fechaInicio.split("T")[0]);
+            setHoraInicio(Evento.fechaInicio.split("T")[1].split("-")[0]);
+            if (Evento.fechaFin) {
+              setFechaFin(Evento.fechaFin.split("T")[0]);
+              setHoraFin(Evento.fechaFin.split("T")[1].split("-")[0]);
+            }
           toast.info("Datos de evento cargados exitosamente");
         }
         let tempPerfiles: OptionType[] = [];

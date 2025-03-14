@@ -1,5 +1,5 @@
 import { estadoEnum } from "./estadoType";
-import { publicoObjetivoInterface } from "./publicoObjetivoType";
+import { eventoPublicoObjetivoInterface } from "./publicoObjetivoType";
 
 export interface eventoInterface {
   id: string;
@@ -17,7 +17,7 @@ export interface eventoInterface {
   eventoTipoId: string;
   creadoEl?: string;
   // eventoPublicoObjetivo: string[];
-  EventoPublicoObjetivo: publicoObjetivoInterface[];
+  EventoPublicoObjetivo: eventoPublicoObjetivoInterface[];
   // Grupo
   EventoGrupo?: {
     id: number;

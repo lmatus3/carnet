@@ -45,8 +45,8 @@ export const ChecklistCatalogo: React.FC<ChecklistProps> = ({
           >
             <input
               type="checkbox"
-              checked={selectedIds.includes(item.value)}
-              onChange={() => handleCheckboxChange(item.value)}
+              checked={selectedIds.includes(String(item.value))}
+              onChange={() => handleCheckboxChange(String(item.value))}
               className="w-4 h-4 text-blue-600 border-gray-300 rounded"
             />
             <span className="text-white select-none">{item.name}</span>

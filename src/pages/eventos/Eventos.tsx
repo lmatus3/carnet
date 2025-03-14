@@ -30,6 +30,7 @@ export const Eventos = () => {
               creadoPor: evento.creadoPor,
               fechaInicio: evento.fechaInicio,
               actualizadoEl: evento.actualizadoEl,
+              EventoPublicoObjetivo: evento.EventoPublicoObjetivo,
             };
           });
           setDatosEventos(newEventos);
@@ -42,9 +43,7 @@ export const Eventos = () => {
         return;
       }
       console.log(error);
-      toast.error(
-        "No se logró obtener la información de los eventos"
-      );
+      toast.error("No se logró obtener la información de los eventos");
     }
   };
   useEffect(() => {

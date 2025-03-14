@@ -11,3 +11,15 @@ export interface publicoObjetivoInterface {
   creadoPor: string; //correo
   actualizadoPor: string; //correo
 }
+
+export interface eventoPublicoObjetivoInterface {
+  id: string;
+  eventoId: string;
+  publicoObjetivoId: string;
+  PublicoObjetivo: publicoObjetivoInterface;
+  estadoId: string;
+  creadoEl: string;
+  actualizadoEl: string;
+  creadoPor: string;
+  actualizadoPor: string;
+}

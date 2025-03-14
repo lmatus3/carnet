@@ -5,13 +5,18 @@ import { TextField } from "../../components/TextField";
 import { OptionType, SelectField } from "../../components/SelectField";
 import { FormValidation, FormValues } from "../../types/useFormTypes";
 import { toast } from "sonner";
-import { GetEstado, GetEventoType } from "../../service/GetCatalogsInfo";
+import {
+  GetEstado,
+  GetEventoType,
+  GetPublicoObjetivo,
+} from "../../service/GetCatalogsInfo";
 import { eventoInterface, eventoPatchInterface } from "../../types/eventoType";
 import { useUIStore } from "../../stores/UIStore";
 import { PatchEvento } from "../../service/EventosService";
 import { validateResponseError } from "../../utils/validateResponseError";
 import { useSessionStore } from "../../stores";
 import { ChecklistCatalogo } from "../../components/Eventos/ChecklistCatalogo";
+import { formatDateFromISO } from "../../utils/formatDates";
 
 type EditEventoProps = {
   closeModal: () => void;
@@ -30,25 +35,27 @@ export const EditEvento = ({
     integrantesForm = grupo.map((integrante) => {
       return { correoIntegrante: integrante.miembro };
     });
-    console.log(integrantesForm);
+    // console.log(integrantesForm);
     // updateForm({
     //   ...formValues,
     //   agregarGrupo: "1",
     //   eventoGrupo: integrantesForm,
     // });
   }
-  console.log(eventoData)
+  // console.log(eventoData);
   const initForm = {
     nombre: eventoData.nombre as string,
     descripcion: eventoData.descripcion as string,
     eventoTipoId: eventoData.eventoTipoId as string,
-    fechaInicio: eventoData.fechaInicio as string, // Fecha y hora incluida
-    fechaFin: eventoData.fechaFin as string, // Fecha y hora incluida
+    fechaInicio: formatDateFromISO(eventoData.fechaInicio as string), // Fecha y hora incluida
+    fechaFin: formatDateFromISO(eventoData.fechaFin as string), // Fecha y hora incluida
     estadoId: eventoData.estadoId as string, // Opcional, si no se envía se agrega en 1
     agregarGrupo: integrantesForm.length > 0 ? "1" : "0", // Opcional y para lógica de frontend 0 false y 1 true
     eventoGrupo: integrantesForm,
     // TODO Obtener del backend el público objetivo
-    // publicoObjetivo: (eventoData.EventoPublicoObjetivo as string).join(","),
+    eventoPublicoObjetivo: eventoData.EventoPublicoObjetivo.map((publico) => {
+      return publico.id;
+    }).join(","),
   };
   // Validaciones de formulario
   const validations: FormValidation = {
@@ -64,7 +71,7 @@ export const EditEvento = ({
       (value) => value.length > 0,
       "Favor, ingrese la fecha y hora de inicio",
     ],
-    publicoObjetivo: [
+    eventoPublicoObjetivo: [
       (value) => value.length > 0,
       "Favor, seleccione el público objetivo",
     ],
@@ -92,7 +99,7 @@ export const EditEvento = ({
     estadoId,
     agregarGrupo,
     eventoGrupo,
-    publicoObjetivo,
+    eventoPublicoObjetivo,
   } = formValues;
   const {
     nombreValid,
@@ -105,13 +112,17 @@ export const EditEvento = ({
 
   const [CATEstados, setCATEstados] = useState<OptionType[]>([]);
   const [CATTipoEvento, setCATTipoEvento] = useState<OptionType[]>([]);
+  const [CATPublicosObjetivos, setCATPublicosObjetivos] = useState<
+    OptionType[]
+  >([]);
   const onLogOut = useSessionStore((state) => state.onLogout);
   const getCatalogs = async () => {
     SetLoading(true);
     // TODO Consumir los catálogos
     const EstadosPromise = GetEstado();
     const TiposEventoPromise = GetEventoType();
-    Promise.all([EstadosPromise, TiposEventoPromise])
+    const PublicosObjetivoPromise = GetPublicoObjetivo();
+    Promise.all([EstadosPromise, TiposEventoPromise, PublicosObjetivoPromise])
       .then((responses) => {
         // Adaptando cada catalogo a options de select
         const EstadosBackendCat = responses[0];
@@ -149,6 +160,24 @@ export const EditEvento = ({
             }
           }
         }
+        const PublicosObjetivosCat = responses[2];
+        if (PublicosObjetivosCat) {
+          if (PublicosObjetivosCat.data) {
+            const { data } = PublicosObjetivosCat.data;
+            if (data) {
+              const { PublicosObjetivo } = data;
+              const CatPublicosObjetivos = PublicosObjetivo?.map(
+                (publicoObjetivo) => {
+                  return {
+                    value: publicoObjetivo.id,
+                    name: publicoObjetivo.nombre,
+                  };
+                }
+              );
+              setCATPublicosObjetivos(CatPublicosObjetivos);
+            }
+          }
+        }
       })
       .finally(() => SetLoading(false));
   };
@@ -165,6 +194,7 @@ export const EditEvento = ({
         eventoTipoId: eventoTipoId as string,
         fechaInicio: (fechaInicio as string).replace("T", " "),
         fechaFin: fechaFin ? (fechaFin as string).replace("T", " ") : undefined,
+        eventoPublicoObjetivo: (eventoPublicoObjetivo as string).split(","),
         eventoGrupo: [],
       };
       let integrantesValidos = true;
@@ -228,9 +258,9 @@ export const EditEvento = ({
       updateForm({ ...formValues, eventoGrupo: [] });
     }
   }, [agregarGrupo]);
-  useEffect(() => {
-    console.log(formValues);
-  }, [formValues]);
+  // useEffect(() => {
+  //   console.log(formValues);
+  // }, [formValues]);
 
   return (
     <>
@@ -318,7 +348,8 @@ export const EditEvento = ({
               cx="w-full"
               type="datetime-local"
               value={fechaInicio as string}
-              onChange={onChange}
+              onChange={console.log}
+              readOnly
               required
             />
             {isFormSent && (
@@ -341,19 +372,17 @@ export const EditEvento = ({
         </div>
         <ChecklistCatalogo
           containerClassName="col-span-2"
-          catalogo={[
-            { id: "1", nombre: "Maestras y maestros" },
-            { id: "2", nombre: "Estudiantes" },
-            { id: "3", nombre: "Personal Administrativo" },
-            { id: "4", nombre: "Padres y madres de familia" },
-            { id: "5", nombre: "Personal directivo" },
-            { id: "6", nombre: "Población general" },
-          ]}
-          value={publicoObjetivo ? (publicoObjetivo as string).split(",") : []}
+          catalogo={CATPublicosObjetivos}
+          value={
+            eventoPublicoObjetivo
+              ? (eventoPublicoObjetivo as string).split(",")
+              : []
+          }
           onSelectionChange={(selectFields) => {
+            console.log(selectFields);
             updateForm({
               ...formValues,
-              publicoObjetivo: selectFields.join(","),
+              eventoPublicoObjetivo: selectFields.join(","),
             });
           }}
           titulo="Público objetivo del evento"

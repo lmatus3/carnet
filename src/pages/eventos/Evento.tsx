@@ -87,9 +87,9 @@ export const Evento = () => {
     getEventoInfo();
   }, []);
 
-  // useEffect(() => {
-  //   console.log(Data);
-  // }, [Data]);
+  useEffect(() => {
+    console.log(Data);
+  }, [Data]);
 
   return (
     <MainLayout>
@@ -135,6 +135,16 @@ export const Evento = () => {
                   </p>
                 </>
               )}
+              <div>
+                <span className="block font-bold text-xl">
+                  Público objetivo
+                </span>
+                <div>
+                  {Data.EventoPublicoObjetivo.map((publico) => (
+                    <p className="list-item ml-4" key={"publicoObjetivo" + publico.id}>{publico.PublicoObjetivo.nombre}</p>
+                  ))}
+                </div>
+              </div>
               {/* Mostrando QR de evento */}
               <p className="text-center font-leagueGothic text-2xl md:text-4xl ">
                 QR de asistencia
@@ -159,7 +169,7 @@ export const Evento = () => {
               </div>
             </div>
             {/* Botones de acciones */}
-            <div className="absolute right-0 bottom-5 w-full flex  gap-2 justify-center items-center md:w-fit md:right-2 md:flex-col px-2">
+            <div className="absolute right-0 bottom-5 w-full flex  gap-2 justify-center md:w-fit md:right-2 md:flex-col px-2">
               <Link
                 type="button"
                 to={"/tomar_asistencia/" + id}

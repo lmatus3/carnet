@@ -332,7 +332,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
                   </div>
                 </td>
                 <td className="text-center">
-                  {evento.fechaInicio.split(" ")[0]}
+                  {evento.fechaInicio.split("T")[0]}
                 </td>
                 <td className="align-middle print:hidden ">
                   <button
