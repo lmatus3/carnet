@@ -12,9 +12,13 @@ import { GetPerfilesDeUsuario } from "../service/GetPerfilesDeUsuario";
 import { TypeOfUser } from "../types/userTypes";
 import { VerAsistencia } from "../pages/asistencias/VerAsistencia";
 import { TomarAsistencia } from "../pages/asistencias/TomarAsistencia";
+import { envs } from "../plugins/envs";
+import { MaintenancePage } from "../pages/MaintenancePage";
 // import { Noticias } from "../pages/noticias/Noticias";
 
 export const AppRoutes = () => {
+  // ! Mantenimiento de app
+  const isAppInMaintenance = envs.MAINTENANCE === "true";
   // Instanciando herramientas de sesión
   // La sesión es un string y puede ser "Logged" | "NotLogged" | "Checking"
   const session = useSessionStore((state) => state.session);
@@ -68,37 +72,47 @@ export const AppRoutes = () => {
   return (
     <>
       <Routes>
-        {session === "Logged" && token && (
+        {isAppInMaintenance ? (
           <>
-            <Route path="/" element={<Home />} />
-            {perfiles &&
-              (perfiles?.includes("Docente") ||
-                perfiles?.includes("Docente posgrado") ||
-                perfiles?.includes("Administrativo")) && (
-                <>
-                  <Route path="/eventos" element={<Eventos />} />
-                  <Route path="/eventos/:id" element={<Evento />} />
-                  <Route
-                    path="/tomar_asistencia/:id"
-                    element={<TomarAsistencia />}
-                  />
-                  <Route
-                    path="/ver_asistencia/:id"
-                    element={<VerAsistencia />}
-                  />
-                </>
-              )}
-            <Route path="/asistencia/:id" element={<MarcarAsistencia />} />
-            <Route path="/*" element={<Navigate to={"/"} replace />} />
-            {/* <Route path="/noticias" element={<Noticias />} /> */}
+            <Route path="/mantenimiento" element={<MaintenancePage />} />
+            <Route path="/*" element={<Navigate to={"/mantenimiento"} replace />} />
+          </>
+        ) : (
+          <>
+            {session === "Logged" && token && (
+              <>
+                <Route path="/" element={<Home />} />
+                {perfiles &&
+                  (perfiles?.includes("Docente") ||
+                    perfiles?.includes("Docente posgrado") ||
+                    perfiles?.includes("Administrativo")) && (
+                    <>
+                      <Route path="/eventos" element={<Eventos />} />
+                      <Route path="/eventos/:id" element={<Evento />} />
+                      <Route
+                        path="/tomar_asistencia/:id"
+                        element={<TomarAsistencia />}
+                      />
+                      <Route
+                        path="/ver_asistencia/:id"
+                        element={<VerAsistencia />}
+                      />
+                    </>
+                  )}
+                <Route path="/asistencia/:id" element={<MarcarAsistencia />} />
+                <Route path="/*" element={<Navigate to={"/"} replace />} />
+                {/* <Route path="/noticias" element={<Noticias />} /> */}
+              </>
+            )}
+            {session === "NotLogged" && (
+              <>
+                <Route path="/validar/:codigo" element={<Validate />} />
+                <Route path="/*" element={<Login />} />
+              </>
+            )}
           </>
         )}
-        {session === "NotLogged" && (
-          <>
-            <Route path="/validar/:codigo" element={<Validate />} />
-            <Route path="/*" element={<Login />} />
-          </>
-        )}
+
         <Route path="/*" element={<LoadingPage />} />
       </Routes>
     </>

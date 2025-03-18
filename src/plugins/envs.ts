@@ -5,4 +5,5 @@ export const envs = {
   BACKEND_URL: import.meta.env.VITE_BACKEND_URL,
   GOOGLE_CLIENT: import.meta.env.VITE_GOOGLE_CLIENT,
   TIMEVALID: import.meta.env.VITE_TIMEVALID,
+  MAINTENANCE: import.meta.env.VITE_MANTENIMIENTO,
 };
