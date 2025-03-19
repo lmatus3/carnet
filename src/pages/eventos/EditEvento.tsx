@@ -42,7 +42,9 @@ export const EditEvento = ({
     //   eventoGrupo: integrantesForm,
     // });
   }
-  // console.log(eventoData);
+  console.log(eventoData);
+  console.log(eventoData.fechaInicio as string);
+  console.log(formatDateFromISO(eventoData.fechaInicio as string));
   const initForm = {
     nombre: eventoData.nombre as string,
     categoriaId: "",
