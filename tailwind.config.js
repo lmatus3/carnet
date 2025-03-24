@@ -33,6 +33,9 @@ module.exports = {
         h3: "24px",
         h3: "20px",
       },
+      animation: {
+        "spin-slow": "spin 8s linear infinite",
+      },
     },
   },
   plugins: [],
