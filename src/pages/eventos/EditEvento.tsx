@@ -43,11 +43,11 @@ export const EditEvento = ({
     // });
   }
   console.log(eventoData);
-  console.log(eventoData.fechaInicio as string);
-  console.log(formatDateFromISO(eventoData.fechaInicio as string));
+  // console.log(eventoData.fechaInicio as string);
+  // console.log(formatDateFromISO(eventoData.fechaInicio as string));
   const initForm = {
     nombre: eventoData.nombre as string,
-    categoriaId: "",
+    categoriaId: eventoData.EventoTipo?.nombre as string,
     descripcion: eventoData.descripcion as string,
     eventoTipoId: eventoData.eventoTipoId as string,
     fechaInicio: formatDateFromISO(eventoData.fechaInicio as string), // Fecha y hora incluida
@@ -57,7 +57,7 @@ export const EditEvento = ({
     eventoGrupo: integrantesForm,
     // TODO Obtener del backend el público objetivo
     eventoPublicoObjetivo: eventoData.EventoPublicoObjetivo.map((publico) => {
-      return publico.id;
+      return publico.publicoObjetivoId;
     }).join(","),
   };
   // Validaciones de formulario
@@ -262,6 +262,7 @@ export const EditEvento = ({
         SetLoading(false);
         return;
       }
+      console.log(payload);
       const response = await PatchEvento(payload, eventoData.id);
       if (response.ok) {
         toast.dismiss();
@@ -302,8 +303,8 @@ export const EditEvento = ({
   //   console.log(formValues);
   // }, [formValues]);
   useEffect(() => {
-    updateForm({ ...formValues, eventoTipoId: "" });
     if (CATTiposEventoDeCategoria && (categoriaId as string).length > 0) {
+      // updateForm({ ...formValues, eventoTipoId: "" });
       const categoriaConTipos = CATTiposEventoDeCategoria.find(
         (registro) => registro.idCategoria == categoriaId
       );
@@ -366,6 +367,8 @@ export const EditEvento = ({
               value={categoriaId as string}
               onChange={onChange}
               required
+              readOnly
+
             />
             {isFormSent && (
               <span className="text-red-500">{categoriaIdValid}</span>
@@ -380,6 +383,7 @@ export const EditEvento = ({
                 <p className="text-sm font-bold">
                   Tipo de evento <span>*</span>
                 </p>
+
                 <SelectField
                   id="eventoTipoId"
                   name="eventoTipoId"
@@ -389,6 +393,7 @@ export const EditEvento = ({
                   value={eventoTipoId as string}
                   onChange={onChange}
                   required
+                  readOnly
                 />
                 {isFormSent && (
                   <span className="text-red-500">{eventoTipoIdValid}</span>

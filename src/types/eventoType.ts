@@ -15,6 +15,7 @@ export interface eventoInterface {
   //   Esto va a cambiar en un futuro
   // tipoEventoId: string;
   eventoTipoId: string;
+  EventoTipo?: eventoTypeType;
   creadoEl?: string;
   // eventoPublicoObjetivo: string[];
   EventoPublicoObjetivo: eventoPublicoObjetivoInterface[];

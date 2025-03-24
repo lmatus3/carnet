@@ -58,6 +58,7 @@ export const Evento = () => {
               id: Evento.id,
               nombre: Evento.nombre,
               eventoTipoId: Evento.eventoTipoId,
+              EventoTipo: Evento.EventoTipo,
               EventoGrupo: Evento.EventoGrupo,
               EventoPublicoObjetivo: Evento.EventoPublicoObjetivo,
             });
@@ -141,7 +142,12 @@ export const Evento = () => {
                 </span>
                 <div>
                   {Data.EventoPublicoObjetivo.map((publico) => (
-                    <p className="list-item ml-4" key={"publicoObjetivo" + publico.id}>{publico.PublicoObjetivo.nombre}</p>
+                    <p
+                      className="list-item ml-4"
+                      key={"publicoObjetivo" + publico.id}
+                    >
+                      {publico.PublicoObjetivo.nombre}
+                    </p>
                   ))}
                 </div>
               </div>
