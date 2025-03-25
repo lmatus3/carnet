@@ -35,6 +35,7 @@ export const TablaAsistenciasTotales: React.FC<
   contentRefTablaTotales,
   nombreEvento = "Asistencias-totales-del-evento",
 }) => {
+  console.log(totalAsistencias)
   return (
     <div className="flex flex-col border rounded p-2 mt-2  w-auto overflow-auto">
       <button
