@@ -50,7 +50,7 @@ export const GetEvento: (id: string) => Promise<ResponseEvento> = async (
 ) => {
   try {
     const response = await BackendApi.get(
-      "/evento/" + id + "?include[]=EventoGrupo&include[]=EventoPublicoObjetivo.PublicoObjetivo"
+      "/evento/" + id + "?include[]=EventoGrupo&include[]=EventoPublicoObjetivo.PublicoObjetivo&include[]=EventoTipo"
     );
     if (response.status) {
       return { ok: true, data: response.data as ResponseEventoDataInterface };

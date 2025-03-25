@@ -6,8 +6,8 @@ import { OptionType, SelectField } from "../../components/SelectField";
 import { FormValidation, FormValues } from "../../types/useFormTypes";
 import { toast } from "sonner";
 import {
+  GetCategoriasEvento,
   GetEstado,
-  GetEventoType,
   GetPublicoObjetivo,
 } from "../../service/GetCatalogsInfo";
 import { eventoInterface, eventoPatchInterface } from "../../types/eventoType";
@@ -42,9 +42,12 @@ export const EditEvento = ({
     //   eventoGrupo: integrantesForm,
     // });
   }
-  // console.log(eventoData);
+  console.log(eventoData);
+  // console.log(eventoData.fechaInicio as string);
+  // console.log(formatDateFromISO(eventoData.fechaInicio as string));
   const initForm = {
     nombre: eventoData.nombre as string,
+    categoriaId: eventoData.EventoTipo?.nombre as string,
     descripcion: eventoData.descripcion as string,
     eventoTipoId: eventoData.eventoTipoId as string,
     fechaInicio: formatDateFromISO(eventoData.fechaInicio as string), // Fecha y hora incluida
@@ -54,7 +57,7 @@ export const EditEvento = ({
     eventoGrupo: integrantesForm,
     // TODO Obtener del backend el público objetivo
     eventoPublicoObjetivo: eventoData.EventoPublicoObjetivo.map((publico) => {
-      return publico.id;
+      return publico.publicoObjetivoId;
     }).join(","),
   };
   // Validaciones de formulario
@@ -62,6 +65,10 @@ export const EditEvento = ({
     nombre: [
       (value) => value.length > 0,
       "Favor, ingrese el nombre del evento",
+    ],
+    categoriaId: [
+      (value) => value.length > 0,
+      "Favor, seleccione una categoría del evento",
     ],
     estadoId: [
       (value) => value.length > 0,
@@ -92,6 +99,7 @@ export const EditEvento = ({
   } = useForm(initForm, validations);
   const {
     nombre,
+    categoriaId,
     descripcion,
     eventoTipoId,
     fechaInicio,
@@ -103,6 +111,7 @@ export const EditEvento = ({
   } = formValues;
   const {
     nombreValid,
+    categoriaIdValid,
     eventoTipoIdValid,
     fechaInicioValid,
     agregarGrupoValid,
@@ -115,14 +124,26 @@ export const EditEvento = ({
   const [CATPublicosObjetivos, setCATPublicosObjetivos] = useState<
     OptionType[]
   >([]);
+  const [CATCategoria, setCATCategoria] = useState<OptionType[]>([]);
+  const [CATTiposEventoDeCategoria, setCATTiposEventoDeCategoria] = useState<
+    {
+      idCategoria: string;
+      tiposEvento: OptionType[];
+    }[]
+  >([]);
+
   const onLogOut = useSessionStore((state) => state.onLogout);
   const getCatalogs = async () => {
     SetLoading(true);
     // TODO Consumir los catálogos
     const EstadosPromise = GetEstado();
-    const TiposEventoPromise = GetEventoType();
+    const CategoriasEventoPromise = GetCategoriasEvento();
     const PublicosObjetivoPromise = GetPublicoObjetivo();
-    Promise.all([EstadosPromise, TiposEventoPromise, PublicosObjetivoPromise])
+    Promise.all([
+      EstadosPromise,
+      CategoriasEventoPromise,
+      PublicosObjetivoPromise,
+    ])
       .then((responses) => {
         // Adaptando cada catalogo a options de select
         const EstadosBackendCat = responses[0];
@@ -144,20 +165,39 @@ export const EditEvento = ({
             }
           }
         }
-        const TiposEventosCat = responses[1];
-        if (TiposEventosCat) {
-          if (TiposEventosCat.data) {
-            const { data } = TiposEventosCat.data;
-            if (data) {
-              const { EventoTipos } = data;
-              const CatTiposEventos = EventoTipos?.map((tipoEvento) => {
-                return {
-                  value: tipoEvento.id,
-                  name: tipoEvento.nombre,
-                };
+        const CategoriasEventosCat = responses[1];
+        if (CategoriasEventosCat.data) {
+          const { data } = CategoriasEventosCat.data;
+          if (data) {
+            // En este nivel están las categorias
+            const Categorias: OptionType[] = [];
+            const TiposEvento: {
+              idCategoria: string;
+              tiposEvento: OptionType[];
+            }[] = [];
+            data.map((categoria) => {
+              Categorias.push({
+                name: categoria.nombre,
+                value: String(categoria.id),
               });
-              setCATTipoEvento(CatTiposEventos);
-            }
+              const tiposCategoria: OptionType[] = categoria.EventoTipos.map(
+                (ev) => {
+                  if (ev.id == (eventoData.eventoTipoId as string)) {
+                    updateForm({
+                      ...formValues,
+                      categoriaId: String(categoria.id),
+                    });
+                  }
+                  return { name: ev.nombre, value: ev.id };
+                }
+              );
+              TiposEvento.push({
+                idCategoria: String(categoria.id),
+                tiposEvento: tiposCategoria,
+              });
+            });
+            setCATCategoria(Categorias);
+            setCATTiposEventoDeCategoria(TiposEvento);
           }
         }
         const PublicosObjetivosCat = responses[2];
@@ -222,6 +262,7 @@ export const EditEvento = ({
         SetLoading(false);
         return;
       }
+      console.log(payload);
       const response = await PatchEvento(payload, eventoData.id);
       if (response.ok) {
         toast.dismiss();
@@ -261,6 +302,19 @@ export const EditEvento = ({
   // useEffect(() => {
   //   console.log(formValues);
   // }, [formValues]);
+  useEffect(() => {
+    if (CATTiposEventoDeCategoria && (categoriaId as string).length > 0) {
+      // updateForm({ ...formValues, eventoTipoId: "" });
+      const categoriaConTipos = CATTiposEventoDeCategoria.find(
+        (registro) => registro.idCategoria == categoriaId
+      );
+      if (categoriaConTipos) {
+        setCATTipoEvento(categoriaConTipos.tiposEvento);
+      } else {
+        setCATTipoEvento([]);
+      }
+    }
+  }, [categoriaId]);
 
   return (
     <>
@@ -300,25 +354,53 @@ export const EditEvento = ({
           </label>
         </div>
         <div>
-          <label htmlFor="eventoTipoId">
+          <label htmlFor="categoriaId">
             <p className="text-sm font-bold">
-              Tipo de evento <span>*</span>
+              Categoría de evento <span>*</span>
             </p>
             <SelectField
-              id="eventoTipoId"
-              name="eventoTipoId"
-              options={CATTipoEvento}
+              id="categoriaId"
+              name="categoriaId"
+              options={CATCategoria}
               cx="w-full"
               selectMessage="Seleccione un tipo de evento"
-              value={eventoTipoId as string}
+              value={categoriaId as string}
               onChange={onChange}
               required
+              readOnly
+
             />
             {isFormSent && (
-              <span className="text-red-500">{eventoTipoIdValid}</span>
+              <span className="text-red-500">{categoriaIdValid}</span>
             )}
           </label>
         </div>
+        {CATTiposEventoDeCategoria &&
+          (categoriaId as string).length > 0 &&
+          CATTipoEvento.length > 0 && (
+            <div>
+              <label htmlFor="eventoTipoId">
+                <p className="text-sm font-bold">
+                  Tipo de evento <span>*</span>
+                </p>
+
+                <SelectField
+                  id="eventoTipoId"
+                  name="eventoTipoId"
+                  options={CATTipoEvento}
+                  cx="w-full"
+                  selectMessage="Seleccione un tipo de evento"
+                  value={eventoTipoId as string}
+                  onChange={onChange}
+                  required
+                  readOnly
+                />
+                {isFormSent && (
+                  <span className="text-red-500">{eventoTipoIdValid}</span>
+                )}
+              </label>
+            </div>
+          )}
         <div className="col-span-2">
           <label htmlFor="descripcion">
             <p className="text-sm font-bold">

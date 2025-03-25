@@ -6,8 +6,8 @@ import { OptionType, SelectField } from "../../components/SelectField";
 import { FormValidation, FormValues } from "../../types/useFormTypes";
 import { toast } from "sonner";
 import {
+  GetCategoriasEvento,
   GetEstado,
-  GetEventoType,
   GetPublicoObjetivo,
 } from "../../service/GetCatalogsInfo";
 import { PostEvento } from "../../service/EventosService";
@@ -26,6 +26,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
   const initForm = {
     nombre: "",
     descripcion: "",
+    categoriaId: "",
     eventoTipoId: "",
     fechaInicio: "", // Fecha y hora incluida
     fechaFin: "", // Fecha y hora incluida
@@ -40,6 +41,10 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
       (value) => value.length > 0,
       "Favor, ingrese el nombre del evento",
     ],
+    categoriaId: [
+      (value) => value.length > 0,
+      "Favor, seleccione una categoría del evento",
+    ],
     eventoTipoId: [
       (value) => value.length > 0,
       "Favor, seleccione el tipo de evento",
@@ -47,10 +52,6 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
     fechaInicio: [
       (value) => value.length > 0,
       "Favor, ingrese la fecha y hora de inicio",
-    ],
-    eventoPublicoObjetivo: [
-      (value) => value.length > 0,
-      "Favor, seleccione el público objetivo",
     ],
     agregarGrupo: [
       (value) => value === "0" || value === "1",
@@ -70,6 +71,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
   const {
     nombre,
     descripcion,
+    categoriaId,
     eventoTipoId,
     fechaInicio,
     fechaFin,
@@ -80,6 +82,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
   } = formValues;
   const {
     nombreValid,
+    categoriaIdValid,
     eventoTipoIdValid,
     fechaInicioValid,
     agregarGrupoValid,
@@ -94,14 +97,25 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
   const [CATPublicosObjetivos, setCATPublicosObjetivos] = useState<
     OptionType[]
   >([]);
+  const [CATCategoria, setCATCategoria] = useState<OptionType[]>([]);
+  const [CATTiposEventoDeCategoria, setCATTiposEventoDeCategoria] = useState<
+    {
+      idCategoria: string;
+      tiposEvento: OptionType[];
+    }[]
+  >([]);
 
   const getCatalogs = async () => {
     // TODO Consumir los catálogos
     SetLoading(true);
     const EstadosPromise = GetEstado();
-    const TiposEventoPromise = GetEventoType();
+    const CategoriasEventoPromise = GetCategoriasEvento();
     const PublicosObjetivoPromise = GetPublicoObjetivo();
-    Promise.all([EstadosPromise, TiposEventoPromise, PublicosObjetivoPromise])
+    Promise.all([
+      EstadosPromise,
+      CategoriasEventoPromise,
+      PublicosObjetivoPromise,
+    ])
       .then((responses) => {
         // Adaptando cada catalogo a options de select
         const EstadosBackendCat = responses[0];
@@ -124,20 +138,33 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
             }
           }
         }
-        const TiposEventosCat = responses[1];
-        if (TiposEventosCat) {
-          if (TiposEventosCat.data) {
-            const { data } = TiposEventosCat.data;
-            if (data) {
-              const { EventoTipos } = data;
-              const CatTiposEventos = EventoTipos?.map((tipoEvento) => {
-                return {
-                  value: tipoEvento.id,
-                  name: tipoEvento.nombre,
-                };
+        const CategoriasEventosCat = responses[1];
+        if (CategoriasEventosCat.data) {
+          const { data } = CategoriasEventosCat.data;
+          if (data) {
+            // En este nivel están las categorias
+            const Categorias: OptionType[] = [];
+            const TiposEvento: {
+              idCategoria: string;
+              tiposEvento: OptionType[];
+            }[] = [];
+            data.map((categoria) => {
+              Categorias.push({
+                name: categoria.nombre,
+                value: String(categoria.id),
               });
-              setCATTipoEvento(CatTiposEventos);
-            }
+              const tiposCategoria: OptionType[] = categoria.EventoTipos.map(
+                (ev) => {
+                  return { name: ev.nombre, value: ev.id };
+                }
+              );
+              TiposEvento.push({
+                idCategoria: String(categoria.id),
+                tiposEvento: tiposCategoria,
+              });
+            });
+            setCATCategoria(Categorias);
+            setCATTiposEventoDeCategoria(TiposEvento);
           }
         }
         const PublicosObjetivosCat = responses[2];
@@ -181,6 +208,7 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
         eventoTipoId: eventoTipoId as string,
         fechaInicio: (fechaInicio as string).replace("T", " "),
         eventoGrupo: [],
+        // Sólo se envía el público objetivo si la categoría es 1 de
         eventoPublicoObjetivo: (eventoPublicoObjetivo as string).split(","),
         fechaFin:
           (fechaFin as string).length > 0
@@ -259,6 +287,19 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
   // useEffect(() => {
   //   console.log(formValues)
   // }, [formValues])
+  useEffect(() => {
+    updateForm({ ...formValues, eventoTipoId: "" });
+    if (CATTiposEventoDeCategoria && (categoriaId as string).length > 0) {
+      const categoriaConTipos = CATTiposEventoDeCategoria.find(
+        (registro) => registro.idCategoria == categoriaId
+      );
+      if (categoriaConTipos) {
+        setCATTipoEvento(categoriaConTipos.tiposEvento);
+      } else {
+        setCATTipoEvento([]);
+      }
+    }
+  }, [categoriaId]);
 
   return (
     <>
@@ -299,25 +340,49 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
           </label>
         </div>
         <div>
-          <label htmlFor="eventoTipoId">
+          <label htmlFor="categoriaId">
             <p className="text-sm font-bold">
-              Tipo de evento <span>*</span>
+              Categoría de evento <span>*</span>
             </p>
             <SelectField
-              id="eventoTipoId"
-              name="eventoTipoId"
-              options={CATTipoEvento}
+              id="categoriaId"
+              name="categoriaId"
+              options={CATCategoria}
               cx="w-full"
               selectMessage="Seleccione un tipo de evento"
-              value={eventoTipoId as string}
+              value={categoriaId as string}
               onChange={onChange}
               required
             />
             {isFormSent && (
-              <span className="text-red-500">{eventoTipoIdValid}</span>
+              <span className="text-red-500">{categoriaIdValid}</span>
             )}
           </label>
         </div>
+        {CATTiposEventoDeCategoria &&
+          (categoriaId as string).length > 0 &&
+          CATTipoEvento.length > 0 && (
+            <div>
+              <label htmlFor="eventoTipoId">
+                <p className="text-sm font-bold">
+                  Tipo de evento <span>*</span>
+                </p>
+                <SelectField
+                  id="eventoTipoId"
+                  name="eventoTipoId"
+                  options={CATTipoEvento}
+                  cx="w-full"
+                  selectMessage="Seleccione un tipo de evento"
+                  value={eventoTipoId as string}
+                  onChange={onChange}
+                  required
+                />
+                {isFormSent && (
+                  <span className="text-red-500">{eventoTipoIdValid}</span>
+                )}
+              </label>
+            </div>
+          )}
         <div className="col-span-2">
           <label htmlFor="descripcion">
             <p className="text-sm font-bold">
@@ -394,9 +459,6 @@ export const RegisterEvento = ({ closeModal, update }: RegisterEventoProps) => {
               onChange={onChange}
               required
             />
-            {isFormSent && (
-              <span className="text-red-500">{eventoTipoIdValid}</span>
-            )}
           </label>
         </div>
         <div>

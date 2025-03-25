@@ -4,6 +4,7 @@ import { ResponseInterface } from "../types/GeneralTypes";
 import { eventoTypeType } from "../types/eventoType";
 import { EstadoBDType } from "../types/estadoType";
 import { publicoObjetivoInterface } from "../types/publicoObjetivoType";
+import { categoriaEventoInterface } from "../types/categoriaEventoType";
 
 interface EstadosData {
   message: string;
@@ -22,6 +23,11 @@ interface PublicoObjetivoTypeData {
   data: {
     PublicosObjetivo: publicoObjetivoInterface[];
   };
+  errors: string[] | null;
+}
+interface CategoriasEventoTypeData {
+  message: string;
+  data: categoriaEventoInterface[];
   errors: string[] | null;
 }
 interface PerfilesData {
@@ -46,6 +52,9 @@ interface ResponsePerfiles extends ResponseInterface {
 }
 interface ResponsePublicosObjetivo extends ResponseInterface {
   data?: PublicoObjetivoTypeData;
+}
+interface ResponseCategoriasEvento extends ResponseInterface {
+  data?: CategoriasEventoTypeData;
 }
 
 const ValidateError: ({
@@ -149,3 +158,23 @@ export const GetEventoType: () => Promise<ResponseEventosType> = async () => {
     });
   }
 };
+
+export const GetCategoriasEvento: () => Promise<ResponseCategoriasEvento> =
+  async () => {
+    try {
+      const response = await BackendApi.get("categoria?estadoId[eq]=1&include[]=EventoTipos");
+      if (response.status) {
+        return { ok: true, data: response.data as CategoriasEventoTypeData };
+      } else {
+        return {
+          ok: false,
+          error: "No se lograron obtener las categorías de los eventos",
+        };
+      }
+    } catch (error) {
+      return ValidateError({
+        err: error,
+        errorMessage: "No se logró obtener las categorías de los evento",
+      });
+    }
+  };

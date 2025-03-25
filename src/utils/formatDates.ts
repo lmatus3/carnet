@@ -1,9 +1,11 @@
 export const formatDateFromISO = (isoDateString: string) => {
   const date = new Date(isoDateString);
-  return date.toISOString().slice(0, 23); // "yyyy-MM-ddThh:mm:ss.SSS"
+  const offset = date.getTimezoneOffset() * 60000; // Ajustar la zona horaria
+  const localDate = new Date(date.getTime() - offset);
+  return localDate.toISOString().slice(0, 16); // Formato compatible con input
 };
 
 export const formatDateToISO = (dateString: string) => {
   const date = new Date(dateString);
-  return date.toISOString(); // Retorna en formato ISO 8601
+  return date.toISOString().slice(0, 23); // Mantiene el formato sin convertir a UTC
 };

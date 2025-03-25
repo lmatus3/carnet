@@ -14,6 +14,7 @@ type SelectFieldType = {
   cx?: string; // Extra class properties
   selectMessage?: string;
   required?: boolean;
+  readOnly?: boolean; //disable
   onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
 };
 
@@ -26,6 +27,7 @@ export const SelectField = ({
   options,
   selectMessage = "Seleccione una opción",
   required = false,
+  readOnly = false,
   onChange,
 }: SelectFieldType) => {
   return (
@@ -33,9 +35,10 @@ export const SelectField = ({
       id={id}
       name={name}
       value={value}
-      className={` border p-1 rounded ${cx}`}
+      className={` border p-1 rounded ${readOnly && "cursor-not-allowed"} ${cx}`}
       required={required}
       onChange={onChange}
+      disabled={readOnly}
       title={title}
     >
       <option value="" disabled>

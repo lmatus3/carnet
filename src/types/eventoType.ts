@@ -15,6 +15,7 @@ export interface eventoInterface {
   //   Esto va a cambiar en un futuro
   // tipoEventoId: string;
   eventoTipoId: string;
+  EventoTipo?: eventoTypeType;
   creadoEl?: string;
   // eventoPublicoObjetivo: string[];
   EventoPublicoObjetivo: eventoPublicoObjetivoInterface[];
@@ -39,7 +40,7 @@ export interface eventoPostInterface {
   fechaFin?: string; //Opcional, Aplica a validación de fecha respecto a la de inicio y la actual\
   estadoId: string; //Opcional
   eventoGrupo?: string[];
-  eventoPublicoObjetivo: string[];
+  eventoPublicoObjetivo?: string[];
 }
 export interface eventoPatchInterface {
   nombre: string;
