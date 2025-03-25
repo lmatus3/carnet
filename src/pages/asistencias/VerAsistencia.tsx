@@ -143,15 +143,15 @@ export const VerAsistencia = () => {
           const nombrePerfil = Asistencia.Perfil.nombre;
           const sexo = Asistencia.sexo;
           asistenciasTotales.total++;
-          if (sexo) {
-            if (sexo === "1") {
-              asistenciasTotales.hombres++;
-            } else {
-              asistenciasTotales.mujeres++;
-            }
-          } else {
-            asistenciasTotales.otro++;
-          }
+          // if (sexo) {
+          //   if (sexo === "1") {
+          //     // asistenciasTotales.hombres++;
+          //   } else {
+          //     // asistenciasTotales.mujeres++;
+          //   }
+          // } else {
+          //   // asistenciasTotales.otro++;
+          // }
           if (nombrePerfil) {
             switch (nombrePerfil) {
               case "Estudiante":
@@ -159,11 +159,14 @@ export const VerAsistencia = () => {
                 if (sexo) {
                   if (sexo === "0") {
                     asistenciasEstudiantes.hombres++;
+                    asistenciasTotales.hombres++;
                   } else {
                     asistenciasEstudiantes.mujeres++;
+                    asistenciasTotales.mujeres++;
                   }
                 } else {
                   asistenciasEstudiantes.otro++;
+                  asistenciasTotales.otro++;
                 }
                 break;
               case "Administrativo":
@@ -171,23 +174,30 @@ export const VerAsistencia = () => {
                 if (sexo) {
                   if (sexo === "1") {
                     asistenciasAdministrativos.hombres++;
+                    asistenciasTotales.hombres++;
                   } else {
                     asistenciasAdministrativos.mujeres++;
+                    asistenciasTotales.mujeres++;
                   }
                 } else {
                   asistenciasAdministrativos.otro++;
+                  asistenciasTotales.otro++;
                 }
                 break;
               case "Docente":
                 asistenciasDocentes.total++;
-                if (sexo) {
-                  if (sexo === "0") {
+                // console.log("El sexo del docente es " + sexo);
+                if (String(sexo) == "false" || String(sexo) == "true") {
+                  if (String(sexo) == "false") {
                     asistenciasDocentes.hombres++;
+                    asistenciasTotales.hombres++;
                   } else {
                     asistenciasDocentes.mujeres++;
+                    asistenciasTotales.mujeres++;
                   }
                 } else {
                   asistenciasDocentes.otro++;
+                  asistenciasTotales.otro++;
                 }
                 break;
               case "Directivo":
@@ -195,11 +205,14 @@ export const VerAsistencia = () => {
                 if (sexo) {
                   if (sexo === "1") {
                     asistenciasDirectivos.hombres++;
+                    asistenciasTotales.hombres++;
                   } else {
                     asistenciasDirectivos.mujeres++;
+                    asistenciasTotales.mujeres++;
                   }
                 } else {
                   asistenciasDirectivos.otro++;
+                  asistenciasTotales.otro++;
                 }
                 break;
             }
@@ -218,10 +231,10 @@ export const VerAsistencia = () => {
                 ? "N/A"
                 : Asistencia.Perfil.nombre == "Administrativo" ||
                   Asistencia.Perfil.nombre == "Directivo"
-                ? Asistencia.sexo === "1"
+                ? Asistencia.sexo == "1"
                   ? "Hombre"
                   : "Mujer"
-                : Asistencia.sexo === "0"
+                : Asistencia.sexo == "0"
                 ? "Hombre"
                 : "Mujer",
 

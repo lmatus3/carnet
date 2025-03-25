@@ -51,7 +51,9 @@ export const EditEvento = ({
     descripcion: eventoData.descripcion as string,
     eventoTipoId: eventoData.eventoTipoId as string,
     fechaInicio: formatDateFromISO(eventoData.fechaInicio as string), // Fecha y hora incluida
-    fechaFin: formatDateFromISO(eventoData.fechaFin as string), // Fecha y hora incluida
+    fechaFin: eventoData.fechaFin
+      ? formatDateFromISO(eventoData.fechaFin as string)
+      : "", // Fecha y hora incluida
     estadoId: eventoData.estadoId as string, // Opcional, si no se envía se agrega en 1
     agregarGrupo: integrantesForm.length > 0 ? "1" : "0", // Opcional y para lógica de frontend 0 false y 1 true
     eventoGrupo: integrantesForm,
@@ -368,7 +370,6 @@ export const EditEvento = ({
               onChange={onChange}
               required
               readOnly
-
             />
             {isFormSent && (
               <span className="text-red-500">{categoriaIdValid}</span>
