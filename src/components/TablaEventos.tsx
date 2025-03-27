@@ -11,6 +11,8 @@ import { useModalControls } from "../hooks/useModalControls";
 import { RegisterEvento } from "../pages/eventos/RegisterEvento";
 import { concluirEvento } from "../utils/concluirEvento";
 import { empezarEvento } from "../utils/empezarEvento";
+import { validateResponseError } from "../utils/validateResponseError";
+import { useSessionStore } from "../stores";
 
 type TablaEventosType = {
   Registros: eventoInterface[];
@@ -32,6 +34,7 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
     content: string | ReactElement;
   }>({ visible: false, x: 0, y: 0, content: "" });
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const onLogOut = useSessionStore((state) => state.onLogout);
 
   useEffect(() => {
     if (searchTerm && searchField) {
@@ -151,6 +154,9 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
                       closePopup();
                       update();
                     } else {
+                      if (res.status) {
+                        validateResponseError(res.status, onLogOut);
+                      }
                       toast.info(
                         "No se pudo concluir el evento " + evento.codigo
                       );
@@ -171,6 +177,9 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
                       closePopup();
                       update();
                     } else {
+                      if (res.status) {
+                        validateResponseError(res.status, onLogOut);
+                      }
                       toast.info(
                         "No se pudo empezar el evento " + evento.codigo
                       );
@@ -325,7 +334,9 @@ export const TablaEventos = ({ Registros, update }: TablaEventosType) => {
               >
                 <td className="border-x text-center">{evento.id}</td>
                 <td className="border-x text-center">{evento.codigo}</td>
-                <td className="text-center align-middle hyphens-auto line-clamp-3">{evento.nombre}</td>
+                <td className="text-center align-middle hyphens-auto line-clamp-3">
+                  {evento.nombre}
+                </td>
                 <td className="text-center align-middle p-0">
                   <div className="inline-block">
                     <EstadoBadge estado={getEstadoName(evento.estadoId)} />

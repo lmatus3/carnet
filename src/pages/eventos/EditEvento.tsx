@@ -266,6 +266,7 @@ export const EditEvento = ({
       }
       console.log(payload);
       const response = await PatchEvento(payload, eventoData.id);
+      console.log(response)
       if (response.ok) {
         toast.dismiss();
         toast.success("Evento actualizado exitósamente");
@@ -276,15 +277,15 @@ export const EditEvento = ({
         update();
         return;
       } else {
-        if (response.status == 401 || response.status == 403) {
+        if (response.status == 401 || response.status == 403 || response.status == 404) {
           validateResponseError(response.status, onLogOut);
+          if (response.errors) {
+            response.errors.map((validacionError) => {
+              toast.error(validacionError, { duration: 50000 });
+            });
+          }
           SetLoading(false);
-          return;
-        }
-        if (response.errors) {
-          response.errors.map((validacionError) => {
-            toast.error(validacionError, { duration: 50000 });
-          });
+          return; 
         }
       }
       toast.error("No se logró actualizar el evento");
