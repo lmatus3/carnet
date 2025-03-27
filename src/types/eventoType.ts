@@ -42,6 +42,9 @@ export interface eventoPostInterface {
   eventoGrupo?: string[];
   eventoPublicoObjetivo?: string[];
 }
+export interface eventoPatchEstado {
+  estadoId?: string;
+}
 export interface eventoPatchInterface {
   nombre: string;
   descripcion: string;
