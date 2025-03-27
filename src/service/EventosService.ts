@@ -1,5 +1,10 @@
 import { ResponseInterface } from "../types/GeneralTypes";
-import { eventoInterface, eventoPatchInterface, eventoPostInterface } from "../types/eventoType";
+import {
+  eventoInterface,
+  eventoPatchEstado,
+  eventoPatchInterface,
+  eventoPostInterface,
+} from "../types/eventoType";
 import { BackendApi } from "../api/config";
 import { ValidateError } from "./ValidateError";
 
@@ -50,7 +55,9 @@ export const GetEvento: (id: string) => Promise<ResponseEvento> = async (
 ) => {
   try {
     const response = await BackendApi.get(
-      "/evento/" + id + "?include[]=EventoGrupo&include[]=EventoPublicoObjetivo.PublicoObjetivo&include[]=EventoTipo"
+      "/evento/" +
+        id +
+        "?include[]=EventoGrupo&include[]=EventoPublicoObjetivo.PublicoObjetivo&include[]=EventoTipo"
     );
     if (response.status) {
       return { ok: true, data: response.data as ResponseEventoDataInterface };
@@ -85,7 +92,7 @@ export const PostEvento: (
 };
 // Actualizar un evento
 export const PatchEvento: (
-  payload: eventoPatchInterface,
+  payload: eventoPatchInterface | eventoPatchEstado,
   id: number | string
 ) => Promise<ResponseInterface> = async (payload, id) => {
   try {
